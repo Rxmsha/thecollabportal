@@ -1,20 +1,12 @@
 'use client'
 
 import React, { useState } from 'react'
-import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { AlertCircle, Mail, Lock } from 'lucide-react'
-
-// Demo test credentials
-const demoCredentials = {
-  admin: { email: 'admin@thecollabportal.com', password: 'demo123' },
-  agent: { email: 'sarah@mortgagepro.com', password: 'demo123' },
-  realtor: { email: 'jessica.realtor@torontorealty.com', password: 'demo123' },
-}
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -34,12 +26,6 @@ export default function LoginPage() {
       setError(result.error || 'Login failed')
     }
     setIsLoading(false)
-  }
-
-  const fillDemoCredentials = (role: 'admin' | 'agent' | 'realtor') => {
-    setEmail(demoCredentials[role].email)
-    setPassword(demoCredentials[role].password)
-    setError('')
   }
 
   return (
@@ -98,45 +84,6 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-4 text-center text-sm">
-              <span className="text-gray-500">Don&apos;t have an account? </span>
-              <Link href="/signup" className="text-blue-600 hover:underline font-medium">
-                Sign up
-              </Link>
-            </div>
-
-            {/* Demo Login Buttons */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-center text-sm text-gray-500 mb-4">
-                Demo Login (for testing)
-              </p>
-              <div className="flex gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => fillDemoCredentials('admin')}
-                >
-                  Admin
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-1 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-                  onClick={() => fillDemoCredentials('agent')}
-                >
-                  Agent
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => fillDemoCredentials('realtor')}
-                >
-                  Realtor
-                </Button>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
