@@ -84,15 +84,9 @@ export default function AgentCalculatorsPage() {
               </CardTitle>
               <CardDescription>{currentCalculator.description}</CardDescription>
             </div>
-            <Button variant="outline" asChild>
-              <a
-                href={currentCalculator.embedUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Open in New Tab
-              </a>
+            <Button variant="outline" disabled>
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Open in New Tab
             </Button>
           </div>
         </CardHeader>
@@ -109,15 +103,9 @@ export default function AgentCalculatorsPage() {
                   In production, this would display an embedded calculator from Bendigi
                   or another calculator provider.
                 </p>
-                <Button asChild>
-                  <a
-                    href={currentCalculator.embedUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Open Calculator
-                  </a>
+                <Button disabled>
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Open Calculator
                 </Button>
               </div>
             </div>
