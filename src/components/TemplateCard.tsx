@@ -24,16 +24,18 @@ export function TemplateCard({ template, onUse }: TemplateCardProps) {
 
   const getCategoryColor = () => {
     switch (template.category) {
-      case 'listing':
-        return 'success'
-      case 'social':
+      case 'social-media':
         return 'purple'
       case 'email':
         return 'default'
-      case 'video':
+      case 'flyer':
+        return 'success'
+      case 'presentation':
         return 'orange'
-      case 'document':
+      case 'checklist':
         return 'secondary'
+      case 'guide':
+        return 'default'
       default:
         return 'secondary'
     }
@@ -45,10 +47,12 @@ export function TemplateCard({ template, onUse }: TemplateCardProps) {
         return 'purple'
       case 'pdf':
         return 'destructive'
-      case 'google_doc':
+      case 'doc':
         return 'default'
       case 'video':
         return 'orange'
+      case 'link':
+        return 'secondary'
       default:
         return 'secondary'
     }
