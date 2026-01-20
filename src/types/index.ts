@@ -49,8 +49,8 @@ export interface Realtor {
 }
 
 // Template types
-export type TemplateCategory = 'listing' | 'social' | 'email' | 'video' | 'document'
-export type TemplateFormat = 'canva' | 'pdf' | 'google_doc' | 'video'
+export type TemplateCategory = 'social-media' | 'email' | 'flyer' | 'presentation' | 'checklist' | 'guide'
+export type TemplateFormat = 'canva' | 'pdf' | 'doc' | 'video' | 'link'
 export type TemplateAudience = 'mortgage_agents' | 'realtors'
 export type TemplateStatus = 'draft' | 'published'
 

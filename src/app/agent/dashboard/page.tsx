@@ -37,7 +37,7 @@ export default function AgentDashboardPage() {
 
   const loadDashboardData = async () => {
     try {
-      const { data, error } = await xano.getAgentStats(user!.id)
+      const { data, error } = await xano.getAgentStats()
       if (data) {
         setStats(data)
       }

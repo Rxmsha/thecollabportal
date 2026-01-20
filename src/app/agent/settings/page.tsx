@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -9,7 +9,16 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
-import { Save, User, Bell, Shield, CreditCard, Users } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Save, User, Bell, Shield, CreditCard, Users, AlertCircle, CheckCircle2, Lock } from 'lucide-react'
+import xano from '@/services/xano'
 
 export default function AgentSettingsPage() {
   const { user } = useAuth()
@@ -19,18 +28,106 @@ export default function AgentSettingsPage() {
     phone: '',
     companyName: '',
   })
+  const [agentData, setAgentData] = useState<any>(null)
   const [notifications, setNotifications] = useState({
     emailNewRealtor: true,
     emailTemplateUpdates: true,
     emailWeeklyDigest: false,
   })
   const [isSaving, setIsSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Change password state
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState(false)
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+
+  useEffect(() => {
+    loadAgentProfile()
+  }, [])
+
+  const loadAgentProfile = async () => {
+    setIsLoading(true)
+    try {
+      const { data, error } = await xano.getMyAgentProfile()
+      if (data) {
+        setAgentData(data)
+        setProfile({
+          name: `${data.firstName} ${data.lastName}`,
+          email: data.email || '',
+          phone: data.phone || '',
+          companyName: data.companyName || '',
+        })
+      }
+    } catch (err) {
+      console.error('Failed to load profile:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleSaveProfile = async () => {
     setIsSaving(true)
-    // Simulate save
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setIsSaving(false)
+    try {
+      await xano.updateMyAgentProfile({
+        phone: profile.phone,
+      })
+    } catch (err) {
+      console.error('Failed to save profile:', err)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleChangePassword = async () => {
+    setPasswordError('')
+    setPasswordSuccess(false)
+
+    // Validation
+    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      setPasswordError('Please fill in all fields')
+      return
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError('New passwords do not match')
+      return
+    }
+
+    if (passwordForm.newPassword.length < 8) {
+      setPasswordError('New password must be at least 8 characters')
+      return
+    }
+
+    setIsChangingPassword(true)
+
+    try {
+      const { data, error } = await xano.changePassword({
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+      })
+
+      if (error) {
+        setPasswordError(error)
+      } else {
+        setPasswordSuccess(true)
+        setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+        setTimeout(() => {
+          setPasswordDialogOpen(false)
+          setPasswordSuccess(false)
+        }, 2000)
+      }
+    } catch (err) {
+      setPasswordError('Failed to change password')
+    } finally {
+      setIsChangingPassword(false)
+    }
   }
 
   return (
@@ -193,10 +290,98 @@ export default function AgentSettingsPage() {
                 <div>
                   <p className="font-medium text-gray-900">Password</p>
                   <p className="text-sm text-gray-500">
-                    Last changed 30 days ago
+                    Update your account password
                   </p>
                 </div>
-                <Button variant="outline">Change Password</Button>
+                <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">Change Password</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Change Password</DialogTitle>
+                      <DialogDescription>
+                        Enter your current password and choose a new one.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 pt-4">
+                      {passwordError && (
+                        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                          {passwordError}
+                        </div>
+                      )}
+                      {passwordSuccess && (
+                        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+                          <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
+                          Password changed successfully!
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <Label htmlFor="currentPassword">Current Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="currentPassword"
+                            type="password"
+                            value={passwordForm.currentPassword}
+                            onChange={(e) =>
+                              setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))
+                            }
+                            className="pl-10"
+                            placeholder="Enter current password"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="newPassword">New Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="newPassword"
+                            type="password"
+                            value={passwordForm.newPassword}
+                            onChange={(e) =>
+                              setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))
+                            }
+                            className="pl-10"
+                            placeholder="Enter new password"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="confirmPassword"
+                            type="password"
+                            value={passwordForm.confirmPassword}
+                            onChange={(e) =>
+                              setPasswordForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
+                            }
+                            className="pl-10"
+                            placeholder="Confirm new password"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-end gap-3 pt-4">
+                        <Button
+                          variant="outline"
+                          onClick={() => setPasswordDialogOpen(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={handleChangePassword}
+                          disabled={isChangingPassword}
+                        >
+                          {isChangingPassword ? 'Changing...' : 'Change Password'}
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
@@ -206,7 +391,9 @@ export default function AgentSettingsPage() {
                     Add an extra layer of security to your account
                   </p>
                 </div>
-                <Button variant="outline">Enable 2FA</Button>
+                <Button variant="outline" disabled>
+                  Coming Soon
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -253,13 +440,20 @@ export default function AgentSettingsPage() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Seats Used</span>
-                <span className="font-medium">5 / 10</span>
+                <span className="font-medium">
+                  {agentData?.seatsUsed || 0} / {agentData?.seatLimit || 50}
+                </span>
               </div>
               <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-600 rounded-full" style={{ width: '50%' }} />
+                <div
+                  className="h-full bg-blue-600 rounded-full"
+                  style={{
+                    width: `${((agentData?.seatsUsed || 0) / (agentData?.seatLimit || 50)) * 100}%`,
+                  }}
+                />
               </div>
               <p className="text-sm text-gray-500">
-                5 seats remaining on your plan
+                {(agentData?.seatLimit || 50) - (agentData?.seatsUsed || 0)} seats remaining on your plan
               </p>
               <Button variant="outline" className="w-full">
                 Upgrade Plan

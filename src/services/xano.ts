@@ -9,6 +9,26 @@ interface XanoResponse<T> {
   error?: string
 }
 
+// Helper to convert snake_case to camelCase
+function snakeToCamel(str: string): string {
+  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
+}
+
+// Transform object keys from snake_case to camelCase
+function transformKeys(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(transformKeys)
+  }
+  if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj).reduce((acc, key) => {
+      const camelKey = snakeToCamel(key)
+      acc[camelKey] = transformKeys(obj[key])
+      return acc
+    }, {} as any)
+  }
+  return obj
+}
+
 class XanoService {
   private authUrl: string
   private apiUrl: string
@@ -34,6 +54,10 @@ class XanoService {
   }
 
   private getHeaders(): HeadersInit {
+    // Always get the latest token from localStorage
+    if (typeof window !== 'undefined') {
+      this.authToken = localStorage.getItem('xano_auth_token')
+    }
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     }
@@ -61,7 +85,8 @@ class XanoService {
       const data = await response.json()
 
       if (!response.ok) {
-        return { data: null as T, error: data.message || 'Request failed' }
+        console.error('Xano API error:', { status: response.status, data })
+        return { data: null as T, error: data.message || data.error || JSON.stringify(data) || 'Request failed' }
       }
 
       return { data }
@@ -117,11 +142,20 @@ class XanoService {
     if (params?.status) queryParams.append('status', params.status)
     if (params?.search) queryParams.append('search', params.search)
     const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
-    return this.request<any[]>(`/agents${query}`)
+    const response = await this.request<any[]>(`/agents${query}`)
+    // Transform snake_case keys to camelCase
+    if (response.data) {
+      response.data = transformKeys(response.data)
+    }
+    return response
   }
 
   async getAgent(id: number) {
-    return this.request<any>(`/agents/${id}`)
+    const response = await this.request<any>(`/agents/${id}`)
+    if (response.data) {
+      response.data = transformKeys(response.data)
+    }
+    return response
   }
 
   async updateAgent(id: number, data: Partial<any>) {
@@ -220,17 +254,49 @@ class XanoService {
     if (params?.status) queryParams.append('status', params.status)
     if (params?.search) queryParams.append('search', params.search)
     const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
-    return this.request<any[]>(`/templates${query}`)
+    const response = await this.request<any[]>(`/templates${query}`)
+    // Transform snake_case keys to camelCase
+    if (response.data) {
+      response.data = transformKeys(response.data)
+    }
+    return response
   }
 
   async getTemplate(id: number) {
     return this.request<any>(`/templates/${id}`)
   }
 
-  async createTemplate(data: any) {
-    return this.request<any>('/templates', {
+  async createTemplate(data: {
+    title: string
+    category: string
+    format: string
+    audience: string[]
+    shortDescription: string
+    downloadLink: string
+    previewImageUrl?: string
+    releaseNotes?: string
+  }) {
+    // Convert camelCase to snake_case for Xano
+    const payload = {
+      title: data.title,
+      category: data.category,
+      format: data.format,
+      audience: data.audience,
+      short_description: data.shortDescription,
+      download_link: data.downloadLink,
+      preview_image_url: data.previewImageUrl || '',
+      release_notes: data.releaseNotes || '',
+      status: 'draft',
+    }
+    return this.request<{
+      id: number
+      title: string
+      category: string
+      format: string
+      status: string
+    }>('/create_template', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     })
   }
 
@@ -333,6 +399,93 @@ class XanoService {
       seatLimit: number
       templatesAccessed: number
     }>('/stats/agent')
+  }
+
+  // Stripe/Subscription endpoints (public, no auth required)
+  async createCheckoutSession(data: {
+    firstName: string
+    lastName: string
+    email: string
+    companyName?: string
+  }) {
+    return this.request<{
+      checkoutUrl: string
+      sessionId: string
+    }>('/create_checkout_session', {
+      method: 'POST',
+      body: JSON.stringify({
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        company_name: data.companyName || '',
+      }),
+    })
+  }
+
+  async verifyCheckoutSession(sessionId: string) {
+    return this.request<{
+      verified: boolean
+      email: string
+      customerId: string
+    }>(`/verify_checkout_session?session_id=${sessionId}`)
+  }
+
+  // Change password (authenticated)
+  async changePassword(data: {
+    currentPassword: string
+    newPassword: string
+  }) {
+    return this.request<{ success: boolean }>('/auth/change_password', {
+      method: 'POST',
+      body: JSON.stringify({
+        current_password: data.currentPassword,
+        new_password: data.newPassword,
+      }),
+    }, true)
+  }
+
+  // Get current agent's profile (authenticated agent)
+  async getMyAgentProfile() {
+    const response = await this.request<any>('/agents/me')
+    if (response.data) {
+      response.data = transformKeys(response.data)
+    }
+    return response
+  }
+
+  // Update current agent's profile (authenticated agent)
+  async updateMyAgentProfile(data: {
+    phone?: string
+    brandColor?: string
+    logoUrl?: string
+    calendlyLink?: string
+    cmaLink?: string
+    bio?: string
+  }) {
+    return this.request<any>('/agents/me', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        phone: data.phone,
+        brand_color: data.brandColor,
+        logo_url: data.logoUrl,
+        calendly_link: data.calendlyLink,
+        cma_link: data.cmaLink,
+        bio: data.bio,
+      }),
+    })
+  }
+
+  // Admin: Reset agent password (generates new temp password)
+  async resetAgentPassword(agentId: number) {
+    return this.request<{
+      success: boolean
+      tempPassword: string
+      agentId: number
+      agentEmail: string
+    }>('/reset_agent_password', {
+      method: 'POST',
+      body: JSON.stringify({ agent_id: agentId }),
+    })
   }
 }
 

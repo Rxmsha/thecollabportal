@@ -8,12 +8,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import { Upload, Link as LinkIcon, Save, Image as ImageIcon } from 'lucide-react'
+import { Upload, Link as LinkIcon, Save, Image as ImageIcon, Phone, AlertCircle } from 'lucide-react'
 import xano from '@/services/xano'
 
 export default function AgentBrandingPage() {
   const { user } = useAuth()
   const [branding, setBranding] = useState({
+    phone: '',
     brandColor: '#2563eb',
     logoUrl: '',
     calendlyLink: '',
@@ -21,7 +22,9 @@ export default function AgentBrandingPage() {
     bio: '',
   })
   const [isSaving, setIsSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [saveSuccess, setSaveSuccess] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (user?.id) {
@@ -30,10 +33,14 @@ export default function AgentBrandingPage() {
   }, [user])
 
   const loadBranding = async () => {
+    setIsLoading(true)
     try {
-      const { data, error } = await xano.getAgent(user!.id)
-      if (data) {
+      const { data, error: fetchError } = await xano.getMyAgentProfile()
+      if (fetchError) {
+        setError(fetchError)
+      } else if (data) {
         setBranding({
+          phone: data.phone || '',
           brandColor: data.brandColor || '#2563eb',
           logoUrl: data.logoUrl || '',
           calendlyLink: data.calendlyLink || '',
@@ -41,21 +48,30 @@ export default function AgentBrandingPage() {
           bio: data.bio || '',
         })
       }
-    } catch (error) {
-      console.error('Failed to load branding:', error)
+    } catch (err) {
+      console.error('Failed to load branding:', err)
+      setError('Failed to load profile')
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const handleSave = async () => {
     setIsSaving(true)
     setSaveSuccess(false)
+    setError('')
 
     try {
-      await xano.updateAgentBranding(user!.id, branding)
-      setSaveSuccess(true)
-      setTimeout(() => setSaveSuccess(false), 3000)
-    } catch (error) {
-      console.error('Failed to save branding:', error)
+      const { error: saveError } = await xano.updateMyAgentProfile(branding)
+      if (saveError) {
+        setError(saveError)
+      } else {
+        setSaveSuccess(true)
+        setTimeout(() => setSaveSuccess(false), 3000)
+      }
+    } catch (err) {
+      console.error('Failed to save branding:', err)
+      setError('Failed to save changes')
     } finally {
       setIsSaving(false)
     }
@@ -66,13 +82,24 @@ export default function AgentBrandingPage() {
     if (!file) return
 
     try {
-      const { data, error } = await xano.uploadFile(file, 'logos')
-      if (data?.url) {
+      const { data, error: uploadError } = await xano.uploadFile(file)
+      if (uploadError) {
+        setError(uploadError)
+      } else if (data?.url) {
         setBranding((prev) => ({ ...prev, logoUrl: data.url }))
       }
-    } catch (error) {
-      console.error('Failed to upload logo:', error)
+    } catch (err) {
+      console.error('Failed to upload logo:', err)
+      setError('Failed to upload logo')
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    )
   }
 
   return (
@@ -84,9 +111,43 @@ export default function AgentBrandingPage() {
         </p>
       </div>
 
+      {error && (
+        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+          {error}
+        </div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Settings */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Contact Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Contact Information</CardTitle>
+              <CardDescription>
+                Your contact details visible to realtors
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="phone"
+                    value={branding.phone}
+                    onChange={(e) =>
+                      setBranding((prev) => ({ ...prev, phone: e.target.value }))
+                    }
+                    placeholder="(555) 123-4567"
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Logo */}
           <Card>
             <CardHeader>
@@ -282,6 +343,9 @@ export default function AgentBrandingPage() {
                   <div>
                     <h3 className="font-semibold text-gray-900">{user?.name}</h3>
                     <p className="text-sm text-gray-500">Mortgage Agent</p>
+                    {branding.phone && (
+                      <p className="text-xs text-gray-400">{branding.phone}</p>
+                    )}
                   </div>
                 </div>
                 <Separator className="my-4" />

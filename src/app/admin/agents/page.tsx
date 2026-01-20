@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Search, Building2, Mail, Phone, Calendar, Users, Plus } from 'lucide-react'
+import { Search, Building2, Mail, Phone, Calendar, Users, Plus, Key, Copy, CheckCircle2, Eye, EyeOff } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import xano from '@/services/xano'
 import { formatDate } from '@/lib/utils'
@@ -43,6 +43,11 @@ export default function AdminAgentsPage() {
     phone: '',
     seatLimit: 10,
   })
+
+  // Reset password state
+  const [isResettingPassword, setIsResettingPassword] = useState(false)
+  const [resetPasswordResult, setResetPasswordResult] = useState<{ password: string; copied: boolean } | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     loadAgents()
@@ -97,6 +102,49 @@ export default function AdminAgentsPage() {
     } catch (error) {
       console.error('Failed to update agent status:', error)
     }
+  }
+
+  const handleResetPassword = async (agentId: number) => {
+    setIsResettingPassword(true)
+    setResetPasswordResult(null)
+    console.log('Resetting password for agent ID:', agentId)
+
+    try {
+      const { data, error } = await xano.resetAgentPassword(agentId)
+      console.log('Reset password response:', { data, error })
+      if (error) {
+        console.error('Failed to reset password:', error)
+        return
+      }
+      if (data) {
+        // Handle both camelCase and snake_case responses from Xano
+        const password = data.tempPassword || (data as any).temp_password
+        console.log('Extracted password:', password)
+        if (password) {
+          setResetPasswordResult({ password, copied: false })
+        }
+      }
+    } catch (error) {
+      console.error('Failed to reset password:', error)
+    } finally {
+      setIsResettingPassword(false)
+    }
+  }
+
+  const copyPassword = async () => {
+    if (resetPasswordResult) {
+      await navigator.clipboard.writeText(resetPasswordResult.password)
+      setResetPasswordResult({ ...resetPasswordResult, copied: true })
+      setTimeout(() => {
+        setResetPasswordResult((prev) => prev ? { ...prev, copied: false } : null)
+      }, 2000)
+    }
+  }
+
+  const closeAgentModal = () => {
+    setSelectedAgent(null)
+    setResetPasswordResult(null)
+    setShowPassword(false)
   }
 
   const handleCreateAgent = async (e: React.FormEvent) => {
@@ -281,7 +329,7 @@ export default function AdminAgentsPage() {
       </Card>
 
       {/* Agent Detail Dialog */}
-      <Dialog open={!!selectedAgent} onOpenChange={() => setSelectedAgent(null)}>
+      <Dialog open={!!selectedAgent} onOpenChange={closeAgentModal}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Agent Details</DialogTitle>
@@ -329,6 +377,54 @@ export default function AdminAgentsPage() {
                     {selectedAgent.seatsUsed} of {selectedAgent.seatLimit} seats used
                   </span>
                 </div>
+              </div>
+
+              {/* Password Reset Section */}
+              <div className="pt-4 border-t">
+                <p className="text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </p>
+                {resetPasswordResult ? (
+                  <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+                    <p className="text-xs text-gray-500">New temporary password:</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-white border rounded px-3 py-2 font-mono text-sm">
+                        {showPassword ? resetPasswordResult.password : '••••••••••••'}
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={copyPassword}
+                      >
+                        {resetPasswordResult.copied ? (
+                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-amber-600">
+                      Share this password with the agent. They should change it after logging in.
+                    </p>
+                  </div>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleResetPassword(selectedAgent.id)}
+                    disabled={isResettingPassword}
+                  >
+                    <Key className="h-4 w-4 mr-2" />
+                    {isResettingPassword ? 'Resetting...' : 'Reset Password'}
+                  </Button>
+                )}
               </div>
 
               <div className="pt-4 border-t">

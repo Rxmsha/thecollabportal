@@ -30,7 +30,6 @@ export default function AgentInvitePage() {
 
     try {
       const { data, error: apiError } = await xano.inviteRealtor({
-        agentId: user!.id,
         email: formData.email,
         firstName: formData.firstName,
         lastName: formData.lastName,

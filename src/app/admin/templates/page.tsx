@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -23,26 +23,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Search, Plus, FileText, Edit, Eye, Upload } from 'lucide-react'
+import { Plus, FileText, ExternalLink, Film, FileIcon, Mail, Image } from 'lucide-react'
 import xano from '@/services/xano'
-import { formatDate } from '@/lib/utils'
 import { Template, TemplateCategory, TemplateFormat, TemplateAudience } from '@/types'
 
 export default function AdminTemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [newTemplate, setNewTemplate] = useState({
     title: '',
-    category: 'listing' as TemplateCategory,
+    category: 'social-media' as TemplateCategory,
     format: 'canva' as TemplateFormat,
     audience: ['mortgage_agents', 'realtors'] as TemplateAudience[],
     shortDescription: '',
     downloadLink: '',
+    previewImageUrl: '',
     releaseNotes: '',
   })
 
@@ -71,15 +69,16 @@ export default function AdminTemplatesPage() {
     try {
       const { data, error } = await xano.createTemplate(newTemplate)
       if (data) {
-        setTemplates((prev) => [data, ...prev])
+        loadTemplates()
         setIsCreateOpen(false)
         setNewTemplate({
           title: '',
-          category: 'listing',
+          category: 'social-media',
           format: 'canva',
           audience: ['mortgage_agents', 'realtors'],
           shortDescription: '',
           downloadLink: '',
+          previewImageUrl: '',
           releaseNotes: '',
         })
       }
@@ -88,71 +87,64 @@ export default function AdminTemplatesPage() {
     }
   }
 
-  const handlePublish = async (templateId: number) => {
-    try {
-      await xano.publishTemplate(templateId)
-      setTemplates((prev) =>
-        prev.map((t) =>
-          t.id === templateId ? { ...t, status: 'published' as const } : t
-        )
-      )
-    } catch (error) {
-      console.error('Failed to publish template:', error)
-    }
-  }
-
-  const filteredTemplates = templates.filter((template) => {
-    const query = searchQuery.toLowerCase()
-    return (
-      template.title.toLowerCase().includes(query) ||
-      template.shortDescription.toLowerCase().includes(query)
-    )
-  })
-
-  const getFormatBadgeColor = (format: string) => {
-    switch (format) {
-      case 'canva':
-        return 'purple'
-      case 'pdf':
-        return 'destructive'
-      case 'google_doc':
-        return 'default'
-      case 'video':
-        return 'orange'
-      default:
-        return 'secondary'
-    }
-  }
-
-  const getCategoryBadgeColor = (category: string) => {
+  const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'listing':
-        return 'success'
-      case 'social':
-        return 'purple'
+      case 'social-media':
+        return <Image className="h-3.5 w-3.5" />
       case 'email':
-        return 'default'
+        return <Mail className="h-3.5 w-3.5" />
       case 'video':
-        return 'orange'
-      case 'document':
-        return 'secondary'
+        return <Film className="h-3.5 w-3.5" />
       default:
-        return 'secondary'
+        return <FileIcon className="h-3.5 w-3.5" />
+    }
+  }
+
+  const getCategoryStyle = (category: string) => {
+    switch (category) {
+      case 'social-media':
+        return 'bg-purple-100 text-purple-700 border-purple-200'
+      case 'email':
+        return 'bg-blue-100 text-blue-700 border-blue-200'
+      case 'flyer':
+        return 'bg-green-100 text-green-700 border-green-200'
+      case 'presentation':
+        return 'bg-orange-100 text-orange-700 border-orange-200'
+      case 'checklist':
+        return 'bg-yellow-100 text-yellow-700 border-yellow-200'
+      case 'guide':
+        return 'bg-teal-100 text-teal-700 border-teal-200'
+      case 'video':
+        return 'bg-red-100 text-red-700 border-red-200'
+      case 'document':
+        return 'bg-gray-100 text-gray-700 border-gray-200'
+      default:
+        return 'bg-gray-100 text-gray-700 border-gray-200'
+    }
+  }
+
+  const formatCategoryLabel = (category: string) => {
+    switch (category) {
+      case 'social-media':
+        return 'social'
+      default:
+        return category
     }
   }
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Templates</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Manage Templates</h1>
           <p className="text-gray-500 mt-1">
-            Manage and publish templates for agents and realtors
+            Create and publish content for your users
           </p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-blue-600 hover:bg-blue-700">
               <Plus className="h-4 w-4 mr-2" />
               Add Template
             </Button>
@@ -191,11 +183,12 @@ export default function AdminTemplatesPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="listing">Listing</SelectItem>
-                      <SelectItem value="social">Social</SelectItem>
+                      <SelectItem value="social-media">Social Media</SelectItem>
                       <SelectItem value="email">Email</SelectItem>
-                      <SelectItem value="video">Video</SelectItem>
-                      <SelectItem value="document">Document</SelectItem>
+                      <SelectItem value="flyer">Flyer</SelectItem>
+                      <SelectItem value="presentation">Presentation</SelectItem>
+                      <SelectItem value="checklist">Checklist</SelectItem>
+                      <SelectItem value="guide">Guide</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -216,8 +209,9 @@ export default function AdminTemplatesPage() {
                     <SelectContent>
                       <SelectItem value="canva">Canva</SelectItem>
                       <SelectItem value="pdf">PDF</SelectItem>
-                      <SelectItem value="google_doc">Google Doc</SelectItem>
+                      <SelectItem value="doc">Document</SelectItem>
                       <SelectItem value="video">Video</SelectItem>
+                      <SelectItem value="link">Link</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -234,6 +228,19 @@ export default function AdminTemplatesPage() {
                   }
                   placeholder="Brief description of the template"
                   rows={3}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Preview Image URL (optional)</Label>
+                <Input
+                  value={newTemplate.previewImageUrl}
+                  onChange={(e) =>
+                    setNewTemplate((prev) => ({
+                      ...prev,
+                      previewImageUrl: e.target.value,
+                    }))
+                  }
+                  placeholder="https://..."
                 />
               </div>
               <div className="space-y-2">
@@ -268,39 +275,19 @@ export default function AdminTemplatesPage() {
               <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleCreateTemplate}>Create Template</Button>
+              <Button onClick={handleCreateTemplate} className="bg-blue-600 hover:bg-blue-700">
+                Create Template
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search templates..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-full sm:w-40">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            <SelectItem value="listing">Listing</SelectItem>
-            <SelectItem value="social">Social</SelectItem>
-            <SelectItem value="email">Email</SelectItem>
-            <SelectItem value="video">Video</SelectItem>
-            <SelectItem value="document">Document</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex gap-3">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-40">
-            <SelectValue placeholder="Status" />
+          <SelectTrigger className="w-[140px] bg-white">
+            <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
@@ -308,71 +295,110 @@ export default function AdminTemplatesPage() {
             <SelectItem value="published">Published</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-[160px] bg-white">
+            <SelectValue placeholder="All Categories" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="social-media">Social Media</SelectItem>
+            <SelectItem value="email">Email</SelectItem>
+            <SelectItem value="flyer">Flyer</SelectItem>
+            <SelectItem value="presentation">Presentation</SelectItem>
+            <SelectItem value="checklist">Checklist</SelectItem>
+            <SelectItem value="guide">Guide</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Templates Grid */}
       {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
-            <Card key={i}>
-              <CardContent className="p-0">
-                <div className="aspect-video bg-gray-100 animate-pulse" />
-                <div className="p-4 space-y-3">
-                  <div className="h-4 bg-gray-100 rounded animate-pulse" />
-                  <div className="h-3 bg-gray-100 rounded w-2/3 animate-pulse" />
+            <Card key={i} className="overflow-hidden border rounded-xl">
+              <div className="aspect-[4/3] bg-gray-100 animate-pulse" />
+              <CardContent className="p-4 space-y-3">
+                <div className="h-5 bg-gray-100 rounded animate-pulse" />
+                <div className="h-4 bg-gray-100 rounded w-2/3 animate-pulse" />
+                <div className="flex justify-between items-center pt-2">
+                  <div className="h-6 w-16 bg-gray-100 rounded animate-pulse" />
+                  <div className="h-9 w-20 bg-gray-100 rounded animate-pulse" />
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
-      ) : filteredTemplates.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredTemplates.map((template) => (
-            <Card key={template.id} className="overflow-hidden">
-              <div className="aspect-video bg-gray-100 relative flex items-center justify-center">
-                <FileText className="h-12 w-12 text-gray-300" />
-                <div className="absolute top-2 left-2 flex gap-1">
-                  <Badge variant={getCategoryBadgeColor(template.category) as any}>
-                    {template.category}
-                  </Badge>
-                  {template.status === 'draft' && (
-                    <Badge variant="secondary">Draft</Badge>
-                  )}
+      ) : templates.length > 0 ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {templates.map((template) => (
+            <Card key={template.id} className="overflow-hidden border rounded-xl hover:shadow-lg transition-shadow">
+              {/* Image Preview */}
+              <div className="aspect-[4/3] bg-gray-100 relative">
+                {template.previewImageUrl ? (
+                  <img
+                    src={template.previewImageUrl}
+                    alt={template.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                    <FileText className="h-16 w-16 text-gray-300" />
+                  </div>
+                )}
+                {/* Category Badge - Top Right */}
+                <div className="absolute top-3 right-3">
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border ${getCategoryStyle(template.category)}`}>
+                    {getCategoryIcon(template.category)}
+                    {formatCategoryLabel(template.category)}
+                  </span>
                 </div>
+                {/* Draft Badge - Top Left */}
+                {template.status === 'draft' && (
+                  <div className="absolute top-3 left-3">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                      Draft
+                    </span>
+                  </div>
+                )}
               </div>
+
+              {/* Content */}
               <CardContent className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-1">{template.title}</h3>
-                <p className="text-sm text-gray-500 line-clamp-2 mb-3">
+                <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                  {template.title}
+                </h3>
+                <p className="text-sm text-gray-500 line-clamp-2 mb-4">
                   {template.shortDescription}
                 </p>
+
+                {/* Footer */}
                 <div className="flex items-center justify-between">
-                  <Badge variant={getFormatBadgeColor(template.format) as any}>
-                    {template.format.replace('_', ' ')}
-                  </Badge>
-                  <div className="flex gap-2">
-                    {template.status === 'draft' && (
-                      <Button
-                        size="sm"
-                        onClick={() => handlePublish(template.id)}
-                      >
-                        <Upload className="h-4 w-4 mr-1" />
-                        Publish
-                      </Button>
-                    )}
-                    <Button size="sm" variant="outline">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    {template.format.toUpperCase().replace('_', ' ')}
+                  </span>
+                  <Button
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={() => template.downloadLink && window.open(template.downloadLink, '_blank')}
+                  >
+                    Open
+                    <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
       ) : (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No templates found</p>
+        <Card className="border rounded-xl">
+          <CardContent className="py-16 text-center">
+            <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
+            <p className="text-gray-500 mb-4">Get started by creating your first template</p>
+            <Button onClick={() => setIsCreateOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Template
+            </Button>
           </CardContent>
         </Card>
       )}
