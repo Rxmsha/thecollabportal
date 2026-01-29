@@ -22,10 +22,7 @@ export default function RealtorTemplatesPage() {
 
   const loadTemplates = async () => {
     try {
-      const { data, error } = await xano.getTemplates({
-        status: 'published',
-        audience: 'realtors',
-      })
+      const { data, error } = await xano.getPublishedTemplates()
       if (data) {
         setTemplates(data)
       }
@@ -58,16 +55,18 @@ export default function RealtorTemplatesPage() {
 
   const getCategoryBadgeColor = (category: string) => {
     switch (category) {
-      case 'listing':
-        return 'success'
-      case 'social':
+      case 'social-media':
         return 'purple'
       case 'email':
         return 'default'
-      case 'video':
+      case 'flyer':
+        return 'success'
+      case 'presentation':
         return 'orange'
-      case 'document':
+      case 'checklist':
         return 'secondary'
+      case 'guide':
+        return 'default'
       default:
         return 'secondary'
     }
@@ -96,11 +95,12 @@ export default function RealtorTemplatesPage() {
 
   const categories = [
     { value: 'all', label: 'All' },
-    { value: 'listing', label: 'Listing' },
-    { value: 'social', label: 'Social' },
+    { value: 'social-media', label: 'Social Media' },
     { value: 'email', label: 'Email' },
-    { value: 'video', label: 'Video' },
-    { value: 'document', label: 'Docs' },
+    { value: 'flyer', label: 'Flyer' },
+    { value: 'presentation', label: 'Presentation' },
+    { value: 'checklist', label: 'Checklist' },
+    { value: 'guide', label: 'Guide' },
   ]
 
   return (

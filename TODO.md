@@ -171,7 +171,7 @@ Open it here:
 |--------|------|
 | [ ] | Current password verification |
 | [ ] | New password + confirm password fields |
-| [ ] | API endpoint: `POST /auth/change_password` |
+| [ ] | API endpoint: `POST /change_password` |
 
 ---
 
@@ -310,129 +310,126 @@ Open it here:
 
 ---
 
-## Xano Database Tables
+## Xano Database Tables (6 Active)
 
-| Status | Table | Fields |
-|--------|-------|--------|
-| [x] | **users** | id, email, password, name, role (admin/agent/realtor), agent_id (for realtors), created_at |
-| [x] | **agents** | id, user_id, first_name, last_name, email, phone, company_name, status, brand_color, logo_url, calendly_link, cma_link, bio, seat_limit, seats_used, created_at, last_login |
-| [x] | **realtors** | id, agent_id, user_id, first_name, last_name, email, brokerage, phone, status, invite_sent_at, activated_at, invite_token |
-| [x] | **templates** | id, title, category, format, audience (array), short_description, preview_image_url, download_link, status, published_at, created_at, release_notes, created_by |
-| [x] | **usage_logs** | id, event_type, agent_id, realtor_id, template_id, details, created_at |
-| [x] | **error_logs** | id, source, scenario_name, message, severity, resolved, resolved_by, created_at |
+| Status | Table | ID | Fields |
+|--------|-------|-----|--------|
+| [x] | **users** | #39 | id, email, password, name, role (enum), agent_id, created_at |
+| [x] | **agents** | #40 | id, user_id, first_name, last_name, email, phone, company_name, status (enum), brand_color, logo_url, calendly_link, cma_link, bio |
+| [x] | **realtors** | #41 | id, agent_id, user_id, first_name, last_name, email, brokerage, phone, status (enum), created_at, invite_sent_at |
+| [x] | **templates** | #42 | id, title, category (enum), format (enum), audience [text], short_description, preview_image_url, download_link, status (enum), published_at, created_at, release_notes, created_by |
+| [x] | **usage_logs** | #43 | id, event_type (enum), agent_id, realtor_id, template_id, details (json), created_at |
+| [x] | **error_logs** | #44 | id, source (enum), scenario_name, message, severity (enum), resolved (bool), resolved_by, created_at |
+
+> Note: `mortgage_rates` table exists but is NOT being used (crossed out)
 
 ---
 
-## Xano API Endpoints
+## Xano API Endpoints (52 Total)
 
-### Authentication
-| Status | Method | Endpoint | Description |
-|--------|--------|----------|-------------|
-| [x] | POST | `/auth/login` | Login & return auth token |
-| [x] | GET | `/auth/me` | Get current user from token |
-| [x] | POST | `/create_agent` | Admin creates new agent (generates temp password) |
-| [ ] | POST | `/auth/change_password` | Change password (authenticated) |
-| [ ] | POST | `/auth/accept_invite` | Realtor accepts invite & sets password |
+### Authentication (4 endpoints)
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | GET | `/auth/me` | Private | Get current user from token |
+| [x] | POST | `/auth/login` | Public | Login & return auth token |
+| [x] | POST | `/auth/signup` | Public | Sign up a new user |
+| [x] | POST | `/auth/accept_invite` | Public | Accept realtor invitation, create user, return token |
+
+### Agents (5 endpoints)
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | GET | `/agents` | Private | Query all agents records |
+| [x] | POST | `/agents` | Private | Add agents record |
+| [x] | GET | `/agents/{agents_id}` | Private | Get agents record |
+| [x] | PATCH | `/agents/{agents_id}` | Private | Edit agents record |
+| [x] | DELETE | `/agents/{agents_id}` | Private | Delete agents record |
+
+### Agent-Specific Endpoints
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | POST | `/create_agent` | Private | Creates new agent + user account |
+| [x] | POST | `/signup_agent` | Public | Creates new agent account with temp password |
+| [x] | POST | `/update_agent_branding` | Private | Updates branding for a specific agent |
+| [x] | GET | `/stats/agent` | Private | Retrieve agent stats (realtor counts, seat usage) |
+| [x] | POST | `/reset_agent_password` | Private | Reset agent password (Admin only) |
+
+### Realtors (5 endpoints)
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | GET | `/realtors` | Private | Query all realtors records |
+| [x] | POST | `/realtors` | Private | Add realtors record |
+| [x] | GET | `/realtors/{realtors_id}` | Private | Get realtors record |
+| [x] | PATCH | `/realtors/{realtors_id}` | Private | Edit realtors record |
+| [x] | DELETE | `/realtors/{realtors_id}` | Private | Delete realtors record |
+
+### Realtor Invite Flow
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | POST | `/invite_realtor` | Private | Invite realtor (checks seat limits, prevents duplicates) |
+| [x] | GET | `/invites/validate` | Public | Validate invite token, get realtor + agent details |
+
+### Templates (6 endpoints)
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | GET | `/templates` | Private | Query templates (with filtering) |
+| [x] | POST | `/templates` | Private | Add templates record |
+| [x] | GET | `/templates/{templates_id}` | Private | Get templates record |
+| [x] | PATCH | `/templates/{templates_id}` | Private | Edit templates record |
+| [x] | DELETE | `/templates/{templates_id}` | Private | Delete templates record |
+| [x] | POST | `/templates/publish` | Private | Publish a template |
 
 ### Admin Endpoints
-| Status | Method | Endpoint | Description |
-|--------|--------|----------|-------------|
-| [ ] | GET | `/dashboard_stats` | Dashboard stats (counts of agents, realtors, templates) |
-| [x] | GET | `/agents` | List all agents (with auth verification) |
-| [ ] | PATCH | `/agents/{id}` | Update agent status |
-| [ ] | GET | `/realtors` | List all realtors |
-| [ ] | GET | `/templates` | List templates |
-| [ ] | POST | `/templates` | Create template |
-| [ ] | PATCH | `/templates/{id}` | Update template |
-| [ ] | POST | `/templates/publish` | Publish template (triggers email automation) |
-| [ ] | GET | `/usage_logs` | Activity logs |
-| [ ] | GET | `/error_logs` | Error logs |
-| [ ] | POST | `/resolve_error_log` | Mark error resolved |
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | GET | `/dashboard_stats` | Private | Aggregated stats for admin dashboard |
+| [x] | POST | `/create_template` | Private | Create template (admin only) |
+| [x] | POST | `/resolve_error_log` | Private | Resolve an error log by ID |
 
-### Agent Endpoints
-| Status | Method | Endpoint | Description |
-|--------|--------|----------|-------------|
-| [ ] | GET | `/agents/me` | Get own agent profile |
-| [ ] | PATCH | `/agents/me` | Update own branding (logo, color, links, bio, phone) |
-| [ ] | GET | `/agents/me/stats` | Agent dashboard stats (realtors count, seats, etc.) |
-| [ ] | GET | `/agents/me/realtors` | Get agent's realtors |
-| [ ] | POST | `/invite_realtor` | Invite a realtor (checks seat limit) |
-| [ ] | POST | `/resend_invite` | Resend realtor invite email |
-| [ ] | POST | `/upload/image` | File upload (logos) |
+### Usage Logs (5 endpoints)
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | GET | `/usage_logs` | Private | Query all usage_logs records |
+| [x] | POST | `/usage_logs` | Private | Add usage_logs record |
+| [x] | GET | `/usage_logs/{usage_logs_id}` | Private | Get usage_logs record |
+| [x] | PATCH | `/usage_logs/{usage_logs_id}` | Private | Edit usage_logs record |
+| [x] | DELETE | `/usage_logs/{usage_logs_id}` | Private | Delete usage_logs record |
 
-### Realtor Endpoints
-| Status | Method | Endpoint | Description |
-|--------|--------|----------|-------------|
-| [ ] | GET | `/realtors/me` | Get own realtor profile |
-| [ ] | GET | `/realtors/me/agent` | Get linked agent info (branding, contact) |
-| [ ] | GET | `/templates` | Get realtor templates (filter by audience) |
-| [ ] | POST | `/contact_agent` | Send message to agent |
+### Error Logs (5 endpoints)
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | GET | `/error_logs` | Private | Query all error_logs records |
+| [x] | POST | `/error_logs` | Private | Add error_logs record |
+| [x] | GET | `/error_logs/{error_logs_id}` | Private | Get error_logs record |
+| [x] | PATCH | `/error_logs/{error_logs_id}` | Private | Edit error_logs record |
+| [x] | DELETE | `/error_logs/{error_logs_id}` | Private | Delete error_logs record |
 
-### Invite Flow
-| Status | Method | Endpoint | Description |
-|--------|--------|----------|-------------|
-| [ ] | GET | `/invites/validate?token=xxx` | Validate invite token, return realtor + agent info |
+### Users (5 endpoints)
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | GET | `/users` | Private | Query all users records |
+| [x] | POST | `/users` | Private | Add users record |
+| [x] | GET | `/users/{users_id}` | Private | Get users record |
+| [x] | PATCH | `/users/{users_id}` | Private | Edit users record |
+| [x] | DELETE | `/users/{users_id}` | Private | Delete users record |
 
-### Stripe Checkout Endpoints
-| Status | Method | Endpoint | Description |
-|--------|--------|----------|-------------|
-| [ ] | POST | `/create_checkout_session` | Create Stripe checkout session (public, no auth) |
-| [ ] | GET | `/verify_checkout_session?session_id=xxx` | Verify checkout session after redirect |
+### File Upload
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | POST | `/upload/image` | Private | Upload image with validation |
 
-**POST `/create_checkout_session` - Function Stack:**
-```
-Input: first_name, last_name, email, company_name (optional)
-1. External API Request to Stripe: POST /v1/checkout/sessions
-   - mode: "subscription"
-   - payment_method_types: ["card"]
-   - line_items: [{ price: STRIPE_PRICE_ID, quantity: 1 }]
-   - customer_email: input.email
-   - success_url: APP_URL/subscribe/success?session_id={CHECKOUT_SESSION_ID}
-   - cancel_url: APP_URL/subscribe
-   - metadata: { first_name, last_name, company_name }
-2. Return: { checkout_url: session.url, session_id: session.id }
-```
+### Stripe (2 endpoints)
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | POST | `/stripe/create-checkout-session` | Private | Create Stripe checkout session |
+| [ ] | POST | `/stripe/webhook` | Public | Handle Stripe webhooks (DRAFT) |
 
-**GET `/verify_checkout_session` - Function Stack:**
-```
-Input: session_id (query param)
-1. External API Request to Stripe: GET /v1/checkout/sessions/{session_id}
-2. Return: { verified: true, email: session.customer_email, customer_id: session.customer }
-```
-
-### Webhooks (Stripe)
-| Status | Method | Endpoint | Description |
-|--------|--------|----------|-------------|
-| [ ] | POST | `/webhooks/stripe` | Handle Stripe events (subscription created/updated/deleted) |
-
-**POST `/webhooks/stripe` - Function Stack:**
-```
-Input: Stripe webhook payload (raw body)
-1. Verify webhook signature using STRIPE_WEBHOOK_SECRET
-2. Parse event type from payload
-3. Handle event based on type:
-
-   checkout.session.completed:
-   - Extract customer email, metadata (first_name, last_name, company_name)
-   - Generate random 12-char temporary password
-   - Create users record: { email, password (hashed), name: first_name + " " + last_name, role: "agent" }
-   - Create agents record: { user_id, first_name, last_name, email, company_name, status: "active", seat_limit: 50, seats_used: 0, stripe_customer_id }
-   - Update users record with agent_id
-   - Send welcome email via SendGrid with temp password
-   - Log to usage_logs: { event_type: "agent_created", agent_id, details: "Stripe subscription" }
-
-   customer.subscription.updated:
-   - Find agent by stripe_customer_id
-   - Update seat_limit based on new plan quantity
-   - Log to usage_logs
-
-   customer.subscription.deleted:
-   - Find agent by stripe_customer_id
-   - Update agent status to "cancelled"
-   - Log to usage_logs
-
-4. Return: { received: true }
-```
+### Other/Unused
+| Status | Method | Endpoint | Access | Description |
+|--------|--------|----------|--------|-------------|
+| [x] | POST | `/generate_placid_pdf` | Private | Generate Placid PDF |
+| [x] | GET | `/placid/get_status` | Private | Get Placid status |
+| [x] | POST | `/placid/webhook_receiver` | Public | Placid webhook receiver |
+| [x] | POST | `/helcim/approval-post` | Public | Helcim approval (likely unused) |
 
 ---
 
@@ -579,4 +576,4 @@ Body:
 
 ---
 
-*Last updated: January 20, 2026*
+*Last updated: January 27, 2026*

@@ -63,7 +63,7 @@ function BendigiCalculator({ toolId }: { toolId: string }) {
   )
 }
 
-export default function RealtorCalculatorsPage() {
+export default function AdminCalculatorsPage() {
   const [activeCalculator, setActiveCalculator] = useState('simple-mtg')
 
   return (
@@ -71,7 +71,7 @@ export default function RealtorCalculatorsPage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Calculators</h1>
         <p className="text-gray-500 mt-1">
-          Use these calculators to help your clients understand their mortgage options
+          Preview all calculators available to agents and realtors
         </p>
       </div>
 

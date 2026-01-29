@@ -12,16 +12,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, Users, Mail, Building } from 'lucide-react'
+import { Search, Users, Building } from 'lucide-react'
 import xano from '@/services/xano'
 import { formatDate } from '@/lib/utils'
 import { Realtor } from '@/types'
+import RealtorCredentialsModal from '@/components/RealtorCredentialsModal'
+import RealtorDetailModal from '@/components/RealtorDetailModal'
+
+interface RealtorCredentials {
+  email: string
+  firstName: string
+  lastName: string
+  tempPassword: string
+}
 
 export default function AdminRealtorsPage() {
   const [realtors, setRealtors] = useState<Realtor[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [showCredentialsModal, setShowCredentialsModal] = useState(false)
+  const [credentials, setCredentials] = useState<RealtorCredentials | null>(null)
+  const [credentialsAgentName, setCredentialsAgentName] = useState<string>('')
+  const [isCredentialsFromReset, setIsCredentialsFromReset] = useState(false)
+  const [showDetailModal, setShowDetailModal] = useState(false)
+  const [selectedRealtorId, setSelectedRealtorId] = useState<number | null>(null)
 
   useEffect(() => {
     loadRealtors()
@@ -30,7 +45,7 @@ export default function AdminRealtorsPage() {
   const loadRealtors = async () => {
     setIsLoading(true)
     try {
-      const { data, error } = await xano.getRealtors({
+      const { data, error } = await xano.adminGetRealtors({
         status: statusFilter === 'all' ? undefined : statusFilter,
       })
       if (data) {
@@ -49,7 +64,7 @@ export default function AdminRealtorsPage() {
     return (
       fullName.includes(query) ||
       realtor.email.toLowerCase().includes(query) ||
-      realtor.brokerage.toLowerCase().includes(query)
+      (realtor.brokerage && realtor.brokerage.toLowerCase().includes(query))
     )
   })
 
@@ -66,7 +81,58 @@ export default function AdminRealtorsPage() {
     }
   }
 
+  const handleOpenDetails = (realtorId: number) => {
+    setSelectedRealtorId(realtorId)
+    setShowDetailModal(true)
+  }
+
+  const handleStatusChange = (realtorId: number, newStatus: string) => {
+    setRealtors((prev) =>
+      prev.map((r) => (r.id === realtorId ? { ...r, status: newStatus } : r))
+    )
+  }
+
+  const handlePasswordReset = (creds: {
+    email: string
+    firstName: string
+    lastName: string
+    tempPassword: string
+    agentName: string
+  }) => {
+    setCredentials({
+      email: creds.email,
+      firstName: creds.firstName,
+      lastName: creds.lastName,
+      tempPassword: creds.tempPassword,
+    })
+    setCredentialsAgentName(creds.agentName)
+    setIsCredentialsFromReset(true)
+    setShowCredentialsModal(true)
+  }
+
   return (
+    <React.Fragment>
+      <RealtorCredentialsModal
+        isOpen={showCredentialsModal}
+        onClose={() => {
+          setShowCredentialsModal(false)
+          setCredentialsAgentName('')
+          setIsCredentialsFromReset(false)
+        }}
+        credentials={credentials}
+        isReactivation={isCredentialsFromReset}
+        agentName={credentialsAgentName}
+      />
+      <RealtorDetailModal
+        isOpen={showDetailModal}
+        onClose={() => {
+          setShowDetailModal(false)
+          setSelectedRealtorId(null)
+        }}
+        realtorId={selectedRealtorId}
+        onStatusChange={handleStatusChange}
+        onPasswordReset={handlePasswordReset}
+      />
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Realtors</h1>
@@ -113,60 +179,45 @@ export default function AdminRealtorsPage() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">
-                      Realtor
-                    </th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">
-                      Brokerage
-                    </th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">
-                      Status
-                    </th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">
-                      Agent
-                    </th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">
-                      Invited
-                    </th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">
-                      Last Active
-                    </th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-500">Realtor</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-500">Brokerage</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-500">Status</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-500">Agent</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-500">Invited</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-500">Last Active</th>
+                    <th className="text-right p-4 text-sm font-medium text-gray-500">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {filteredRealtors.map((realtor) => (
-                    <tr key={realtor.id} className="hover:bg-gray-50">
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-medium">
-                            {realtor.firstName[0]}
-                            {realtor.lastName[0]}
+                      <tr key={realtor.id} className="hover:bg-gray-50">
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-medium">
+                              {realtor.firstName[0]}{realtor.lastName[0]}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{realtor.firstName} {realtor.lastName}</p>
+                              <p className="text-sm text-gray-500">{realtor.email}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {realtor.firstName} {realtor.lastName}
-                            </p>
-                            <p className="text-sm text-gray-500">{realtor.email}</p>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2">
+                            <Building className="h-4 w-4 text-gray-400" />
+                            <span className="text-gray-900">{realtor.brokerage || '-'}</span>
                           </div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <Building className="h-4 w-4 text-gray-400" />
-                          <span className="text-gray-900">{realtor.brokerage}</span>
-                        </div>
-                      </td>
-                      <td className="p-4">{getStatusBadge(realtor.status)}</td>
-                      <td className="p-4 text-gray-500">Agent #{realtor.agentId}</td>
-                      <td className="p-4 text-gray-500">
-                        {formatDate(realtor.inviteSentAt)}
-                      </td>
-                      <td className="p-4 text-gray-500">
-                        {realtor.activatedAt
-                          ? formatDate(realtor.activatedAt)
-                          : 'Never'}
-                      </td>
-                    </tr>
+                        </td>
+                        <td className="p-4">{getStatusBadge(realtor.status)}</td>
+                        <td className="p-4 text-gray-500">Agent #{realtor.agentId}</td>
+                        <td className="p-4 text-gray-500">{formatDate(realtor.inviteSentAt)}</td>
+                        <td className="p-4 text-gray-500">{realtor.activatedAt ? formatDate(realtor.activatedAt) : 'Never'}</td>
+                        <td className="p-4 text-right">
+                          <Button variant="outline" size="sm" onClick={() => handleOpenDetails(realtor.id)}>
+                            More
+                          </Button>
+                        </td>
+                      </tr>
                   ))}
                 </tbody>
               </table>
@@ -180,5 +231,6 @@ export default function AdminRealtorsPage() {
         </CardContent>
       </Card>
     </div>
+    </React.Fragment>
   )
 }

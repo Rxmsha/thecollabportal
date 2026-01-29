@@ -7,6 +7,7 @@ export interface User {
   name: string
   role: UserRole
   agentId?: number // For realtors, links to their agent
+  firstLoginCompleted?: boolean // For agents - tracks if they've seen the password change prompt
 }
 
 // Agent types

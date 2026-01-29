@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -17,25 +16,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Save, User, Bell, Shield, CreditCard, Users, AlertCircle, CheckCircle2, Lock } from 'lucide-react'
+import { Save, User, Shield, CreditCard, AlertCircle, CheckCircle2, Lock, Bell } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
 import xano from '@/services/xano'
 
 export default function AgentSettingsPage() {
   const { user } = useAuth()
   const [profile, setProfile] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
+    firstName: '',
+    lastName: '',
+    email: '',
     phone: '',
-    companyName: '',
   })
   const [agentData, setAgentData] = useState<any>(null)
-  const [notifications, setNotifications] = useState({
-    emailNewRealtor: true,
-    emailTemplateUpdates: true,
-    emailWeeklyDigest: false,
-  })
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [saveSuccess, setSaveSuccess] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   // Change password state
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
@@ -48,6 +45,10 @@ export default function AgentSettingsPage() {
   const [passwordSuccess, setPasswordSuccess] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
 
+  // Notification preferences
+  const [templateNotificationsEnabled, setTemplateNotificationsEnabled] = useState(true)
+  const [isSavingNotifications, setIsSavingNotifications] = useState(false)
+
   useEffect(() => {
     loadAgentProfile()
   }, [])
@@ -59,11 +60,13 @@ export default function AgentSettingsPage() {
       if (data) {
         setAgentData(data)
         setProfile({
-          name: `${data.firstName} ${data.lastName}`,
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
           email: data.email || '',
           phone: data.phone || '',
-          companyName: data.companyName || '',
         })
+        // Set notification preference (default to true if not set)
+        setTemplateNotificationsEnabled(data.templateNotificationsEnabled !== false)
       }
     } catch (err) {
       console.error('Failed to load profile:', err)
@@ -74,14 +77,44 @@ export default function AgentSettingsPage() {
 
   const handleSaveProfile = async () => {
     setIsSaving(true)
+    setSaveSuccess(false)
+    setSaveError('')
+
     try {
-      await xano.updateMyAgentProfile({
+      const { error } = await xano.updateAgentProfile({
+        firstName: profile.firstName,
+        lastName: profile.lastName,
         phone: profile.phone,
       })
+
+      if (error) {
+        setSaveError(error)
+      } else {
+        setSaveSuccess(true)
+        setTimeout(() => setSaveSuccess(false), 3000)
+      }
     } catch (err) {
       console.error('Failed to save profile:', err)
+      setSaveError('Failed to save profile')
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleToggleTemplateNotifications = async (enabled: boolean) => {
+    setIsSavingNotifications(true)
+    try {
+      const { error } = await xano.updateAgentProfile({
+        templateNotificationsEnabled: enabled,
+      })
+
+      if (!error) {
+        setTemplateNotificationsEnabled(enabled)
+      }
+    } catch (err) {
+      console.error('Failed to update notification preference:', err)
+    } finally {
+      setIsSavingNotifications(false)
     }
   }
 
@@ -130,6 +163,14 @@ export default function AgentSettingsPage() {
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -153,32 +194,54 @@ export default function AgentSettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {saveError && (
+                <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                  {saveError}
+                </div>
+              )}
+              {saveSuccess && (
+                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+                  <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
+                  Profile saved successfully!
+                </div>
+              )}
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="firstName">First Name</Label>
                   <Input
-                    id="name"
-                    value={profile.name}
+                    id="firstName"
+                    value={profile.firstName}
                     onChange={(e) =>
-                      setProfile((prev) => ({ ...prev, name: e.target.value }))
+                      setProfile((prev) => ({ ...prev, firstName: e.target.value }))
                     }
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="lastName">Last Name</Label>
                   <Input
-                    id="email"
-                    type="email"
-                    value={profile.email}
+                    id="lastName"
+                    value={profile.lastName}
                     onChange={(e) =>
-                      setProfile((prev) => ({ ...prev, email: e.target.value }))
+                      setProfile((prev) => ({ ...prev, lastName: e.target.value }))
                     }
                   />
                 </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={profile.email}
+                    disabled
+                    className="bg-gray-50 text-gray-500 cursor-not-allowed"
+                  />
+                  <p className="text-xs text-gray-400">Email cannot be changed</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
                   <Input
                     id="phone"
                     value={profile.phone}
@@ -188,88 +251,12 @@ export default function AgentSettingsPage() {
                     placeholder="(555) 123-4567"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company">Company Name</Label>
-                  <Input
-                    id="company"
-                    value={profile.companyName}
-                    onChange={(e) =>
-                      setProfile((prev) => ({ ...prev, companyName: e.target.value }))
-                    }
-                    placeholder="Your Company"
-                  />
-                </div>
               </div>
               <div className="flex justify-end">
                 <Button onClick={handleSaveProfile} disabled={isSaving}>
                   <Save className="h-4 w-4 mr-2" />
                   {isSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Notifications */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
-                Notifications
-              </CardTitle>
-              <CardDescription>
-                Configure your email notification preferences
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-gray-900">New Realtor Signups</p>
-                  <p className="text-sm text-gray-500">
-                    Get notified when a realtor accepts your invitation
-                  </p>
-                </div>
-                <Switch
-                  checked={notifications.emailNewRealtor}
-                  onCheckedChange={(checked) =>
-                    setNotifications((prev) => ({ ...prev, emailNewRealtor: checked }))
-                  }
-                />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-gray-900">Template Updates</p>
-                  <p className="text-sm text-gray-500">
-                    Receive notifications when new templates are published
-                  </p>
-                </div>
-                <Switch
-                  checked={notifications.emailTemplateUpdates}
-                  onCheckedChange={(checked) =>
-                    setNotifications((prev) => ({
-                      ...prev,
-                      emailTemplateUpdates: checked,
-                    }))
-                  }
-                />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-gray-900">Weekly Digest</p>
-                  <p className="text-sm text-gray-500">
-                    Get a weekly summary of activity in your portal
-                  </p>
-                </div>
-                <Switch
-                  checked={notifications.emailWeeklyDigest}
-                  onCheckedChange={(checked) =>
-                    setNotifications((prev) => ({
-                      ...prev,
-                      emailWeeklyDigest: checked,
-                    }))
-                  }
-                />
               </div>
             </CardContent>
           </Card>
@@ -329,7 +316,6 @@ export default function AgentSettingsPage() {
                               setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))
                             }
                             className="pl-10"
-                            placeholder="Enter current password"
                           />
                         </div>
                       </div>
@@ -345,7 +331,6 @@ export default function AgentSettingsPage() {
                               setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))
                             }
                             className="pl-10"
-                            placeholder="Enter new password"
                           />
                         </div>
                       </div>
@@ -361,7 +346,6 @@ export default function AgentSettingsPage() {
                               setPasswordForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
                             }
                             className="pl-10"
-                            placeholder="Confirm new password"
                           />
                         </div>
                       </div>
@@ -383,17 +367,33 @@ export default function AgentSettingsPage() {
                   </DialogContent>
                 </Dialog>
               </div>
-              <Separator />
+            </CardContent>
+          </Card>
+
+          {/* Notifications */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="h-5 w-5" />
+                Notifications
+              </CardTitle>
+              <CardDescription>
+                Manage your email notification preferences
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-gray-900">Two-Factor Authentication</p>
+                <div className="space-y-0.5">
+                  <p className="font-medium text-gray-900">New Template Notifications</p>
                   <p className="text-sm text-gray-500">
-                    Add an extra layer of security to your account
+                    Receive emails when new templates are published
                   </p>
                 </div>
-                <Button variant="outline" disabled>
-                  Coming Soon
-                </Button>
+                <Switch
+                  checked={templateNotificationsEnabled}
+                  onCheckedChange={handleToggleTemplateNotifications}
+                  disabled={isSavingNotifications}
+                />
               </div>
             </CardContent>
           </Card>
@@ -411,67 +411,20 @@ export default function AgentSettingsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Current Plan</span>
-                <Badge>Pro</Badge>
+                <span className="text-gray-600">Status</span>
+                <Badge variant={agentData?.status === 'active' ? 'default' : 'secondary'}>
+                  {agentData?.status || 'Loading...'}
+                </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Billing Period</span>
                 <span className="font-medium">Monthly</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Next Invoice</span>
-                <span className="font-medium">Feb 1, 2026</span>
-              </div>
               <Separator />
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={() => {
+                window.open('/api/billing/portal', '_blank')
+              }}>
                 Manage Subscription
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Seat Usage */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Users className="h-5 w-5" />
-                Seat Usage
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Seats Used</span>
-                <span className="font-medium">
-                  {agentData?.seatsUsed || 0} / {agentData?.seatLimit || 50}
-                </span>
-              </div>
-              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-blue-600 rounded-full"
-                  style={{
-                    width: `${((agentData?.seatsUsed || 0) / (agentData?.seatLimit || 50)) * 100}%`,
-                  }}
-                />
-              </div>
-              <p className="text-sm text-gray-500">
-                {(agentData?.seatLimit || 50) - (agentData?.seatsUsed || 0)} seats remaining on your plan
-              </p>
-              <Button variant="outline" className="w-full">
-                Upgrade Plan
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Danger Zone */}
-          <Card className="border-red-200">
-            <CardHeader>
-              <CardTitle className="text-base text-red-600">Danger Zone</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-gray-600">
-                Once you delete your account, there is no going back. Please be certain.
-              </p>
-              <Button variant="destructive" className="w-full">
-                Delete Account
               </Button>
             </CardContent>
           </Card>

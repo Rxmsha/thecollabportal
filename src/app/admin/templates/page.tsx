@@ -1,12 +1,10 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
@@ -14,39 +12,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Plus, FileText, ExternalLink, Film, FileIcon, Mail, Image } from 'lucide-react'
+import { Plus, FileText, Film, FileIcon, Mail, Image, Search, Trash2, X, Check, Loader2 } from 'lucide-react'
 import xano from '@/services/xano'
-import { Template, TemplateCategory, TemplateFormat, TemplateAudience } from '@/types'
+import { Template } from '@/types'
 
 export default function AdminTemplatesPage() {
+  const router = useRouter()
   const [templates, setTemplates] = useState<Template[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const [newTemplate, setNewTemplate] = useState({
-    title: '',
-    category: 'social-media' as TemplateCategory,
-    format: 'canva' as TemplateFormat,
-    audience: ['mortgage_agents', 'realtors'] as TemplateAudience[],
-    shortDescription: '',
-    downloadLink: '',
-    previewImageUrl: '',
-    releaseNotes: '',
-  })
+  const [formatFilter, setFormatFilter] = useState('all')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Selection state
+  const [selectedIds, setSelectedIds] = useState<number[]>([])
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   useEffect(() => {
     loadTemplates()
-  }, [categoryFilter, statusFilter])
+  }, [categoryFilter, statusFilter, formatFilter])
 
   const loadTemplates = async () => {
     setIsLoading(true)
@@ -54,6 +40,8 @@ export default function AdminTemplatesPage() {
       const { data, error } = await xano.getTemplates({
         category: categoryFilter === 'all' ? undefined : categoryFilter,
         status: statusFilter === 'all' ? undefined : statusFilter,
+        format: formatFilter === 'all' ? undefined : formatFilter,
+        search: searchQuery || undefined,
       })
       if (data) {
         setTemplates(data)
@@ -65,25 +53,56 @@ export default function AdminTemplatesPage() {
     }
   }
 
-  const handleCreateTemplate = async () => {
+  // Search with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadTemplates()
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
+
+  // Clear selection when filters change
+  useEffect(() => {
+    setSelectedIds([])
+  }, [categoryFilter, statusFilter, formatFilter, searchQuery])
+
+  const toggleSelection = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    )
+  }
+
+  const selectAll = () => {
+    if (selectedIds.length === templates.length) {
+      setSelectedIds([])
+    } else {
+      setSelectedIds(templates.map(t => t.id))
+    }
+  }
+
+  const clearSelection = () => {
+    setSelectedIds([])
+    setShowDeleteConfirm(false)
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return
+
+    setIsDeleting(true)
     try {
-      const { data, error } = await xano.createTemplate(newTemplate)
-      if (data) {
-        loadTemplates()
-        setIsCreateOpen(false)
-        setNewTemplate({
-          title: '',
-          category: 'social-media',
-          format: 'canva',
-          audience: ['mortgage_agents', 'realtors'],
-          shortDescription: '',
-          downloadLink: '',
-          previewImageUrl: '',
-          releaseNotes: '',
-        })
-      }
+      // Delete templates one by one
+      const deletePromises = selectedIds.map(id => xano.deleteTemplate(id))
+      await Promise.all(deletePromises)
+
+      // Remove deleted templates from state
+      setTemplates(prev => prev.filter(t => !selectedIds.includes(t.id)))
+      setSelectedIds([])
+      setShowDeleteConfirm(false)
     } catch (error) {
-      console.error('Failed to create template:', error)
+      console.error('Failed to delete templates:', error)
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -142,149 +161,83 @@ export default function AdminTemplatesPage() {
             Create and publish content for your users
           </p>
         </div>
-        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Template
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Create New Template</DialogTitle>
-              <DialogDescription>
-                Add a new template to the library
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Title</Label>
-                <Input
-                  value={newTemplate.title}
-                  onChange={(e) =>
-                    setNewTemplate((prev) => ({ ...prev, title: e.target.value }))
-                  }
-                  placeholder="Enter template title"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Category</Label>
-                  <Select
-                    value={newTemplate.category}
-                    onValueChange={(value) =>
-                      setNewTemplate((prev) => ({
-                        ...prev,
-                        category: value as TemplateCategory,
-                      }))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="social-media">Social Media</SelectItem>
-                      <SelectItem value="email">Email</SelectItem>
-                      <SelectItem value="flyer">Flyer</SelectItem>
-                      <SelectItem value="presentation">Presentation</SelectItem>
-                      <SelectItem value="checklist">Checklist</SelectItem>
-                      <SelectItem value="guide">Guide</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Format</Label>
-                  <Select
-                    value={newTemplate.format}
-                    onValueChange={(value) =>
-                      setNewTemplate((prev) => ({
-                        ...prev,
-                        format: value as TemplateFormat,
-                      }))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="canva">Canva</SelectItem>
-                      <SelectItem value="pdf">PDF</SelectItem>
-                      <SelectItem value="doc">Document</SelectItem>
-                      <SelectItem value="video">Video</SelectItem>
-                      <SelectItem value="link">Link</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Description</Label>
-                <Textarea
-                  value={newTemplate.shortDescription}
-                  onChange={(e) =>
-                    setNewTemplate((prev) => ({
-                      ...prev,
-                      shortDescription: e.target.value,
-                    }))
-                  }
-                  placeholder="Brief description of the template"
-                  rows={3}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Preview Image URL (optional)</Label>
-                <Input
-                  value={newTemplate.previewImageUrl}
-                  onChange={(e) =>
-                    setNewTemplate((prev) => ({
-                      ...prev,
-                      previewImageUrl: e.target.value,
-                    }))
-                  }
-                  placeholder="https://..."
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Download/Edit Link</Label>
-                <Input
-                  value={newTemplate.downloadLink}
-                  onChange={(e) =>
-                    setNewTemplate((prev) => ({
-                      ...prev,
-                      downloadLink: e.target.value,
-                    }))
-                  }
-                  placeholder="https://..."
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Release Notes (optional)</Label>
-                <Textarea
-                  value={newTemplate.releaseNotes}
-                  onChange={(e) =>
-                    setNewTemplate((prev) => ({
-                      ...prev,
-                      releaseNotes: e.target.value,
-                    }))
-                  }
-                  placeholder="What's new or updated"
-                  rows={2}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleCreateTemplate} className="bg-blue-600 hover:bg-blue-700">
-                Create Template
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Button
+          className="bg-blue-600 hover:bg-blue-700"
+          onClick={() => router.push('/admin/templates/new')}
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Template
+        </Button>
       </div>
 
+      {/* Selection Bar - Shows when templates are selected */}
+      {selectedIds.length > 0 && (
+        <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-blue-700">
+              {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''} selected
+            </span>
+            <Button variant="ghost" size="sm" onClick={selectAll} className="text-blue-600 hover:text-blue-700">
+              {selectedIds.length === templates.length ? 'Deselect All' : 'Select All'}
+            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            {showDeleteConfirm ? (
+              <>
+                <span className="text-sm text-red-600 mr-2">Delete {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''}?</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  disabled={isDeleting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleBulkDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4 mr-2" />
+                  )}
+                  Confirm Delete
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" onClick={clearSelection}>
+                  <X className="h-4 w-4 mr-1" />
+                  Clear
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Selected
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search templates..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 w-[200px] bg-white"
+          />
+        </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[140px] bg-white">
             <SelectValue placeholder="All Status" />
@@ -309,6 +262,19 @@ export default function AdminTemplatesPage() {
             <SelectItem value="guide">Guide</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={formatFilter} onValueChange={setFormatFilter}>
+          <SelectTrigger className="w-[140px] bg-white">
+            <SelectValue placeholder="All Formats" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Formats</SelectItem>
+            <SelectItem value="canva">Canva</SelectItem>
+            <SelectItem value="pdf">PDF</SelectItem>
+            <SelectItem value="doc">Document</SelectItem>
+            <SelectItem value="video">Video</SelectItem>
+            <SelectItem value="link">Link</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Templates Grid */}
@@ -330,64 +296,93 @@ export default function AdminTemplatesPage() {
         </div>
       ) : templates.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {templates.map((template) => (
-            <Card key={template.id} className="overflow-hidden border rounded-xl hover:shadow-lg transition-shadow">
-              {/* Image Preview */}
-              <div className="aspect-[4/3] bg-gray-100 relative">
-                {template.previewImageUrl ? (
-                  <img
-                    src={template.previewImageUrl}
-                    alt={template.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-                    <FileText className="h-16 w-16 text-gray-300" />
+          {templates.map((template) => {
+            const isSelected = selectedIds.includes(template.id)
+            return (
+              <Card
+                key={template.id}
+                className={`overflow-hidden border rounded-xl hover:shadow-lg transition-all cursor-pointer ${
+                  isSelected ? 'ring-2 ring-blue-500 border-blue-500' : ''
+                }`}
+                onClick={() => router.push(`/admin/templates/${template.id}`)}
+              >
+                {/* Image Preview */}
+                <div className="aspect-[4/3] bg-gray-100 relative">
+                  {template.previewImageUrl ? (
+                    <img
+                      src={template.previewImageUrl}
+                      alt={template.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                      <FileText className="h-16 w-16 text-gray-300" />
+                    </div>
+                  )}
+
+                  {/* Selection Checkbox - Top Left */}
+                  <div
+                    className="absolute top-3 left-3 z-10"
+                    onClick={(e) => toggleSelection(template.id, e)}
+                  >
+                    <div
+                      className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+                        isSelected
+                          ? 'bg-blue-600 border-blue-600 text-white'
+                          : 'bg-white/90 border-gray-300 hover:border-blue-400'
+                      }`}
+                    >
+                      {isSelected && <Check className="h-4 w-4" />}
+                    </div>
                   </div>
-                )}
-                {/* Category Badge - Top Right */}
-                <div className="absolute top-3 right-3">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border ${getCategoryStyle(template.category)}`}>
-                    {getCategoryIcon(template.category)}
-                    {formatCategoryLabel(template.category)}
-                  </span>
-                </div>
-                {/* Draft Badge - Top Left */}
-                {template.status === 'draft' && (
-                  <div className="absolute top-3 left-3">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
-                      Draft
+
+                  {/* Category Badge - Top Right */}
+                  <div className="absolute top-3 right-3">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border ${getCategoryStyle(template.category)}`}>
+                      {getCategoryIcon(template.category)}
+                      {formatCategoryLabel(template.category)}
                     </span>
                   </div>
-                )}
-              </div>
 
-              {/* Content */}
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-gray-900 text-lg mb-1">
-                  {template.title}
-                </h3>
-                <p className="text-sm text-gray-500 line-clamp-2 mb-4">
-                  {template.shortDescription}
-                </p>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    {template.format.toUpperCase().replace('_', ' ')}
-                  </span>
-                  <Button
-                    size="sm"
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                    onClick={() => template.downloadLink && window.open(template.downloadLink, '_blank')}
-                  >
-                    Open
-                    <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
-                  </Button>
+                  {/* Draft Badge - Below checkbox */}
+                  {template.status === 'draft' && (
+                    <div className="absolute top-12 left-3">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                        Draft
+                      </span>
+                    </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+
+                {/* Content */}
+                <CardContent className="p-4">
+                  <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                    {template.title}
+                  </h3>
+                  <p className="text-sm text-gray-500 line-clamp-2 mb-4">
+                    {template.shortDescription}
+                  </p>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      {template.format.toUpperCase().replace('_', ' ')}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(`/admin/templates/${template.id}`)
+                      }}
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       ) : (
         <Card className="border rounded-xl">
@@ -395,7 +390,10 @@ export default function AdminTemplatesPage() {
             <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
             <p className="text-gray-500 mb-4">Get started by creating your first template</p>
-            <Button onClick={() => setIsCreateOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              onClick={() => router.push('/admin/templates/new')}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Template
             </Button>

@@ -1,17 +1,22 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useAuth } from '@/context/AuthContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
-import { UserPlus, Mail, CheckCircle, Copy, AlertCircle } from 'lucide-react'
+import { UserPlus, Mail, AlertCircle } from 'lucide-react'
 import xano from '@/services/xano'
+import RealtorCredentialsModal from '@/components/RealtorCredentialsModal'
+
+interface RealtorCredentials {
+  email: string
+  firstName: string
+  lastName: string
+  tempPassword: string
+}
 
 export default function AgentInvitePage() {
-  const { user } = useAuth()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -20,8 +25,9 @@ export default function AgentInvitePage() {
     phone: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [showCredentialsModal, setShowCredentialsModal] = useState(false)
+  const [credentials, setCredentials] = useState<RealtorCredentials | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,8 +45,16 @@ export default function AgentInvitePage() {
 
       if (apiError) {
         setError(apiError)
-      } else {
-        setSuccess(true)
+      } else if (data) {
+        // Show credentials modal
+        setCredentials({
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          tempPassword: data.tempPassword,
+        })
+        setShowCredentialsModal(true)
+        // Reset form
         setFormData({
           firstName: '',
           lastName: '',
@@ -60,46 +74,14 @@ export default function AgentInvitePage() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const inviteLink = `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/DEMO_TOKEN`
-
-  const copyInviteLink = () => {
-    navigator.clipboard.writeText(inviteLink)
-  }
-
-  if (success) {
-    return (
-      <div className="max-w-lg mx-auto">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="h-8 w-8 text-green-600" />
-              </div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Invitation Sent!
-              </h2>
-              <p className="text-gray-500 mb-6">
-                An invitation email has been sent to{' '}
-                <span className="font-medium">{formData.email || 'the realtor'}</span>.
-                They&apos;ll receive instructions to join your portal.
-              </p>
-              <div className="flex gap-3 justify-center">
-                <Button onClick={() => setSuccess(false)}>
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Invite Another
-                </Button>
-                <Button variant="outline" onClick={() => window.history.back()}>
-                  Go Back
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
   return (
+    <React.Fragment>
+      <RealtorCredentialsModal
+        isOpen={showCredentialsModal}
+        onClose={() => setShowCredentialsModal(false)}
+        credentials={credentials}
+        isReactivation={false}
+      />
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Invite Realtor</h1>
@@ -108,9 +90,8 @@ export default function AgentInvitePage() {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <Card>
+      <div className="max-w-2xl">
+        <Card>
             <CardHeader>
               <CardTitle>Realtor Details</CardTitle>
               <CardDescription>
@@ -193,55 +174,8 @@ export default function AgentInvitePage() {
               </form>
             </CardContent>
           </Card>
-        </div>
-
-        <div className="lg:col-span-1 space-y-6">
-          {/* Share Link */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Share Invite Link</CardTitle>
-              <CardDescription>
-                Or share this link directly with realtors
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-2">
-                <Input
-                  value={inviteLink}
-                  readOnly
-                  className="text-xs bg-gray-50"
-                />
-                <Button variant="outline" size="icon" onClick={copyInviteLink}>
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Tips */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Tips</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3 text-sm text-gray-600">
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
-                  <span>Invited realtors receive an email with a link to create their account</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
-                  <span>They&apos;ll have access to your branded portal with templates and tools</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
-                  <span>You can track who has accepted their invitation in &quot;My Realtors&quot;</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
+    </React.Fragment>
   )
 }

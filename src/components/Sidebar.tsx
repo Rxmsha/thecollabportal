@@ -31,6 +31,8 @@ const adminNavItems: NavItem[] = [
   { name: 'Agents', href: '/admin/agents', icon: Building2 },
   { name: 'Realtors', href: '/admin/realtors', icon: Users },
   { name: 'Templates', href: '/admin/templates', icon: FileText },
+  { name: 'AI Tools', href: '/admin/tools', icon: Wrench },
+  { name: 'Calculators', href: '/admin/calculators', icon: Calculator },
   { name: 'Usage Logs', href: '/admin/logs', icon: Activity },
   { name: 'Error Logs', href: '/admin/errors', icon: AlertCircle },
 ]

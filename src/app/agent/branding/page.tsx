@@ -13,6 +13,8 @@ import xano from '@/services/xano'
 
 export default function AgentBrandingPage() {
   const { user } = useAuth()
+  const [agentId, setAgentId] = useState<number | null>(null)
+  const [agentName, setAgentName] = useState({ firstName: '', lastName: '' })
   const [branding, setBranding] = useState({
     phone: '',
     brandColor: '#2563eb',
@@ -23,11 +25,12 @@ export default function AgentBrandingPage() {
   })
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isUploading, setIsUploading] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    if (user?.id) {
+    if (user) {
       loadBranding()
     }
   }, [user])
@@ -39,6 +42,11 @@ export default function AgentBrandingPage() {
       if (fetchError) {
         setError(fetchError)
       } else if (data) {
+        setAgentId(data.id)
+        setAgentName({
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
+        })
         setBranding({
           phone: data.phone || '',
           brandColor: data.brandColor || '#2563eb',
@@ -61,8 +69,14 @@ export default function AgentBrandingPage() {
     setSaveSuccess(false)
     setError('')
 
+    if (!agentId) {
+      setError('Agent ID not found')
+      setIsSaving(false)
+      return
+    }
+
     try {
-      const { error: saveError } = await xano.updateMyAgentProfile(branding)
+      const { error: saveError } = await xano.updateAgentBranding(agentId, branding)
       if (saveError) {
         setError(saveError)
       } else {
@@ -81,16 +95,30 @@ export default function AgentBrandingPage() {
     const file = e.target.files?.[0]
     if (!file) return
 
+    setIsUploading(true)
+    setError('')
+
     try {
       const { data, error: uploadError } = await xano.uploadFile(file)
       if (uploadError) {
         setError(uploadError)
-      } else if (data?.url) {
-        setBranding((prev) => ({ ...prev, logoUrl: data.url }))
+      } else if (data) {
+        // Debug: log the response to see its structure
+        console.log('Upload response:', JSON.stringify(data, null, 2))
+
+        // Handle different Xano response formats for file URL
+        const logoUrl = data.file?.url || data.file?.path || data.url || data.path || (typeof data === 'string' ? data : null)
+        if (logoUrl) {
+          setBranding((prev) => ({ ...prev, logoUrl }))
+        } else {
+          setError('Upload succeeded but no URL returned. Check console for response structure.')
+        }
       }
     } catch (err) {
       console.error('Failed to upload logo:', err)
       setError('Failed to upload logo')
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -159,7 +187,9 @@ export default function AgentBrandingPage() {
             <CardContent>
               <div className="flex items-start gap-6">
                 <div className="h-24 w-24 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center bg-gray-50 overflow-hidden">
-                  {branding.logoUrl ? (
+                  {isUploading ? (
+                    <div className="h-6 w-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                  ) : branding.logoUrl ? (
                     <img
                       src={branding.logoUrl}
                       alt="Logo"
@@ -170,10 +200,10 @@ export default function AgentBrandingPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="logo-upload" className="cursor-pointer">
+                  <Label htmlFor="logo-upload" className={isUploading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}>
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                       <Upload className="h-4 w-4" />
-                      Upload Logo
+                      {isUploading ? 'Uploading...' : 'Upload Logo'}
                     </div>
                     <input
                       id="logo-upload"
@@ -181,6 +211,7 @@ export default function AgentBrandingPage() {
                       accept="image/*"
                       className="hidden"
                       onChange={handleLogoUpload}
+                      disabled={isUploading}
                     />
                   </Label>
                   <p className="text-xs text-gray-500">
@@ -337,11 +368,13 @@ export default function AgentBrandingPage() {
                         className="h-full w-full object-contain rounded-lg"
                       />
                     ) : (
-                      user?.name?.[0] || 'A'
+                      agentName.firstName?.[0] || 'A'
                     )}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{user?.name}</h3>
+                    <h3 className="font-semibold text-gray-900">
+                      {agentName.firstName} {agentName.lastName}
+                    </h3>
                     <p className="text-sm text-gray-500">Mortgage Agent</p>
                     {branding.phone && (
                       <p className="text-xs text-gray-400">{branding.phone}</p>

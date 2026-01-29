@@ -17,6 +17,7 @@ import {
   Send,
   CheckCircle,
   ExternalLink,
+  AlertCircle,
 } from 'lucide-react'
 import xano from '@/services/xano'
 
@@ -63,18 +64,44 @@ export default function RealtorContactPage() {
     }
   }
 
+  const [sendError, setSendError] = useState('')
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.subject.trim() || !formData.message.trim()) return
 
     setIsSending(true)
+    setSendError('')
 
-    // Simulate sending email via Zapier/SendGrid
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const response = await fetch('/api/contact/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          agentId: user?.agentId,
+          realtorName: user?.name,
+          realtorEmail: user?.email,
+          subject: formData.subject,
+          message: formData.message,
+        }),
+      })
 
-    setIsSent(true)
-    setFormData({ subject: '', message: '' })
-    setIsSending(false)
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send message')
+      }
+
+      setIsSent(true)
+      setFormData({ subject: '', message: '' })
+    } catch (error: any) {
+      console.error('Failed to send message:', error)
+      setSendError(error.message || 'Failed to send message. Please try again.')
+    } finally {
+      setIsSending(false)
+    }
   }
 
   if (isSent) {
@@ -123,6 +150,12 @@ export default function RealtorContactPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
+                {sendError && (
+                  <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    {sendError}
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="subject">Subject</Label>
                   <Input

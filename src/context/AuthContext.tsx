@@ -5,32 +5,6 @@ import { useRouter } from 'next/navigation'
 import { User, UserRole } from '@/types'
 import xano from '@/services/xano'
 
-// Demo users for testing (when Xano is not configured)
-const DEMO_USERS: Record<string, User & { password: string }> = {
-  'admin@thecollabportal.com': {
-    id: 1,
-    email: 'admin@thecollabportal.com',
-    name: 'Admin User',
-    role: 'admin',
-    password: 'demo123',
-  },
-  'sarah@mortgagepro.com': {
-    id: 2,
-    email: 'sarah@mortgagepro.com',
-    name: 'Sarah Johnson',
-    role: 'agent',
-    password: 'demo123',
-  },
-  'jessica.realtor@torontorealty.com': {
-    id: 3,
-    email: 'jessica.realtor@torontorealty.com',
-    name: 'Jessica Miller',
-    role: 'realtor',
-    agentId: 2,
-    password: 'demo123',
-  },
-}
-
 interface AuthContextType {
   user: User | null
   isLoading: boolean
@@ -63,14 +37,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      // Check for demo user in localStorage
-      const demoUser = localStorage.getItem('demo_user')
-      if (demoUser) {
-        setUser(JSON.parse(demoUser))
-        setIsLoading(false)
-        return
-      }
-
       const token = localStorage.getItem('xano_auth_token')
       if (!token) {
         setIsLoading(false)
@@ -92,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: data.name,
         role: data.role,
         agentId: data.agent_id,
+        firstLoginCompleted: data.first_login_completed,
       })
     } catch (error) {
       console.error('Auth check failed:', error)
@@ -101,11 +68,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const login = async (email: string, password: string) => {
-    // Try Xano API first
     try {
       const { data, error } = await xano.login(email, password)
 
-      if (data && data.authToken) {
+      if (error || !data) {
+        return { success: false, error: error || 'Invalid email or password' }
+      }
+
+      if (data.authToken) {
         xano.setAuthToken(data.authToken)
         setUser({
           id: data.user.id,
@@ -113,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           name: data.user.name,
           role: data.user.role,
           agentId: data.user.agent_id,
+          firstLoginCompleted: data.user.first_login_completed,
         })
 
         // Redirect based on role
@@ -121,33 +92,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         return { success: true }
       }
+
+      return { success: false, error: 'Invalid email or password' }
     } catch (error) {
-      console.log('Xano login failed, trying demo users...')
+      console.error('Login failed:', error)
+      return { success: false, error: 'Login failed. Please try again.' }
     }
-
-    // Fallback to demo users if Xano fails
-    const demoUser = DEMO_USERS[email.toLowerCase()]
-    if (demoUser && demoUser.password === password) {
-      const userData: User = {
-        id: demoUser.id,
-        email: demoUser.email,
-        name: demoUser.name,
-        role: demoUser.role,
-        agentId: demoUser.agentId,
-      }
-
-      // Store demo user in localStorage
-      localStorage.setItem('demo_user', JSON.stringify(userData))
-      setUser(userData)
-
-      // Redirect based on role
-      const redirectPath = getRedirectPath(userData.role)
-      router.push(redirectPath)
-
-      return { success: true }
-    }
-
-    return { success: false, error: 'Invalid email or password' }
   }
 
   const signup = async (signupData: SignupData) => {
@@ -165,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: data.user.name,
         role: data.user.role,
         agentId: data.user.agent_id,
+        firstLoginCompleted: data.user.first_login_completed,
       })
 
       // Redirect based on role
@@ -179,7 +130,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     xano.setAuthToken(null)
-    localStorage.removeItem('demo_user')
     setUser(null)
     router.push('/login')
   }

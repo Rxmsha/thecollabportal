@@ -4,6 +4,13 @@
 const XANO_AUTH_URL = process.env.NEXT_PUBLIC_XANO_AUTH_URL || 'https://your-instance.xano.io/api:1'
 const XANO_API_URL = process.env.NEXT_PUBLIC_XANO_API_URL || 'https://your-instance.xano.io/api:2'
 
+// Get Xano base URL (without /api:xxx) for file storage
+function getXanoBaseUrl(): string {
+  const apiUrl = XANO_API_URL
+  // Remove /api:xxx from the URL to get base URL
+  return apiUrl.replace(/\/api:[^/]+$/, '')
+}
+
 interface XanoResponse<T> {
   data: T
   error?: string
@@ -194,16 +201,26 @@ class XanoService {
     })
   }
 
-  async updateAgentBranding(data: {
+  async updateAgentBranding(agentId: number, data: {
+    phone?: string
     brandColor?: string
     logoUrl?: string
     calendlyLink?: string
     cmaLink?: string
     bio?: string
   }) {
+    // Convert camelCase to snake_case for Xano
     return this.request<any>('/update_agent_branding', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        agents_id: agentId,
+        phone: data.phone,
+        brand_color: data.brandColor,
+        logo_url: data.logoUrl,
+        calendly_link: data.calendlyLink,
+        cma_link: data.cmaLink,
+        bio: data.bio,
+      }),
     })
   }
 
@@ -214,11 +231,164 @@ class XanoService {
     if (params?.status) queryParams.append('status', params.status)
     if (params?.search) queryParams.append('search', params.search)
     const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
-    return this.request<any[]>(`/realtors${query}`)
+    const response = await this.request<any[]>(`/realtors${query}`)
+    if (response.data) {
+      response.data = transformKeys(response.data)
+    }
+    return response
+  }
+
+  // Get realtors for the currently authenticated agent
+  async getMyRealtors(params?: { status?: string; search?: string }) {
+    const queryParams = new URLSearchParams()
+    if (params?.status) queryParams.append('status', params.status)
+    if (params?.search) queryParams.append('search', params.search)
+    const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
+    const response = await this.request<any[]>(`/get_my_realtors${query}`)
+    if (response.data) {
+      response.data = transformKeys(response.data)
+    }
+    return response
+  }
+
+  // Deactivate a realtor
+  async deactivateRealtor(realtorId: number) {
+    return this.request<{ success: boolean; realtorId: number; status: string }>('/update_realtor_status', {
+      method: 'POST',
+      body: JSON.stringify({ realtor_id: realtorId }),
+    })
+  }
+
+  // Reactivate a realtor (generates new password and sends welcome email)
+  async reactivateRealtor(realtorId: number) {
+    return this.request<{
+      success: boolean
+      realtorId: number
+      email: string
+      firstName: string
+      lastName: string
+      status: string
+      tempPassword: string
+    }>('/reactivate_realtor', {
+      method: 'POST',
+      body: JSON.stringify({ realtor_id: realtorId }),
+    })
   }
 
   async getRealtor(id: number) {
     return this.request<any>(`/realtors/${id}`)
+  }
+
+  // Agent: Get detailed info for one of their realtors
+  async getMyRealtorDetails(realtorId: number) {
+    return this.request<{
+      id: number
+      firstName: string
+      lastName: string
+      email: string
+      phone: string
+      brokerage: string
+      status: string
+      agentId: number
+      userId: number
+      inviteSentAt: string
+      activatedAt: string
+      createdAt: string
+    }>(`/get_my_realtor_details?realtor_id=${realtorId}`)
+  }
+
+  // Agent: Reset password for one of their realtors
+  async resetMyRealtorPassword(realtorId: number) {
+    return this.request<{
+      success: boolean
+      realtorId: number
+      email: string
+      firstName: string
+      lastName: string
+      tempPassword: string
+    }>('/reset_my_realtor_password', {
+      method: 'POST',
+      body: JSON.stringify({ realtor_id: realtorId }),
+    })
+  }
+
+  // Admin: Get all realtors across all agents
+  async adminGetRealtors(params?: { status?: string }) {
+    const queryParams = new URLSearchParams()
+    if (params?.status) queryParams.append('status', params.status)
+    const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
+    const response = await this.request<any[]>(`/admin_get_realtors${query}`)
+    if (response.data) {
+      response.data = transformKeys(response.data)
+    }
+    return response
+  }
+
+  // Admin: Deactivate a realtor
+  async adminDeactivateRealtor(realtorId: number) {
+    return this.request<{ success: boolean; realtorId: number; status: string }>('/admin_deactivate_realtor', {
+      method: 'POST',
+      body: JSON.stringify({ realtor_id: realtorId }),
+    })
+  }
+
+  // Admin: Reactivate a realtor (generates new password and sends email from linked agent)
+  async adminReactivateRealtor(realtorId: number) {
+    return this.request<{
+      success: boolean
+      realtorId: number
+      email: string
+      firstName: string
+      lastName: string
+      status: string
+      tempPassword: string
+      agentName: string
+    }>('/admin_reactivate_realtor', {
+      method: 'POST',
+      body: JSON.stringify({ realtor_id: realtorId }),
+    })
+  }
+
+  // Admin: Get detailed realtor info with linked agent
+  async adminGetRealtorDetails(realtorId: number) {
+    return this.request<{
+      id: number
+      firstName: string
+      lastName: string
+      email: string
+      phone: string
+      brokerage: string
+      status: string
+      agentId: number
+      userId: number
+      inviteSentAt: string
+      activatedAt: string
+      createdAt: string
+      agent: {
+        id: number
+        firstName: string
+        lastName: string
+        email: string
+        phone: string
+        companyName: string
+      }
+    }>(`/admin_get_realtor_details?realtor_id=${realtorId}`)
+  }
+
+  // Admin: Reset realtor password (generates new password and sends email from linked agent)
+  async adminResetRealtorPassword(realtorId: number) {
+    return this.request<{
+      success: boolean
+      realtorId: number
+      email: string
+      firstName: string
+      lastName: string
+      tempPassword: string
+      agentName: string
+    }>('/admin_reset_realtor_password', {
+      method: 'POST',
+      body: JSON.stringify({ realtor_id: realtorId }),
+    })
   }
 
   async inviteRealtor(data: {
@@ -228,9 +398,25 @@ class XanoService {
     brokerage?: string
     phone?: string
   }) {
-    return this.request<any>('/invite_realtor', {
+    // Use realtor_ prefix to avoid Xano's implicit field mapping issue
+    const payload = {
+      realtor_email: data.email,
+      realtor_first_name: data.firstName,
+      realtor_last_name: data.lastName,
+      realtor_brokerage: data.brokerage || '',
+      realtor_phone: data.phone || '',
+    }
+    return this.request<{
+      realtorId: number
+      userId: number
+      firstName: string
+      lastName: string
+      email: string
+      status: string
+      tempPassword: string
+    }>('/invite_realtor', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     })
   }
 
@@ -247,12 +433,14 @@ class XanoService {
     audience?: string
     status?: string
     search?: string
+    format?: string
   }) {
     const queryParams = new URLSearchParams()
     if (params?.category) queryParams.append('category', params.category)
     if (params?.audience) queryParams.append('audience', params.audience)
     if (params?.status) queryParams.append('status', params.status)
     if (params?.search) queryParams.append('search', params.search)
+    if (params?.format) queryParams.append('format', params.format)
     const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
     const response = await this.request<any[]>(`/templates${query}`)
     // Transform snake_case keys to camelCase
@@ -263,7 +451,25 @@ class XanoService {
   }
 
   async getTemplate(id: number) {
-    return this.request<any>(`/templates/${id}`)
+    return this.request<any>(`/admin_get_template?template_id=${id}`)
+  }
+
+  async getPublishedTemplates(params?: {
+    category?: string
+    format?: string
+    search?: string
+  }) {
+    const queryParams = new URLSearchParams()
+    if (params?.category) queryParams.append('category', params.category)
+    if (params?.format) queryParams.append('format', params.format)
+    if (params?.search) queryParams.append('search', params.search)
+    const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
+    const response = await this.request<any[]>(`/get_published_templates${query}`)
+    // Transform snake_case keys to camelCase
+    if (response.data) {
+      response.data = transformKeys(response.data)
+    }
+    return response
   }
 
   async createTemplate(data: {
@@ -274,6 +480,7 @@ class XanoService {
     shortDescription: string
     downloadLink: string
     previewImageUrl?: string
+    status?: 'draft' | 'published'
     releaseNotes?: string
   }) {
     // Convert camelCase to snake_case for Xano
@@ -286,7 +493,7 @@ class XanoService {
       download_link: data.downloadLink,
       preview_image_url: data.previewImageUrl || '',
       release_notes: data.releaseNotes || '',
-      status: 'draft',
+      status: data.status || 'draft',
     }
     return this.request<{
       id: number
@@ -301,9 +508,46 @@ class XanoService {
   }
 
   async updateTemplate(id: number, data: Partial<any>) {
-    return this.request<any>(`/templates/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
+    return this.request<any>('/admin_update_template', {
+      method: 'POST',
+      body: JSON.stringify({
+        template_id: id,
+        ...data,
+      }),
+    })
+  }
+
+  async deleteTemplate(id: number) {
+    return this.request<any>('/admin_delete_template', {
+      method: 'POST',
+      body: JSON.stringify({ template_id: id }),
+    })
+  }
+
+  async updateTemplateStatus(id: number, status: 'draft' | 'published') {
+    return this.request<{
+      success: boolean
+      templateId: number
+      status: string
+      notificationSent: boolean
+    }>('/admin_update_template_status', {
+      method: 'POST',
+      body: JSON.stringify({ template_id: id, status }),
+    })
+  }
+
+  // Admin: Manually send template notification to agents
+  async sendTemplateNotification(templateId: number, agentIds?: number[]) {
+    return this.request<{
+      success: boolean
+      templateId: number
+      emailsSent: number
+    }>('/admin_send_template_notification', {
+      method: 'POST',
+      body: JSON.stringify({
+        template_id: templateId,
+        agent_ids: agentIds && agentIds.length > 0 ? agentIds : null
+      }),
     })
   }
 
@@ -373,6 +617,12 @@ class XanoService {
         return { data: null, error: data.message || 'Upload failed' }
       }
 
+      // Convert relative path to full URL
+      if (data.file?.path) {
+        const baseUrl = getXanoBaseUrl()
+        data.file.url = `${baseUrl}${data.file.path}`
+      }
+
       return { data }
     } catch (error) {
       return { data: null, error: 'Upload error' }
@@ -435,25 +685,25 @@ class XanoService {
     currentPassword: string
     newPassword: string
   }) {
-    return this.request<{ success: boolean }>('/auth/change_password', {
+    return this.request<{ success: boolean }>('/change_password', {
       method: 'POST',
       body: JSON.stringify({
         current_password: data.currentPassword,
         new_password: data.newPassword,
       }),
-    }, true)
+    })
   }
 
   // Get current agent's profile (authenticated agent)
   async getMyAgentProfile() {
-    const response = await this.request<any>('/agents/me')
+    const response = await this.request<any>('/get_agent_profile')
     if (response.data) {
       response.data = transformKeys(response.data)
     }
     return response
   }
 
-  // Update current agent's profile (authenticated agent)
+  // Update current agent's profile (authenticated agent) - for branding page
   async updateMyAgentProfile(data: {
     phone?: string
     brandColor?: string
@@ -475,16 +725,136 @@ class XanoService {
     })
   }
 
-  // Admin: Reset agent password (generates new temp password)
+  // Update agent profile info (first name, last name, phone, notifications) - for settings page
+  async updateAgentProfile(data: {
+    firstName?: string
+    lastName?: string
+    phone?: string
+    templateNotificationsEnabled?: boolean
+  }) {
+    return this.request<any>('/update_agent_profile', {
+      method: 'POST',
+      body: JSON.stringify({
+        first_name: data.firstName,
+        last_name: data.lastName,
+        phone: data.phone,
+        template_notifications_enabled: data.templateNotificationsEnabled,
+      }),
+    })
+  }
+
+  // Admin: Reset agent password (generates new temp password and sends email)
   async resetAgentPassword(agentId: number) {
     return this.request<{
       success: boolean
-      tempPassword: string
       agentId: number
-      agentEmail: string
+      email: string
+      firstName: string
+      lastName: string
+      tempPassword: string
     }>('/reset_agent_password', {
       method: 'POST',
       body: JSON.stringify({ agent_id: agentId }),
+    })
+  }
+
+  // Admin: Get detailed agent info with linked realtors
+  async adminGetAgentDetails(agentId: number) {
+    const response = await this.request<{
+      id: number
+      firstName: string
+      lastName: string
+      email: string
+      phone: string
+      companyName: string
+      brandColor: string
+      status: string
+      seatLimit: number
+      seatsUsed: number
+      createdAt: string
+      realtors: any[]
+    }>(`/admin_get_agent_details?agent_id=${agentId}`)
+    if (response.data && response.data.realtors) {
+      response.data.realtors = transformKeys(response.data.realtors)
+    }
+    return response
+  }
+
+  // Admin: Deactivate an agent
+  async adminDeactivateAgent(agentId: number) {
+    return this.request<{ success: boolean; agentId: number; status: string }>('/admin_deactivate_agent', {
+      method: 'POST',
+      body: JSON.stringify({ agent_id: agentId }),
+    })
+  }
+
+  // Admin: Reactivate an agent (generates new password and sends email)
+  async adminReactivateAgent(agentId: number) {
+    return this.request<{
+      success: boolean
+      agentId: number
+      email: string
+      firstName: string
+      lastName: string
+      status: string
+      tempPassword: string
+    }>('/admin_reactivate_agent', {
+      method: 'POST',
+      body: JSON.stringify({ agent_id: agentId }),
+    })
+  }
+
+  // Admin: Delete an agent and all linked realtors
+  async adminDeleteAgent(agentId: number) {
+    return this.request<{
+      success: boolean
+      deletedAgentId: number
+      message: string
+    }>('/admin_delete_agent', {
+      method: 'POST',
+      body: JSON.stringify({ agent_id: agentId }),
+    })
+  }
+
+  // Admin: Delete a realtor
+  async adminDeleteRealtor(realtorId: number) {
+    return this.request<{
+      success: boolean
+      deletedRealtorId: number
+      message: string
+    }>('/admin_delete_realtor', {
+      method: 'POST',
+      body: JSON.stringify({ realtor_id: realtorId }),
+    })
+  }
+
+  // Mark first login as completed (after password change or dismissal)
+  async completeFirstLogin() {
+    return this.request<{ success: boolean; role: string; realtorId: number | null }>('/complete_first_login', {
+      method: 'POST',
+    })
+  }
+
+  // Activate current realtor's status (called after first login for realtors)
+  async activateMyRealtorStatus() {
+    return this.request<{ success: boolean }>('/activate_my_realtor_status', {
+      method: 'POST',
+    })
+  }
+
+  // Agent: Send template notification to realtors
+  // If realtorIds is provided, sends only to those realtors. Otherwise sends to all active realtors.
+  async agentSendTemplateNotificationToRealtors(templateId: number, realtorIds?: number[]) {
+    return this.request<{
+      success: boolean
+      templateId: number
+      emailsSent: number
+    }>('/agent_send_template_notification_to_realtors', {
+      method: 'POST',
+      body: JSON.stringify({
+        template_id: templateId,
+        realtor_ids: realtorIds && realtorIds.length > 0 ? realtorIds : null
+      }),
     })
   }
 }

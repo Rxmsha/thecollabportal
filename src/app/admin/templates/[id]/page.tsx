@@ -1,0 +1,688 @@
+'use client'
+
+import React, { useState, useEffect } from 'react'
+import { useRouter, useParams } from 'next/navigation'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  ArrowLeft, Loader2, Upload, X, Pencil, Trash2, Eye, EyeOff,
+  ExternalLink, Send, Users, User, Check, AlertTriangle, FileText, Image, Mail, Film, FileIcon
+} from 'lucide-react'
+import xano from '@/services/xano'
+import { Template, TemplateCategory, TemplateFormat } from '@/types'
+
+export default function TemplateDetailPage() {
+  const router = useRouter()
+  const params = useParams()
+  const templateId = Number(params.id)
+
+  const [template, setTemplate] = useState<Template | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showPublishedWarning, setShowPublishedWarning] = useState(false)
+
+  // Edit state
+  const [editData, setEditData] = useState<{
+    title: string
+    category: TemplateCategory
+    format: TemplateFormat
+    shortDescription: string
+    downloadLink: string
+    previewImageUrl: string
+    releaseNotes: string
+  } | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const [uploadError, setUploadError] = useState('')
+
+  // Status update
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
+
+  // Delete
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  // Notification
+  const [notificationMode, setNotificationMode] = useState<'all' | 'specific'>('all')
+  const [agents, setAgents] = useState<{ id: number; firstName: string; lastName: string; email: string }[]>([])
+  const [selectedAgentIds, setSelectedAgentIds] = useState<number[]>([])
+  const [isLoadingAgents, setIsLoadingAgents] = useState(false)
+  const [isSendingNotification, setIsSendingNotification] = useState(false)
+  const [notificationResult, setNotificationResult] = useState<{ success: boolean; count: number } | null>(null)
+
+  useEffect(() => {
+    loadTemplate()
+  }, [templateId])
+
+  const loadTemplate = async () => {
+    setIsLoading(true)
+    try {
+      const { data, error } = await xano.getTemplate(templateId)
+      if (data && !error) {
+        // Transform snake_case to camelCase
+        setTemplate({
+          id: data.id,
+          title: data.title,
+          category: data.category,
+          format: data.format,
+          audience: data.audience,
+          shortDescription: data.short_description,
+          downloadLink: data.download_link,
+          previewImageUrl: data.preview_image_url,
+          status: data.status,
+          releaseNotes: data.release_notes,
+          publishedAt: data.published_at,
+          createdAt: data.created_at,
+          createdBy: data.created_by,
+        })
+      }
+    } catch (error) {
+      console.error('Failed to load template:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleStartEdit = () => {
+    if (!template) return
+    if (template.status === 'published') {
+      setShowPublishedWarning(true)
+      return
+    }
+    startEditMode()
+  }
+
+  const startEditMode = () => {
+    if (!template) return
+    setEditData({
+      title: template.title,
+      category: template.category,
+      format: template.format,
+      shortDescription: template.shortDescription || '',
+      downloadLink: template.downloadLink || '',
+      previewImageUrl: template.previewImageUrl || '',
+      releaseNotes: template.releaseNotes || '',
+    })
+    setShowPublishedWarning(false)
+    setIsEditMode(true)
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditMode(false)
+    setEditData(null)
+    setUploadError('')
+  }
+
+  const handleSaveEdit = async () => {
+    if (!template || !editData) return
+
+    setIsSaving(true)
+    try {
+      // Check if user cleared the preview image
+      const clearedImage = !editData.previewImageUrl && template.previewImageUrl
+
+      const { error } = await xano.updateTemplate(template.id, {
+        title: editData.title,
+        category: editData.category,
+        format: editData.format,
+        short_description: editData.shortDescription,
+        download_link: editData.downloadLink,
+        preview_image_url: editData.previewImageUrl || undefined,
+        clear_preview_image: clearedImage ? true : undefined,
+        release_notes: editData.releaseNotes,
+        status: 'draft',
+      })
+
+      if (!error) {
+        setTemplate({
+          ...template,
+          ...editData,
+          status: 'draft',
+        })
+        setIsEditMode(false)
+        setEditData(null)
+      }
+    } catch (error) {
+      console.error('Failed to update template:', error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !editData) return
+
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select an image file')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('Image must be less than 5MB')
+      return
+    }
+
+    setIsUploadingImage(true)
+    setUploadError('')
+
+    try {
+      const { data, error } = await xano.uploadFile(file)
+      if (error) {
+        setUploadError(error)
+      } else if (data?.file?.url) {
+        setEditData({ ...editData, previewImageUrl: data.file.url })
+      }
+    } catch (err) {
+      setUploadError('Failed to upload image')
+    } finally {
+      setIsUploadingImage(false)
+    }
+  }
+
+  const handleUpdateStatus = async (newStatus: 'draft' | 'published') => {
+    if (!template) return
+
+    setIsUpdatingStatus(true)
+    try {
+      const { error } = await xano.updateTemplateStatus(template.id, newStatus)
+      if (!error) {
+        setTemplate({ ...template, status: newStatus })
+      }
+    } catch (error) {
+      console.error('Failed to update status:', error)
+    } finally {
+      setIsUpdatingStatus(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!template) return
+
+    setIsDeleting(true)
+    try {
+      const { error } = await xano.deleteTemplate(template.id)
+      if (!error) {
+        router.push('/admin/templates')
+      }
+    } catch (error) {
+      console.error('Failed to delete template:', error)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const loadAgents = async () => {
+    setIsLoadingAgents(true)
+    try {
+      const { data } = await xano.getAgents()
+      if (data) {
+        setAgents(data.filter((a: any) => a.status === 'active').map((a: any) => ({
+          id: a.id,
+          firstName: a.firstName || '',
+          lastName: a.lastName || '',
+          email: a.email || ''
+        })))
+      }
+    } catch (error) {
+      console.error('Failed to load agents:', error)
+    } finally {
+      setIsLoadingAgents(false)
+    }
+  }
+
+  const handleNotificationModeChange = (mode: 'all' | 'specific') => {
+    setNotificationMode(mode)
+    if (mode === 'specific' && agents.length === 0) {
+      loadAgents()
+    }
+    setSelectedAgentIds([])
+    setNotificationResult(null)
+  }
+
+  const toggleAgentSelection = (agentId: number) => {
+    setSelectedAgentIds(prev =>
+      prev.includes(agentId) ? prev.filter(id => id !== agentId) : [...prev, agentId]
+    )
+  }
+
+  const handleSendNotification = async () => {
+    if (!template) return
+    if (notificationMode === 'specific' && selectedAgentIds.length === 0) return
+
+    setIsSendingNotification(true)
+    setNotificationResult(null)
+    try {
+      const agentIds = notificationMode === 'specific' ? selectedAgentIds : undefined
+      const { data, error } = await xano.sendTemplateNotification(template.id, agentIds)
+      if (data && !error) {
+        setNotificationResult({ success: true, count: data.emailsSent })
+      } else {
+        setNotificationResult({ success: false, count: 0 })
+      }
+    } catch (error) {
+      setNotificationResult({ success: false, count: 0 })
+    } finally {
+      setIsSendingNotification(false)
+    }
+  }
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'social-media': return <Image className="h-4 w-4" />
+      case 'email': return <Mail className="h-4 w-4" />
+      case 'video': return <Film className="h-4 w-4" />
+      default: return <FileIcon className="h-4 w-4" />
+    }
+  }
+
+  const getCategoryStyle = (category: string) => {
+    switch (category) {
+      case 'social-media': return 'bg-purple-100 text-purple-700 border-purple-200'
+      case 'email': return 'bg-blue-100 text-blue-700 border-blue-200'
+      case 'flyer': return 'bg-green-100 text-green-700 border-green-200'
+      case 'presentation': return 'bg-orange-100 text-orange-700 border-orange-200'
+      case 'checklist': return 'bg-yellow-100 text-yellow-700 border-yellow-200'
+      case 'guide': return 'bg-teal-100 text-teal-700 border-teal-200'
+      default: return 'bg-gray-100 text-gray-700 border-gray-200'
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      </div>
+    )
+  }
+
+  if (!template) {
+    return (
+      <div className="space-y-6">
+        <Button variant="ghost" onClick={() => router.push('/admin/templates')}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Templates
+        </Button>
+        <Card>
+          <CardContent className="py-16 text-center">
+            <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Template not found</h3>
+            <p className="text-gray-500">This template may have been deleted.</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Delete Confirmation View
+  if (showDeleteConfirm) {
+    return (
+      <div className="space-y-6">
+        <Button variant="ghost" onClick={() => setShowDeleteConfirm(false)}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+        <Card className="max-w-lg mx-auto">
+          <CardContent className="pt-6 space-y-4">
+            <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <Trash2 className="h-8 w-8 text-red-600 flex-shrink-0" />
+              <div>
+                <h4 className="font-medium text-red-800">Delete "{template.title}"?</h4>
+                <p className="text-sm text-red-700 mt-1">
+                  This action cannot be undone. The template will be permanently removed.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} className="flex-1">
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="flex-1">
+                {isDeleting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Trash2 className="h-4 w-4 mr-2" />}
+                Delete Template
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Published Warning View
+  if (showPublishedWarning) {
+    return (
+      <div className="space-y-6">
+        <Button variant="ghost" onClick={() => setShowPublishedWarning(false)}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+        <Card className="max-w-lg mx-auto">
+          <CardContent className="pt-6 space-y-4">
+            <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <AlertTriangle className="h-8 w-8 text-yellow-600 flex-shrink-0" />
+              <div>
+                <h4 className="font-medium text-yellow-800">This template is published</h4>
+                <p className="text-sm text-yellow-700 mt-1">
+                  Editing will unpublish this template. It will be hidden from agents and realtors until you publish it again.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowPublishedWarning(false)} className="flex-1">
+                Cancel
+              </Button>
+              <Button onClick={startEditMode} className="flex-1 bg-yellow-600 hover:bg-yellow-700">
+                Continue to Edit
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Edit Mode View
+  if (isEditMode && editData) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={handleCancelEdit}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Edit Template</h1>
+            <p className="text-gray-500 mt-1">Update template information</p>
+          </div>
+        </div>
+
+        <Card>
+          <CardContent className="pt-6 space-y-6">
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input
+                value={editData.title}
+                onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select value={editData.category} onValueChange={(v) => setEditData({ ...editData, category: v as TemplateCategory })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="social-media">Social Media</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                    <SelectItem value="flyer">Flyer</SelectItem>
+                    <SelectItem value="presentation">Presentation</SelectItem>
+                    <SelectItem value="checklist">Checklist</SelectItem>
+                    <SelectItem value="guide">Guide</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Format</Label>
+                <Select value={editData.format} onValueChange={(v) => setEditData({ ...editData, format: v as TemplateFormat })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="canva">Canva</SelectItem>
+                    <SelectItem value="pdf">PDF</SelectItem>
+                    <SelectItem value="doc">Document</SelectItem>
+                    <SelectItem value="video">Video</SelectItem>
+                    <SelectItem value="link">Link</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea
+                value={editData.shortDescription}
+                onChange={(e) => setEditData({ ...editData, shortDescription: e.target.value })}
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Preview Image</Label>
+              {editData.previewImageUrl ? (
+                <div className="relative w-full max-w-md">
+                  <img src={editData.previewImageUrl} alt="Preview" className="w-full h-48 object-cover rounded-lg border" />
+                  <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-8 w-8"
+                    onClick={() => setEditData({ ...editData, previewImageUrl: '' })}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="relative w-full max-w-md">
+                  <input type="file" accept="image/*" onChange={handleImageUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" disabled={isUploadingImage} />
+                  <div className="flex items-center justify-center h-32 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400">
+                    {isUploadingImage ? (
+                      <div className="flex items-center gap-2 text-gray-500">
+                        <Loader2 className="h-5 w-5 animate-spin" /><span>Uploading...</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-1 text-gray-500">
+                        <Upload className="h-6 w-6" /><span className="text-sm">Click to upload</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              {uploadError && <p className="text-sm text-red-500">{uploadError}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Download/Edit Link</Label>
+              <Input value={editData.downloadLink} onChange={(e) => setEditData({ ...editData, downloadLink: e.target.value })} placeholder="https://..." />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Release Notes</Label>
+              <Textarea value={editData.releaseNotes} onChange={(e) => setEditData({ ...editData, releaseNotes: e.target.value })} rows={2} />
+            </div>
+
+            {template.status === 'published' && (
+              <div className="flex items-start gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-yellow-700">Saving will unpublish this template.</p>
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-4 border-t">
+              <Button variant="outline" onClick={handleCancelEdit}>Cancel</Button>
+              <Button onClick={handleSaveEdit} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
+                {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Save Changes
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // View Mode (Default)
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => router.push('/admin/templates')}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold text-gray-900">{template.title}</h1>
+              <Badge variant={template.status === 'published' ? 'default' : 'secondary'}>
+                {template.status === 'published' ? 'Published' : 'Draft'}
+              </Badge>
+            </div>
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getCategoryStyle(template.category)}`}>
+                {getCategoryIcon(template.category)}
+                {template.category === 'social-media' ? 'Social' : template.category}
+              </span>
+              <Badge variant="outline" className="text-xs">{template.format.toUpperCase()}</Badge>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleStartEdit}>
+            <Pencil className="h-4 w-4 mr-2" />Edit
+          </Button>
+          <Button variant="outline" onClick={() => setShowDeleteConfirm(true)} className="text-red-600 hover:text-red-700 hover:bg-red-50">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Preview Image */}
+          <Card>
+            <CardContent className="p-0">
+              {template.previewImageUrl ? (
+                <img src={template.previewImageUrl} alt={template.title} className="w-full h-64 object-cover rounded-lg" />
+              ) : (
+                <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <FileText className="h-16 w-16 text-gray-300" />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="text-xs text-gray-500 uppercase">Description</Label>
+                <p className="text-gray-700 mt-1">{template.shortDescription || 'No description provided'}</p>
+              </div>
+              {template.releaseNotes && (
+                <div>
+                  <Label className="text-xs text-gray-500 uppercase">Release Notes</Label>
+                  <p className="text-gray-700 mt-1">{template.releaseNotes}</p>
+                </div>
+              )}
+              <Separator />
+              <div>
+                <Label className="text-xs text-gray-500 uppercase">Download/Edit Link</Label>
+                <div className="mt-2">
+                  <Button onClick={() => template.downloadLink && window.open(template.downloadLink, '_blank')}>
+                    <ExternalLink className="h-4 w-4 mr-2" />Open Template
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Status Control */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Status</CardTitle>
+              <CardDescription>Control template visibility</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {template.status === 'draft' ? (
+                <Button className="w-full bg-green-600 hover:bg-green-700" onClick={() => handleUpdateStatus('published')} disabled={isUpdatingStatus}>
+                  {isUpdatingStatus ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Eye className="h-4 w-4 mr-2" />}
+                  Publish Template
+                </Button>
+              ) : (
+                <Button variant="outline" className="w-full text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50" onClick={() => handleUpdateStatus('draft')} disabled={isUpdatingStatus}>
+                  {isUpdatingStatus ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <EyeOff className="h-4 w-4 mr-2" />}
+                  Unpublish (Draft)
+                </Button>
+              )}
+              <p className="text-xs text-gray-500 mt-2">
+                {template.status === 'draft' ? 'Publishing will make this template visible and send notifications.' : 'Unpublishing will hide this template from users.'}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Notifications - Only for published */}
+          {template.status === 'published' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Notify Agents</CardTitle>
+                <CardDescription>Send email notifications manually</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-2">
+                  <Button variant={notificationMode === 'all' ? 'default' : 'outline'} size="sm" onClick={() => handleNotificationModeChange('all')}
+                    className={notificationMode === 'all' ? 'bg-blue-600 hover:bg-blue-700' : ''}>
+                    <Users className="h-4 w-4 mr-2" />All
+                  </Button>
+                  <Button variant={notificationMode === 'specific' ? 'default' : 'outline'} size="sm" onClick={() => handleNotificationModeChange('specific')}
+                    className={notificationMode === 'specific' ? 'bg-blue-600 hover:bg-blue-700' : ''}>
+                    <User className="h-4 w-4 mr-2" />Specific
+                  </Button>
+                </div>
+
+                {notificationMode === 'specific' && (
+                  <div className="border rounded-lg p-3 max-h-48 overflow-y-auto space-y-2">
+                    {isLoadingAgents ? (
+                      <div className="flex items-center justify-center py-4"><Loader2 className="h-5 w-5 animate-spin text-gray-400" /></div>
+                    ) : agents.length === 0 ? (
+                      <p className="text-sm text-gray-500 text-center py-2">No active agents</p>
+                    ) : (
+                      agents.map((agent) => (
+                        <div key={agent.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer" onClick={() => toggleAgentSelection(agent.id)}>
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center ${selectedAgentIds.includes(agent.id) ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-300'}`}>
+                            {selectedAgentIds.includes(agent.id) && <Check className="h-3 w-3" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{agent.firstName} {agent.lastName}</p>
+                            <p className="text-xs text-gray-500 truncate">{agent.email}</p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+
+                {notificationMode === 'specific' && selectedAgentIds.length > 0 && (
+                  <p className="text-xs text-blue-600">{selectedAgentIds.length} agent{selectedAgentIds.length !== 1 ? 's' : ''} selected</p>
+                )}
+
+                <Button variant="outline" className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50" onClick={handleSendNotification}
+                  disabled={isSendingNotification || (notificationMode === 'specific' && selectedAgentIds.length === 0)}>
+                  {isSendingNotification ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+                  Send Notification
+                </Button>
+
+                {notificationResult && (
+                  <p className={`text-xs ${notificationResult.success ? 'text-green-600' : 'text-red-600'}`}>
+                    {notificationResult.success ? `Sent to ${notificationResult.count} agent${notificationResult.count !== 1 ? 's' : ''}` : 'Failed to send'}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

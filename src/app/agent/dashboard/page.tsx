@@ -7,6 +7,7 @@ import { StatsCard } from '@/components/StatsCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import FirstLoginModal from '@/components/FirstLoginModal'
 import {
   Users,
   UserPlus,
@@ -20,6 +21,14 @@ import xano from '@/services/xano'
 
 export default function AgentDashboardPage() {
   const { user } = useAuth()
+  const [showFirstLoginModal, setShowFirstLoginModal] = useState(false)
+
+  // Show first login modal if user hasn't completed first login
+  useEffect(() => {
+    if (user && user.role === 'agent' && user.firstLoginCompleted === false) {
+      setShowFirstLoginModal(true)
+    }
+  }, [user])
   const [stats, setStats] = useState({
     totalRealtors: 0,
     activeRealtors: 0,
@@ -83,6 +92,12 @@ export default function AgentDashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* First Login Password Change Modal */}
+      <FirstLoginModal
+        isOpen={showFirstLoginModal}
+        onComplete={() => setShowFirstLoginModal(false)}
+      />
+
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
           Welcome back, {user?.name?.split(' ')[0]}!

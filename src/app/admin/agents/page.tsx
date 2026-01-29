@@ -19,18 +19,40 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Search, Building2, Mail, Phone, Calendar, Users, Plus, Key, Copy, CheckCircle2, Eye, EyeOff } from 'lucide-react'
+import { Search, Building2, Mail, Phone, Calendar, Users, Plus, KeyRound, Copy, CheckCircle2, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
 import { Label } from '@/components/ui/label'
 import xano from '@/services/xano'
 import { formatDate } from '@/lib/utils'
 import { Agent } from '@/types'
+
+interface AgentDetails {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  companyName: string
+  brandColor: string
+  status: string
+  seatLimit: number
+  seatsUsed: number
+  createdAt: string
+  realtors: any[]
+}
+
+interface ResetCredentials {
+  email: string
+  firstName: string
+  lastName: string
+  tempPassword: string
+}
 
 export default function AdminAgentsPage() {
   const [agents, setAgents] = useState<Agent[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [createError, setCreateError] = useState('')
@@ -44,10 +66,19 @@ export default function AdminAgentsPage() {
     seatLimit: 10,
   })
 
+  // Agent detail modal state
+  const [showDetailModal, setShowDetailModal] = useState(false)
+  const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null)
+  const [agentDetails, setAgentDetails] = useState<AgentDetails | null>(null)
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false)
+  const [detailsError, setDetailsError] = useState<string | null>(null)
+
   // Reset password state
   const [isResettingPassword, setIsResettingPassword] = useState(false)
-  const [resetPasswordResult, setResetPasswordResult] = useState<{ password: string; copied: boolean } | null>(null)
+  const [showCredentialsModal, setShowCredentialsModal] = useState(false)
+  const [resetCredentials, setResetCredentials] = useState<ResetCredentials | null>(null)
   const [showPassword, setShowPassword] = useState(false)
+  const [copiedPassword, setCopiedPassword] = useState(false)
 
   useEffect(() => {
     loadAgents()
@@ -83,46 +114,101 @@ export default function AdminAgentsPage() {
     switch (status) {
       case 'active':
         return <Badge variant="success">Active</Badge>
-      case 'suspended':
-        return <Badge variant="warning">Suspended</Badge>
-      case 'cancelled':
-        return <Badge variant="destructive">Cancelled</Badge>
+      case 'invited':
+        return <Badge variant="default">Invited</Badge>
+      case 'inactive':
+        return <Badge variant="secondary">Inactive</Badge>
       default:
         return <Badge variant="secondary">{status}</Badge>
     }
   }
 
-  const handleStatusChange = async (agentId: number, newStatus: string) => {
+  const handleDeactivate = async () => {
+    if (!selectedAgentId) return
     try {
-      await xano.updateAgent(agentId, { status: newStatus })
-      setAgents((prev) =>
-        prev.map((a) => (a.id === agentId ? { ...a, status: newStatus as any } : a))
-      )
-      setSelectedAgent(null)
+      const { error } = await xano.adminDeactivateAgent(selectedAgentId)
+      if (!error) {
+        setAgents((prev) =>
+          prev.map((a) => (a.id === selectedAgentId ? { ...a, status: 'inactive' as any } : a))
+        )
+        if (agentDetails) {
+          setAgentDetails({ ...agentDetails, status: 'inactive' })
+        }
+      }
     } catch (error) {
-      console.error('Failed to update agent status:', error)
+      console.error('Failed to deactivate agent:', error)
     }
   }
 
-  const handleResetPassword = async (agentId: number) => {
+  const handleReactivate = async () => {
+    if (!selectedAgentId) return
     setIsResettingPassword(true)
-    setResetPasswordResult(null)
-    console.log('Resetting password for agent ID:', agentId)
+    try {
+      const { data, error } = await xano.adminReactivateAgent(selectedAgentId)
+      if (error) {
+        console.error('Failed to reactivate agent:', error)
+        return
+      }
+      if (data) {
+        setAgents((prev) =>
+          prev.map((a) => (a.id === selectedAgentId ? { ...a, status: 'active' as any } : a))
+        )
+        setResetCredentials({
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          tempPassword: data.tempPassword,
+        })
+        setShowDetailModal(false)
+        setShowCredentialsModal(true)
+      }
+    } catch (error) {
+      console.error('Failed to reactivate agent:', error)
+    } finally {
+      setIsResettingPassword(false)
+    }
+  }
+
+  const handleOpenDetails = async (agentId: number) => {
+    setSelectedAgentId(agentId)
+    setShowDetailModal(true)
+    setIsLoadingDetails(true)
+    setDetailsError(null)
+    setAgentDetails(null)
 
     try {
-      const { data, error } = await xano.resetAgentPassword(agentId)
-      console.log('Reset password response:', { data, error })
+      const { data, error } = await xano.adminGetAgentDetails(agentId)
+      if (error) {
+        setDetailsError(error)
+      } else if (data) {
+        setAgentDetails(data)
+      }
+    } catch (err) {
+      setDetailsError('Failed to load agent details')
+    } finally {
+      setIsLoadingDetails(false)
+    }
+  }
+
+  const handleResetPassword = async () => {
+    if (!selectedAgentId) return
+    setIsResettingPassword(true)
+
+    try {
+      const { data, error } = await xano.resetAgentPassword(selectedAgentId)
       if (error) {
         console.error('Failed to reset password:', error)
         return
       }
       if (data) {
-        // Handle both camelCase and snake_case responses from Xano
-        const password = data.tempPassword || (data as any).temp_password
-        console.log('Extracted password:', password)
-        if (password) {
-          setResetPasswordResult({ password, copied: false })
-        }
+        setResetCredentials({
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          tempPassword: data.tempPassword,
+        })
+        setShowDetailModal(false)
+        setShowCredentialsModal(true)
       }
     } catch (error) {
       console.error('Failed to reset password:', error)
@@ -132,19 +218,25 @@ export default function AdminAgentsPage() {
   }
 
   const copyPassword = async () => {
-    if (resetPasswordResult) {
-      await navigator.clipboard.writeText(resetPasswordResult.password)
-      setResetPasswordResult({ ...resetPasswordResult, copied: true })
-      setTimeout(() => {
-        setResetPasswordResult((prev) => prev ? { ...prev, copied: false } : null)
-      }, 2000)
+    if (resetCredentials) {
+      await navigator.clipboard.writeText(resetCredentials.tempPassword)
+      setCopiedPassword(true)
+      setTimeout(() => setCopiedPassword(false), 2000)
     }
   }
 
-  const closeAgentModal = () => {
-    setSelectedAgent(null)
-    setResetPasswordResult(null)
+  const closeDetailModal = () => {
+    setShowDetailModal(false)
+    setSelectedAgentId(null)
+    setAgentDetails(null)
+    setDetailsError(null)
+  }
+
+  const closeCredentialsModal = () => {
+    setShowCredentialsModal(false)
+    setResetCredentials(null)
     setShowPassword(false)
+    setCopiedPassword(false)
   }
 
   const handleCreateAgent = async (e: React.FormEvent) => {
@@ -166,9 +258,7 @@ export default function AdminAgentsPage() {
           email: data.email,
           tempPassword: data.tempPassword,
         })
-        // Reload agents list
         loadAgents()
-        // Reset form
         setNewAgent({
           email: '',
           firstName: '',
@@ -230,8 +320,8 @@ export default function AdminAgentsPage() {
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="suspended">Suspended</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
+            <SelectItem value="invited">Invited</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -250,71 +340,46 @@ export default function AdminAgentsPage() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">
-                      Agent
-                    </th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">
-                      Company
-                    </th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">
-                      Status
-                    </th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">
-                      Realtors
-                    </th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">
-                      Joined
-                    </th>
-                    <th className="text-right p-4 text-sm font-medium text-gray-500">
-                      Actions
-                    </th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-500">Agent</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-500">Company</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-500">Status</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-500">Realtors</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-500">Joined</th>
+                    <th className="text-right p-4 text-sm font-medium text-gray-500">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {filteredAgents.map((agent) => (
-                    <tr key={agent.id} className="hover:bg-gray-50">
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="h-10 w-10 rounded-full flex items-center justify-center text-white font-medium"
-                            style={{ backgroundColor: agent.brandColor || '#2563eb' }}
-                          >
-                            {agent.firstName[0]}
-                            {agent.lastName[0]}
+                      <tr key={agent.id} className="hover:bg-gray-50">
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="h-10 w-10 rounded-full flex items-center justify-center text-white font-medium"
+                              style={{ backgroundColor: agent.brandColor || '#2563eb' }}
+                            >
+                              {agent.firstName[0]}{agent.lastName[0]}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{agent.firstName} {agent.lastName}</p>
+                              <p className="text-sm text-gray-500">{agent.email}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {agent.firstName} {agent.lastName}
-                            </p>
-                            <p className="text-sm text-gray-500">{agent.email}</p>
+                        </td>
+                        <td className="p-4"><p className="text-gray-900">{agent.companyName}</p></td>
+                        <td className="p-4">{getStatusBadge(agent.status)}</td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-1">
+                            <Users className="h-4 w-4 text-gray-400" />
+                            <span className="text-gray-900">{agent.seatsUsed}/{agent.seatLimit}</span>
                           </div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <p className="text-gray-900">{agent.companyName}</p>
-                      </td>
-                      <td className="p-4">{getStatusBadge(agent.status)}</td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-1">
-                          <Users className="h-4 w-4 text-gray-400" />
-                          <span className="text-gray-900">
-                            {agent.seatsUsed}/{agent.seatLimit}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="p-4 text-gray-500">
-                        {formatDate(agent.createdAt)}
-                      </td>
-                      <td className="p-4 text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setSelectedAgent(agent)}
-                        >
-                          View
-                        </Button>
-                      </td>
-                    </tr>
+                        </td>
+                        <td className="p-4 text-gray-500">{formatDate(agent.createdAt)}</td>
+                        <td className="p-4 text-right">
+                          <Button variant="outline" size="sm" onClick={() => handleOpenDetails(agent.id)}>
+                            More
+                          </Button>
+                        </td>
+                      </tr>
                   ))}
                 </tbody>
               </table>
@@ -328,135 +393,162 @@ export default function AdminAgentsPage() {
         </CardContent>
       </Card>
 
-      {/* Agent Detail Dialog */}
-      <Dialog open={!!selectedAgent} onOpenChange={closeAgentModal}>
-        <DialogContent className="max-w-lg">
+      {/* Agent Detail Modal */}
+      <Dialog open={showDetailModal} onOpenChange={closeDetailModal}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Agent Details</DialogTitle>
-            <DialogDescription>
-              View and manage agent information
-            </DialogDescription>
+            <DialogDescription>View and manage agent information</DialogDescription>
           </DialogHeader>
-          {selectedAgent && (
-            <div className="space-y-4">
+
+          {isLoadingDetails ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            </div>
+          ) : detailsError ? (
+            <div className="bg-red-50 text-red-600 p-4 rounded-lg">{detailsError}</div>
+          ) : agentDetails ? (
+            <div className="space-y-6">
+              {/* Agent Info */}
               <div className="flex items-center gap-4">
                 <div
                   className="h-16 w-16 rounded-full flex items-center justify-center text-white text-xl font-medium"
-                  style={{ backgroundColor: selectedAgent.brandColor || '#2563eb' }}
+                  style={{ backgroundColor: agentDetails.brandColor || '#2563eb' }}
                 >
-                  {selectedAgent.firstName[0]}
-                  {selectedAgent.lastName[0]}
+                  {agentDetails.firstName[0]}{agentDetails.lastName[0]}
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold">
-                    {selectedAgent.firstName} {selectedAgent.lastName}
-                  </h3>
-                  <p className="text-gray-500">{selectedAgent.companyName}</p>
-                  {getStatusBadge(selectedAgent.status)}
+                  <h3 className="text-lg font-semibold">{agentDetails.firstName} {agentDetails.lastName}</h3>
+                  <p className="text-gray-500">{agentDetails.companyName}</p>
+                  {getStatusBadge(agentDetails.status)}
                 </div>
               </div>
 
-              <div className="space-y-3 pt-4 border-t">
-                <div className="flex items-center gap-3">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm">
                   <Mail className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">{selectedAgent.email}</span>
+                  <span className="text-gray-600">{agentDetails.email}</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 text-sm">
                   <Phone className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">{selectedAgent.phone || 'N/A'}</span>
+                  <span className="text-gray-600">{agentDetails.phone || 'N/A'}</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 text-sm">
                   <Calendar className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">
-                    Joined {formatDate(selectedAgent.createdAt)}
-                  </span>
+                  <span className="text-gray-600">Joined {formatDate(agentDetails.createdAt)}</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 text-sm">
                   <Users className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">
-                    {selectedAgent.seatsUsed} of {selectedAgent.seatLimit} seats used
-                  </span>
+                  <span className="text-gray-600">{agentDetails.seatsUsed} of {agentDetails.seatLimit} seats used</span>
                 </div>
               </div>
 
-              {/* Password Reset Section */}
-              <div className="pt-4 border-t">
-                <p className="text-sm font-medium text-gray-700 mb-2">
-                  Password
-                </p>
-                {resetPasswordResult ? (
-                  <div className="bg-gray-50 rounded-lg p-3 space-y-2">
-                    <p className="text-xs text-gray-500">New temporary password:</p>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-white border rounded px-3 py-2 font-mono text-sm">
-                        {showPassword ? resetPasswordResult.password : '••••••••••••'}
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={copyPassword}
-                      >
-                        {resetPasswordResult.copied ? (
-                          <CheckCircle2 className="h-4 w-4 text-green-600" />
-                        ) : (
-                          <Copy className="h-4 w-4" />
-                        )}
-                      </Button>
+              {/* Linked Realtors */}
+              <div>
+                <Label className="text-xs text-gray-500 uppercase tracking-wide">
+                  Linked Realtors ({agentDetails.realtors?.length || 0})
+                </Label>
+                <div className="mt-2 bg-gray-50 rounded-lg p-3 max-h-40 overflow-y-auto">
+                  {agentDetails.realtors && agentDetails.realtors.length > 0 ? (
+                    <div className="space-y-2">
+                      {agentDetails.realtors.map((realtor: any) => (
+                        <div key={realtor.id} className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center text-green-700 text-xs font-medium">
+                              {realtor.firstName?.[0]}{realtor.lastName?.[0]}
+                            </div>
+                            <span className="text-gray-700">{realtor.firstName} {realtor.lastName}</span>
+                          </div>
+                          <Badge variant={realtor.status === 'active' ? 'success' : realtor.status === 'invited' ? 'default' : 'secondary'} className="text-xs">
+                            {realtor.status}
+                          </Badge>
+                        </div>
+                      ))}
                     </div>
-                    <p className="text-xs text-amber-600">
-                      Share this password with the agent. They should change it after logging in.
-                    </p>
-                  </div>
-                ) : (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleResetPassword(selectedAgent.id)}
-                    disabled={isResettingPassword}
-                  >
-                    <Key className="h-4 w-4 mr-2" />
-                    {isResettingPassword ? 'Resetting...' : 'Reset Password'}
-                  </Button>
-                )}
-              </div>
-
-              <div className="pt-4 border-t">
-                <p className="text-sm font-medium text-gray-700 mb-2">
-                  Change Status
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant={selectedAgent.status === 'active' ? 'default' : 'outline'}
-                    onClick={() => handleStatusChange(selectedAgent.id, 'active')}
-                  >
-                    Active
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={selectedAgent.status === 'suspended' ? 'warning' : 'outline'}
-                    onClick={() => handleStatusChange(selectedAgent.id, 'suspended')}
-                  >
-                    Suspend
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={
-                      selectedAgent.status === 'cancelled' ? 'destructive' : 'outline'
-                    }
-                    onClick={() => handleStatusChange(selectedAgent.id, 'cancelled')}
-                  >
-                    Cancel
-                  </Button>
+                  ) : (
+                    <p className="text-sm text-gray-500 text-center py-2">No realtors yet</p>
+                  )}
                 </div>
               </div>
+
+              <Separator />
+
+              {/* Password Reset */}
+              <div>
+                <Label className="text-xs text-gray-500 uppercase tracking-wide">Password</Label>
+                <div className="mt-2">
+                  <Button variant="outline" onClick={handleResetPassword} disabled={isResettingPassword}>
+                    {isResettingPassword ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <KeyRound className="h-4 w-4 mr-2" />}
+                    Reset Password
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-1">This will generate a new password and send an email to the agent.</p>
+                </div>
+              </div>
+
+              {/* Status Change */}
+              <div>
+                <Label className="text-xs text-gray-500 uppercase tracking-wide">Change Status</Label>
+                <div className="flex gap-2 mt-2">
+                  {agentDetails.status === 'active' ? (
+                    <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={handleDeactivate}>
+                      Deactivate
+                    </Button>
+                  ) : agentDetails.status === 'inactive' ? (
+                    <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700 hover:bg-green-50" onClick={handleReactivate} disabled={isResettingPassword}>
+                      {isResettingPassword ? 'Activating...' : 'Activate'}
+                    </Button>
+                  ) : (
+                    <span className="text-sm text-gray-500">Agent will be activated on first login</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+
+      {/* Password Reset Credentials Modal */}
+      <Dialog open={showCredentialsModal} onOpenChange={closeCredentialsModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Password Reset</DialogTitle>
+            <DialogDescription>A new password has been generated and an email has been sent to the agent.</DialogDescription>
+          </DialogHeader>
+
+          {resetCredentials && (
+            <div className="space-y-4">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <p className="text-green-800 font-medium">Password reset successfully!</p>
+                <p className="text-green-700 text-sm mt-1">Share these credentials with {resetCredentials.firstName}:</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+                <div>
+                  <Label className="text-gray-500 text-xs">Agent Name</Label>
+                  <p className="font-medium">{resetCredentials.firstName} {resetCredentials.lastName}</p>
+                </div>
+                <div>
+                  <Label className="text-gray-500 text-xs">Email</Label>
+                  <p className="font-mono text-sm">{resetCredentials.email}</p>
+                </div>
+                <div>
+                  <Label className="text-gray-500 text-xs">Temporary Password</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="flex-1 bg-yellow-100 px-3 py-2 rounded font-mono text-sm">
+                      {showPassword ? resetCredentials.tempPassword : '••••••••••••'}
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={copyPassword}>
+                      {copiedPassword ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-amber-600">The agent will be prompted to change their password on first login.</p>
+              <Button onClick={closeCredentialsModal} className="w-full">Done</Button>
             </div>
           )}
         </DialogContent>
@@ -467,18 +559,14 @@ export default function AdminAgentsPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Create New Agent</DialogTitle>
-            <DialogDescription>
-              Add a new mortgage agent to the platform. A temporary password will be generated.
-            </DialogDescription>
+            <DialogDescription>Add a new mortgage agent to the platform. A temporary password will be generated.</DialogDescription>
           </DialogHeader>
 
           {createSuccess ? (
             <div className="space-y-4">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <p className="text-green-800 font-medium">Agent created successfully!</p>
-                <p className="text-green-700 text-sm mt-1">
-                  Send these credentials to the agent:
-                </p>
+                <p className="text-green-700 text-sm mt-1">Send these credentials to the agent:</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                 <div>
@@ -487,94 +575,52 @@ export default function AdminAgentsPage() {
                 </div>
                 <div>
                   <Label className="text-gray-500 text-xs">Temporary Password</Label>
-                  <p className="font-mono text-sm bg-yellow-100 px-2 py-1 rounded inline-block">
-                    {createSuccess.tempPassword}
-                  </p>
+                  <p className="font-mono text-sm bg-yellow-100 px-2 py-1 rounded inline-block">{createSuccess.tempPassword}</p>
                 </div>
               </div>
-              <Button onClick={closeCreateModal} className="w-full">
-                Done
-              </Button>
+              <Button onClick={closeCreateModal} className="w-full">Done</Button>
             </div>
           ) : (
             <form onSubmit={handleCreateAgent} className="space-y-4">
               {createError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                  {createError}
-                </div>
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{createError}</div>
               )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    value={newAgent.firstName}
-                    onChange={(e) => setNewAgent({ ...newAgent, firstName: e.target.value })}
-                    required
-                  />
+                  <Input id="firstName" value={newAgent.firstName} onChange={(e) => setNewAgent({ ...newAgent, firstName: e.target.value })} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    value={newAgent.lastName}
-                    onChange={(e) => setNewAgent({ ...newAgent, lastName: e.target.value })}
-                    required
-                  />
+                  <Input id="lastName" value={newAgent.lastName} onChange={(e) => setNewAgent({ ...newAgent, lastName: e.target.value })} required />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={newAgent.email}
-                  onChange={(e) => setNewAgent({ ...newAgent, email: e.target.value })}
-                  required
-                />
+                <Input id="email" type="email" value={newAgent.email} onChange={(e) => setNewAgent({ ...newAgent, email: e.target.value })} required />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="companyName">Company Name</Label>
-                <Input
-                  id="companyName"
-                  value={newAgent.companyName}
-                  onChange={(e) => setNewAgent({ ...newAgent, companyName: e.target.value })}
-                  required
-                />
+                <Input id="companyName" value={newAgent.companyName} onChange={(e) => setNewAgent({ ...newAgent, companyName: e.target.value })} required />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone (optional)</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={newAgent.phone}
-                    onChange={(e) => setNewAgent({ ...newAgent, phone: e.target.value })}
-                  />
+                  <Input id="phone" type="tel" value={newAgent.phone} onChange={(e) => setNewAgent({ ...newAgent, phone: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="seatLimit">Seat Limit</Label>
-                  <Input
-                    id="seatLimit"
-                    type="number"
-                    min="1"
-                    value={newAgent.seatLimit}
-                    onChange={(e) => setNewAgent({ ...newAgent, seatLimit: parseInt(e.target.value) || 10 })}
-                  />
+                  <Input id="seatLimit" type="number" min="1" value={newAgent.seatLimit} onChange={(e) => setNewAgent({ ...newAgent, seatLimit: parseInt(e.target.value) || 10 })} />
                 </div>
               </div>
 
               <div className="flex gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1">
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isCreating} className="flex-1">
-                  {isCreating ? 'Creating...' : 'Create Agent'}
-                </Button>
+                <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1">Cancel</Button>
+                <Button type="submit" disabled={isCreating} className="flex-1">{isCreating ? 'Creating...' : 'Create Agent'}</Button>
               </div>
             </form>
           )}

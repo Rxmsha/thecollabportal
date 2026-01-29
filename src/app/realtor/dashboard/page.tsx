@@ -18,6 +18,7 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import xano from '@/services/xano'
+import FirstLoginModal from '@/components/FirstLoginModal'
 
 interface AgentInfo {
   id: number
@@ -37,10 +38,18 @@ export default function RealtorDashboardPage() {
   const { user } = useAuth()
   const [agent, setAgent] = useState<AgentInfo | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [showFirstLoginModal, setShowFirstLoginModal] = useState(false)
 
   useEffect(() => {
     if (user?.agentId) {
       loadAgentInfo()
+    }
+  }, [user])
+
+  // Show first login modal for realtors who haven't completed first login
+  useEffect(() => {
+    if (user && user.role === 'realtor' && user.firstLoginCompleted === false) {
+      setShowFirstLoginModal(true)
     }
   }, [user])
 
@@ -90,6 +99,12 @@ export default function RealtorDashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* First Login Modal for password change */}
+      <FirstLoginModal
+        isOpen={showFirstLoginModal}
+        onComplete={() => setShowFirstLoginModal(false)}
+      />
+
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
           Welcome, {user?.name?.split(' ')[0]}!

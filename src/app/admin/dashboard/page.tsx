@@ -120,13 +120,12 @@ export default function AdminDashboardPage() {
           iconBgColor="bg-purple-100"
         />
         <StatsCard
-          title="Platform Growth"
-          value="+12%"
-          subtitle="vs last month"
+          title="Active Agents"
+          value={stats.activeAgents}
+          subtitle={`of ${stats.totalAgents} total`}
           icon={TrendingUp}
           iconColor="text-orange-600"
           iconBgColor="bg-orange-100"
-          trend={{ value: 12, label: 'from last month', isPositive: true }}
         />
       </div>
 

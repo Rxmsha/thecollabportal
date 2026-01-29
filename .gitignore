@@ -47,3 +47,16 @@ Thumbs.db
 
 # Original zip
 *.zip
+
+# Xano files (managed separately)
+.xano/
+addons/
+apis/
+functions/
+tables/
+docs/
+.claude/
+.cursor/
+.github/
+CLAUDE.md
+AGENTS.md
