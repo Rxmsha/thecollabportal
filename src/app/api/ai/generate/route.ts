@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Initialize lazily to avoid build-time errors
+let openai: OpenAI | null = null
+
+function getOpenAI() {
+  if (!openai && process.env.OPENAI_API_KEY) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  }
+  return openai
+}
 
 // System prompts for different tools
 const systemPrompts: Record<string, string> = {
@@ -58,7 +66,14 @@ export async function POST(request: NextRequest) {
       : input
 
     // Call OpenAI
-    const completion = await openai.chat.completions.create({
+    const client = getOpenAI()
+    if (!client) {
+      return NextResponse.json(
+        { error: 'OpenAI client not available' },
+        { status: 500 }
+      )
+    }
+    const completion = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: fullSystemPrompt },
