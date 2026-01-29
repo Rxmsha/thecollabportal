@@ -15,7 +15,7 @@ import {
 import { Search, Users, Building } from 'lucide-react'
 import xano from '@/services/xano'
 import { formatDate } from '@/lib/utils'
-import { Realtor } from '@/types'
+import { Realtor, RealtorStatus } from '@/types'
 import RealtorCredentialsModal from '@/components/RealtorCredentialsModal'
 import RealtorDetailModal from '@/components/RealtorDetailModal'
 
@@ -86,7 +86,7 @@ export default function AdminRealtorsPage() {
     setShowDetailModal(true)
   }
 
-  const handleStatusChange = (realtorId: number, newStatus: string) => {
+  const handleStatusChange = (realtorId: number, newStatus: RealtorStatus) => {
     setRealtors((prev) =>
       prev.map((r) => (r.id === realtorId ? { ...r, status: newStatus } : r))
     )

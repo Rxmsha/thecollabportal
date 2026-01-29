@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import xano from '@/services/xano'
+import { RealtorStatus } from '@/types'
 
 interface RealtorDetails {
   id: number
@@ -44,7 +45,7 @@ interface AgentRealtorDetailModalProps {
   isOpen: boolean
   onClose: () => void
   realtorId: number | null
-  onStatusChange?: (realtorId: number, newStatus: string) => void
+  onStatusChange?: (realtorId: number, newStatus: RealtorStatus) => void
   onPasswordReset?: (credentials: {
     email: string
     firstName: string
