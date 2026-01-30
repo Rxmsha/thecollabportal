@@ -172,7 +172,8 @@ export default function AdminLogsPage() {
       })
       if (data) {
         // Handle both paginated response (data.items) and plain array
-        const logsArray = Array.isArray(data) ? data : (data.items || [])
+        const rawData = data as any
+        const logsArray = Array.isArray(rawData) ? rawData : (rawData.items || [])
         // Transform snake_case from API to camelCase for frontend
         const transformedLogs = logsArray.map((log: any) => ({
           id: log.id,
