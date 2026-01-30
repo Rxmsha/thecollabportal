@@ -293,7 +293,7 @@ export default function AdminLogsPage() {
         return `Notification for "${templateTitle}" sent to ${details.realtor_count || 0} realtors`
 
       default:
-        return eventType.replace(/_/g, ' ')
+        return (eventType as string).replace(/_/g, ' ')
     }
   }
 
