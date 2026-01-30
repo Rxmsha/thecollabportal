@@ -45,7 +45,8 @@ export default function AdminDashboardPage() {
       }
       if (logsRes.data) {
         // Transform from snake_case to camelCase
-        const logsArray = Array.isArray(logsRes.data) ? logsRes.data : (logsRes.data.items || [])
+        const rawData = logsRes.data as any
+        const logsArray = Array.isArray(rawData) ? rawData : (rawData.items || [])
         const transformedLogs = logsArray.map((log: any) => ({
           id: log.id,
           eventType: log.event_type,
