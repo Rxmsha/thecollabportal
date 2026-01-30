@@ -60,7 +60,15 @@ export default function TemplateDetailPage() {
   const [selectedAgentIds, setSelectedAgentIds] = useState<number[]>([])
   const [isLoadingAgents, setIsLoadingAgents] = useState(false)
   const [isSendingNotification, setIsSendingNotification] = useState(false)
-  const [notificationResult, setNotificationResult] = useState<{ success: boolean; count: number } | null>(null)
+  const [notificationResult, setNotificationResult] = useState<{ success: boolean; agentCount: number } | null>(null)
+
+  // Realtor Notification
+  const [realtorNotificationMode, setRealtorNotificationMode] = useState<'all' | 'specific'>('all')
+  const [realtors, setRealtors] = useState<{ id: number; firstName: string; lastName: string; email: string; agentName: string }[]>([])
+  const [selectedRealtorIds, setSelectedRealtorIds] = useState<number[]>([])
+  const [isLoadingRealtors, setIsLoadingRealtors] = useState(false)
+  const [isSendingRealtorNotification, setIsSendingRealtorNotification] = useState(false)
+  const [realtorNotificationResult, setRealtorNotificationResult] = useState<{ success: boolean; count: number } | null>(null)
 
   useEffect(() => {
     loadTemplate()
@@ -200,6 +208,19 @@ export default function TemplateDetailPage() {
       const { error } = await xano.updateTemplateStatus(template.id, newStatus)
       if (!error) {
         setTemplate({ ...template, status: newStatus })
+
+        // If publishing, send notifications to both agents and realtors
+        if (newStatus === 'published') {
+          // Send to agents (fire and forget - don't block UI)
+          xano.sendTemplateNotification(template.id).then(({ data }) => {
+            console.log('Agent notifications sent:', data?.agentEmailsSent || 0)
+          }).catch(err => console.error('Agent notification error:', err))
+
+          // Send to realtors (fire and forget - don't block UI)
+          xano.sendTemplateNotificationToRealtors(template.id).then(({ data }) => {
+            console.log('Realtor notifications sent:', data?.realtorEmailsSent || 0)
+          }).catch(err => console.error('Realtor notification error:', err))
+        }
       }
     } catch (error) {
       console.error('Failed to update status:', error)
@@ -268,14 +289,77 @@ export default function TemplateDetailPage() {
       const agentIds = notificationMode === 'specific' ? selectedAgentIds : undefined
       const { data, error } = await xano.sendTemplateNotification(template.id, agentIds)
       if (data && !error) {
-        setNotificationResult({ success: true, count: data.emailsSent })
+        setNotificationResult({
+          success: true,
+          agentCount: data.agentEmailsSent || 0
+        })
       } else {
-        setNotificationResult({ success: false, count: 0 })
+        setNotificationResult({ success: false, agentCount: 0 })
       }
     } catch (error) {
-      setNotificationResult({ success: false, count: 0 })
+      setNotificationResult({ success: false, agentCount: 0 })
     } finally {
       setIsSendingNotification(false)
+    }
+  }
+
+  // Realtor notification functions
+  const loadRealtors = async () => {
+    setIsLoadingRealtors(true)
+    try {
+      const { data } = await xano.getAllRealtors()
+      if (data) {
+        setRealtors(data.filter((r: any) => r.status === 'active').map((r: any) => ({
+          id: r.id,
+          firstName: r.firstName || '',
+          lastName: r.lastName || '',
+          email: r.email || '',
+          agentName: r.agentName || ''
+        })))
+      }
+    } catch (error) {
+      console.error('Failed to load realtors:', error)
+    } finally {
+      setIsLoadingRealtors(false)
+    }
+  }
+
+  const handleRealtorNotificationModeChange = (mode: 'all' | 'specific') => {
+    setRealtorNotificationMode(mode)
+    if (mode === 'specific' && realtors.length === 0) {
+      loadRealtors()
+    }
+    setSelectedRealtorIds([])
+    setRealtorNotificationResult(null)
+  }
+
+  const toggleRealtorSelection = (realtorId: number) => {
+    setSelectedRealtorIds(prev =>
+      prev.includes(realtorId) ? prev.filter(id => id !== realtorId) : [...prev, realtorId]
+    )
+  }
+
+  const handleSendRealtorNotification = async () => {
+    if (!template) return
+    if (realtorNotificationMode === 'specific' && selectedRealtorIds.length === 0) return
+
+    setIsSendingRealtorNotification(true)
+    setRealtorNotificationResult(null)
+    try {
+      const realtorIds = realtorNotificationMode === 'specific' ? selectedRealtorIds : undefined
+      const { data, error } = await xano.sendTemplateNotificationToRealtors(template.id, realtorIds)
+      if (data && !error) {
+        setRealtorNotificationResult({
+          success: true,
+          count: data.realtorEmailsSent || 0
+        })
+      } else {
+        setRealtorNotificationResult({ success: false, count: 0 })
+      }
+    } catch (error) {
+      setRealtorNotificationResult({ success: false, count: 0 })
+    } finally {
+      setIsSendingRealtorNotification(false)
     }
   }
 
@@ -608,7 +692,7 @@ export default function TemplateDetailPage() {
               {template.status === 'draft' ? (
                 <Button className="w-full bg-green-600 hover:bg-green-700" onClick={() => handleUpdateStatus('published')} disabled={isUpdatingStatus}>
                   {isUpdatingStatus ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Eye className="h-4 w-4 mr-2" />}
-                  Publish Template
+                  Publish & Notify All
                 </Button>
               ) : (
                 <Button variant="outline" className="w-full text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50" onClick={() => handleUpdateStatus('draft')} disabled={isUpdatingStatus}>
@@ -617,7 +701,7 @@ export default function TemplateDetailPage() {
                 </Button>
               )}
               <p className="text-xs text-gray-500 mt-2">
-                {template.status === 'draft' ? 'Publishing will make this template visible and send notifications.' : 'Unpublishing will hide this template from users.'}
+                {template.status === 'draft' ? 'Publishing will make this visible and automatically notify all agents and realtors.' : 'Unpublishing will hide this template from users.'}
               </p>
             </CardContent>
           </Card>
@@ -675,7 +759,72 @@ export default function TemplateDetailPage() {
 
                 {notificationResult && (
                   <p className={`text-xs ${notificationResult.success ? 'text-green-600' : 'text-red-600'}`}>
-                    {notificationResult.success ? `Sent to ${notificationResult.count} agent${notificationResult.count !== 1 ? 's' : ''}` : 'Failed to send'}
+                    {notificationResult.success
+                      ? `Sent to ${notificationResult.agentCount} agent${notificationResult.agentCount !== 1 ? 's' : ''}`
+                      : 'Failed to send'}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Notify Realtors - Only for published */}
+          {template.status === 'published' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Notify Realtors</CardTitle>
+                <CardDescription>Send to realtors (appears from their agent)</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-2">
+                  <Button variant={realtorNotificationMode === 'all' ? 'default' : 'outline'} size="sm" onClick={() => handleRealtorNotificationModeChange('all')}
+                    className={realtorNotificationMode === 'all' ? 'bg-orange-600 hover:bg-orange-700' : ''}>
+                    <Users className="h-4 w-4 mr-2" />All
+                  </Button>
+                  <Button variant={realtorNotificationMode === 'specific' ? 'default' : 'outline'} size="sm" onClick={() => handleRealtorNotificationModeChange('specific')}
+                    className={realtorNotificationMode === 'specific' ? 'bg-orange-600 hover:bg-orange-700' : ''}>
+                    <User className="h-4 w-4 mr-2" />Specific
+                  </Button>
+                </div>
+
+                {realtorNotificationMode === 'specific' && (
+                  <div className="border rounded-lg p-3 max-h-48 overflow-y-auto space-y-2">
+                    {isLoadingRealtors ? (
+                      <div className="flex items-center justify-center py-4"><Loader2 className="h-5 w-5 animate-spin text-gray-400" /></div>
+                    ) : realtors.length === 0 ? (
+                      <p className="text-sm text-gray-500 text-center py-2">No active realtors</p>
+                    ) : (
+                      realtors.map((realtor) => (
+                        <div key={realtor.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer" onClick={() => toggleRealtorSelection(realtor.id)}>
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center ${selectedRealtorIds.includes(realtor.id) ? 'bg-orange-600 border-orange-600 text-white' : 'border-gray-300'}`}>
+                            {selectedRealtorIds.includes(realtor.id) && <Check className="h-3 w-3" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{realtor.firstName} {realtor.lastName}</p>
+                            <p className="text-xs text-gray-500 truncate">{realtor.email}</p>
+                            {realtor.agentName && <p className="text-xs text-gray-400 truncate">Agent: {realtor.agentName}</p>}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+
+                {realtorNotificationMode === 'specific' && selectedRealtorIds.length > 0 && (
+                  <p className="text-xs text-orange-600">{selectedRealtorIds.length} realtor{selectedRealtorIds.length !== 1 ? 's' : ''} selected</p>
+                )}
+
+                <Button variant="outline" className="w-full text-orange-600 hover:text-orange-700 hover:bg-orange-50" onClick={handleSendRealtorNotification}
+                  disabled={isSendingRealtorNotification || (realtorNotificationMode === 'specific' && selectedRealtorIds.length === 0)}>
+                  {isSendingRealtorNotification ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+                  Send Notification
+                </Button>
+
+                {realtorNotificationResult && (
+                  <p className={`text-xs ${realtorNotificationResult.success ? 'text-green-600' : 'text-red-600'}`}>
+                    {realtorNotificationResult.success
+                      ? `Sent to ${realtorNotificationResult.count} realtor${realtorNotificationResult.count !== 1 ? 's' : ''}`
+                      : 'Failed to send'}
                   </p>
                 )}
               </CardContent>

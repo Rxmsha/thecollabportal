@@ -44,7 +44,15 @@ export default function AdminDashboardPage() {
         setStats(statsRes.data)
       }
       if (logsRes.data) {
-        setRecentLogs(logsRes.data)
+        // Transform from snake_case to camelCase
+        const logsArray = Array.isArray(logsRes.data) ? logsRes.data : (logsRes.data.items || [])
+        const transformedLogs = logsArray.map((log: any) => ({
+          id: log.id,
+          eventType: log.event_type,
+          details: log.details,
+          createdAt: log.created_at,
+        }))
+        setRecentLogs(transformedLogs)
       }
       if (errorsRes.data) {
         setRecentErrors(errorsRes.data.slice(0, 3))
@@ -154,10 +162,12 @@ export default function AdminDashboardPage() {
                     className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                   >
                     <div className="flex items-center gap-3">
-                      <Badge variant={getEventBadgeColor(log.eventType) as any}>
-                        {log.eventType.replace(/_/g, ' ')}
+                      <Badge variant={getEventBadgeColor(log.eventType || '') as any}>
+                        {(log.eventType || 'unknown').replace(/_/g, ' ')}
                       </Badge>
-                      <span className="text-sm text-gray-600">{log.details}</span>
+                      <span className="text-sm text-gray-600">
+                        {log.details?.template_title || log.details?.agent_email || log.details?.realtor_email || ''}
+                      </span>
                     </div>
                     <span className="text-xs text-gray-400">
                       {formatDateTime(log.createdAt)}

@@ -73,12 +73,22 @@ export interface Template {
 
 // Log types
 export type EventType =
-  | 'template_published'
-  | 'email_sent'
   | 'realtor_invited'
   | 'realtor_activated'
   | 'agent_created'
-  | 'branding_updated'
+  | 'agent_activated'
+  | 'agent_deactivated'
+  | 'agent_reactivated'
+  | 'realtor_deactivated_by_agent'
+  | 'realtor_deactivated_by_admin'
+  | 'realtor_reactivated_by_agent'
+  | 'realtor_reactivated_by_admin'
+  | 'template_created'
+  | 'template_published'
+  | 'template_updated'
+  | 'template_deleted'
+  | 'template_notification_sent_to_agents'
+  | 'template_notification_sent_to_realtors'
 
 export interface UsageLog {
   id: number
@@ -86,8 +96,25 @@ export interface UsageLog {
   agentId: number | null
   realtorId: number | null
   templateId: number | null
-  details: string
+  details: Record<string, any> | null
   createdAt: string
+  // Joined data for display
+  agent?: {
+    id: number
+    firstName: string
+    lastName: string
+    email: string
+  } | null
+  realtor?: {
+    id: number
+    firstName: string
+    lastName: string
+    email: string
+  } | null
+  template?: {
+    id: number
+    title: string
+  } | null
 }
 
 // Error log types

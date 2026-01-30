@@ -14,7 +14,9 @@
       "Bash(node:*)",
       "Bash(npx xanoscript:*)",
       "Bash(npx xano push:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(find:*)",
+      "Bash(npx xano-mcp:*)"
     ]
   }
 }

@@ -541,7 +541,7 @@ class XanoService {
     return this.request<{
       success: boolean
       templateId: number
-      emailsSent: number
+      agentEmailsSent: number
     }>('/admin_send_template_notification', {
       method: 'POST',
       body: JSON.stringify({
@@ -549,6 +549,26 @@ class XanoService {
         agent_ids: agentIds && agentIds.length > 0 ? agentIds : null
       }),
     })
+  }
+
+  // Admin: Send template notification to realtors (appears from their agent)
+  async sendTemplateNotificationToRealtors(templateId: number, realtorIds?: number[]) {
+    return this.request<{
+      success: boolean
+      templateId: number
+      realtorEmailsSent: number
+    }>('/admin_send_template_notification_to_realtors', {
+      method: 'POST',
+      body: JSON.stringify({
+        template_id: templateId,
+        realtor_ids: realtorIds && realtorIds.length > 0 ? realtorIds : null
+      }),
+    })
+  }
+
+  // Admin: Get all realtors (for notification selection)
+  async getAllRealtors() {
+    return this.request<any[]>('/admin_get_all_realtors')
   }
 
   async publishTemplate(id: number) {
