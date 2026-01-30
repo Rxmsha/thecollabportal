@@ -17,8 +17,13 @@ import {
 import { Search, FileText, ExternalLink, Video, Image, Mail, Loader2, Users, Check, X } from 'lucide-react'
 import xano from '@/services/xano'
 import { Template, Realtor } from '@/types'
+import { markTemplatesVisited } from '@/lib/onboarding'
 
 export default function AgentTemplatesPage() {
+  // Mark templates as visited for onboarding progress
+  useEffect(() => {
+    markTemplatesVisited()
+  }, [])
   const [templates, setTemplates] = useState<Template[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')

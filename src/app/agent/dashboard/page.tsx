@@ -15,13 +15,25 @@ import {
   Palette,
   Wrench,
   Calculator,
-  ArrowRight,
+  Check,
 } from 'lucide-react'
 import xano from '@/services/xano'
+import { getOnboardingProgress, type OnboardingProgress } from '@/lib/onboarding'
 
 export default function AgentDashboardPage() {
   const { user } = useAuth()
   const [showFirstLoginModal, setShowFirstLoginModal] = useState(false)
+  const [onboarding, setOnboarding] = useState<OnboardingProgress>({
+    visitedBranding: false,
+    visitedInvite: false,
+    visitedTemplates: false,
+    completed: false,
+  })
+
+  // Load onboarding progress on mount
+  useEffect(() => {
+    setOnboarding(getOnboardingProgress())
+  }, [])
 
   // Show first login modal if user hasn't completed first login
   useEffect(() => {
@@ -32,9 +44,12 @@ export default function AgentDashboardPage() {
   const [stats, setStats] = useState({
     totalRealtors: 0,
     activeRealtors: 0,
+    pendingRealtors: 0,
     seatsUsed: 0,
     seatLimit: 10,
-    templatesAccessed: 0,
+    seatsRemaining: 10,
+    occupiedSeats: 0,
+    canInvite: true,
   })
   const [isLoading, setIsLoading] = useState(true)
 
@@ -125,12 +140,12 @@ export default function AgentDashboardPage() {
           iconBgColor="bg-green-100"
         />
         <StatsCard
-          title="Templates Accessed"
-          value={stats.templatesAccessed}
-          subtitle="this month"
-          icon={FileText}
-          iconColor="text-purple-600"
-          iconBgColor="bg-purple-100"
+          title="Pending Invites"
+          value={stats.pendingRealtors}
+          subtitle="awaiting activation"
+          icon={UserPlus}
+          iconColor="text-amber-600"
+          iconBgColor="bg-amber-100"
         />
         <Card>
           <CardContent className="p-6">
@@ -184,94 +199,83 @@ export default function AgentDashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Recent Activity & Tips */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Getting Started</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-                <div className="h-6 w-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium">
-                  1
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-900">
-                    Customize your branding
-                  </h4>
-                  <p className="text-sm text-gray-500">
-                    Add your logo and brand colors to personalize your portal
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                <div className="h-6 w-6 rounded-full bg-gray-300 text-white flex items-center justify-center text-sm font-medium">
-                  2
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-900">
-                    Invite your realtors
-                  </h4>
-                  <p className="text-sm text-gray-500">
-                    Send invitations to realtors you want to collaborate with
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                <div className="h-6 w-6 rounded-full bg-gray-300 text-white flex items-center justify-center text-sm font-medium">
-                  3
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-900">
-                    Explore templates & tools
-                  </h4>
-                  <p className="text-sm text-gray-500">
-                    Browse our library of marketing templates and AI tools
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Your Realtors</CardTitle>
-            <Link href="/agent/realtors">
-              <Button variant="ghost" size="sm">
-                View all
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {stats.totalRealtors > 0 ? (
-              <div className="text-center py-4">
-                <p className="text-gray-500">
-                  You have {stats.totalRealtors} realtors in your network
-                </p>
-                <Link href="/agent/realtors">
-                  <Button variant="outline" className="mt-4">
-                    Manage Realtors
-                  </Button>
+      {/* Getting Started - Only show if not completed */}
+      {!onboarding.completed && (
+        <div className="max-w-xl">
+          <Card>
+            <CardHeader>
+              <CardTitle>Getting Started</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Link href="/agent/branding">
+                  <div className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                    onboarding.visitedBranding ? 'bg-green-50' : 'bg-gray-50 hover:bg-gray-100'
+                  }`}>
+                    <div className={`h-6 w-6 rounded-full flex items-center justify-center text-sm font-medium ${
+                      onboarding.visitedBranding
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-300 text-white'
+                    }`}>
+                      {onboarding.visitedBranding ? <Check className="h-4 w-4" /> : '1'}
+                    </div>
+                    <div>
+                      <h4 className={`font-medium ${onboarding.visitedBranding ? 'text-green-700' : 'text-gray-900'}`}>
+                        Customize your branding
+                      </h4>
+                      <p className={`text-sm ${onboarding.visitedBranding ? 'text-green-600' : 'text-gray-500'}`}>
+                        Add your logo and brand colors to personalize your portal
+                      </p>
+                    </div>
+                  </div>
                 </Link>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 mb-4">No realtors yet</p>
                 <Link href="/agent/invite">
-                  <Button>
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Invite Your First Realtor
-                  </Button>
+                  <div className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                    onboarding.visitedInvite ? 'bg-green-50' : 'bg-gray-50 hover:bg-gray-100'
+                  }`}>
+                    <div className={`h-6 w-6 rounded-full flex items-center justify-center text-sm font-medium ${
+                      onboarding.visitedInvite
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-300 text-white'
+                    }`}>
+                      {onboarding.visitedInvite ? <Check className="h-4 w-4" /> : '2'}
+                    </div>
+                    <div>
+                      <h4 className={`font-medium ${onboarding.visitedInvite ? 'text-green-700' : 'text-gray-900'}`}>
+                        Invite your realtors
+                      </h4>
+                      <p className={`text-sm ${onboarding.visitedInvite ? 'text-green-600' : 'text-gray-500'}`}>
+                        Send invitations to realtors you want to collaborate with
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+                <Link href="/agent/templates">
+                  <div className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                    onboarding.visitedTemplates ? 'bg-green-50' : 'bg-gray-50 hover:bg-gray-100'
+                  }`}>
+                    <div className={`h-6 w-6 rounded-full flex items-center justify-center text-sm font-medium ${
+                      onboarding.visitedTemplates
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-300 text-white'
+                    }`}>
+                      {onboarding.visitedTemplates ? <Check className="h-4 w-4" /> : '3'}
+                    </div>
+                    <div>
+                      <h4 className={`font-medium ${onboarding.visitedTemplates ? 'text-green-700' : 'text-gray-900'}`}>
+                        Explore templates & tools
+                      </h4>
+                      <p className={`text-sm ${onboarding.visitedTemplates ? 'text-green-600' : 'text-gray-500'}`}>
+                        Browse our library of marketing templates and AI tools
+                      </p>
+                    </div>
+                  </div>
                 </Link>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }

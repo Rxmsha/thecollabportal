@@ -10,8 +10,13 @@ import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
 import { Upload, Link as LinkIcon, Save, Image as ImageIcon, Phone, AlertCircle } from 'lucide-react'
 import xano from '@/services/xano'
+import { markBrandingVisited } from '@/lib/onboarding'
 
 export default function AgentBrandingPage() {
+  // Mark branding as visited for onboarding progress
+  useEffect(() => {
+    markBrandingVisited()
+  }, [])
   const { user } = useAuth()
   const [agentId, setAgentId] = useState<number | null>(null)
   const [agentName, setAgentName] = useState({ firstName: '', lastName: '' })

@@ -1,19 +1,26 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { UserPlus, Mail, AlertCircle } from 'lucide-react'
+import { UserPlus, Mail, AlertCircle, Users } from 'lucide-react'
 import xano from '@/services/xano'
 import RealtorCredentialsModal from '@/components/RealtorCredentialsModal'
+import { markInviteVisited } from '@/lib/onboarding'
 
 interface RealtorCredentials {
   email: string
   firstName: string
   lastName: string
   tempPassword: string
+}
+
+interface SeatStats {
+  seatLimit: number
+  occupiedSeats: number
+  canInvite: boolean
 }
 
 export default function AgentInvitePage() {
@@ -28,6 +35,34 @@ export default function AgentInvitePage() {
   const [error, setError] = useState('')
   const [showCredentialsModal, setShowCredentialsModal] = useState(false)
   const [credentials, setCredentials] = useState<RealtorCredentials | null>(null)
+  const [seatStats, setSeatStats] = useState<SeatStats | null>(null)
+  const [isLoadingStats, setIsLoadingStats] = useState(true)
+
+  // Mark invite as visited for onboarding progress
+  useEffect(() => {
+    markInviteVisited()
+  }, [])
+
+  useEffect(() => {
+    loadSeatStats()
+  }, [])
+
+  const loadSeatStats = async () => {
+    try {
+      const { data } = await xano.getAgentStats()
+      if (data) {
+        setSeatStats({
+          seatLimit: data.seatLimit,
+          occupiedSeats: data.occupiedSeats,
+          canInvite: data.canInvite,
+        })
+      }
+    } catch (err) {
+      console.error('Failed to load seat stats:', err)
+    } finally {
+      setIsLoadingStats(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -62,6 +97,8 @@ export default function AgentInvitePage() {
           brokerage: '',
           phone: '',
         })
+        // Reload seat stats
+        loadSeatStats()
       }
     } catch (err) {
       setError('Failed to send invitation. Please try again.')
@@ -91,6 +128,27 @@ export default function AgentInvitePage() {
       </div>
 
       <div className="max-w-2xl">
+        {/* Seat Usage Banner */}
+        {seatStats && (
+          <div className={`mb-4 p-4 rounded-lg border flex items-center gap-3 ${
+            seatStats.canInvite
+              ? 'bg-blue-50 border-blue-200'
+              : 'bg-amber-50 border-amber-200'
+          }`}>
+            <Users className={`h-5 w-5 ${seatStats.canInvite ? 'text-blue-600' : 'text-amber-600'}`} />
+            <div>
+              <p className={`font-medium ${seatStats.canInvite ? 'text-blue-800' : 'text-amber-800'}`}>
+                {seatStats.occupiedSeats} / {seatStats.seatLimit} seats used
+              </p>
+              <p className={`text-sm ${seatStats.canInvite ? 'text-blue-600' : 'text-amber-600'}`}>
+                {seatStats.canInvite
+                  ? `${seatStats.seatLimit - seatStats.occupiedSeats} seats remaining`
+                  : 'Seat limit reached. Contact support to upgrade your plan.'}
+              </p>
+            </div>
+          </div>
+        )}
+
         <Card>
             <CardHeader>
               <CardTitle>Realtor Details</CardTitle>
@@ -100,6 +158,13 @@ export default function AgentInvitePage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
+                {!seatStats?.canInvite && !isLoadingStats && (
+                  <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
+                    <AlertCircle className="h-4 w-4" />
+                    You have reached your seat limit. Please upgrade your plan to invite more realtors.
+                  </div>
+                )}
+
                 {error && (
                   <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                     <AlertCircle className="h-4 w-4" />
@@ -167,7 +232,11 @@ export default function AgentInvitePage() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isSubmitting || isLoadingStats || !seatStats?.canInvite}
+                >
                   <UserPlus className="h-4 w-4 mr-2" />
                   {isSubmitting ? 'Sending Invitation...' : 'Send Invitation'}
                 </Button>

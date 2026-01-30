@@ -645,10 +645,13 @@ class XanoService {
     return this.request<{
       totalRealtors: number
       activeRealtors: number
+      pendingRealtors: number
       seatsUsed: number
       seatLimit: number
-      templatesAccessed: number
-    }>('/stats/agent')
+      seatsRemaining: number
+      occupiedSeats: number
+      canInvite: boolean
+    }>('/my_agent_stats')
   }
 
   // Stripe/Subscription endpoints (public, no auth required)
