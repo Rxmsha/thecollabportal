@@ -172,6 +172,14 @@ class XanoService {
     })
   }
 
+  // Admin: Update agent seat limit
+  async updateAgentSeatLimit(agentId: number, seatLimit: number) {
+    return this.request<{ success: boolean; agentId: number; seatLimit: number }>('/admin_update_agent_seat_limit', {
+      method: 'POST',
+      body: JSON.stringify({ agent_id: agentId, seat_limit: seatLimit }),
+    })
+  }
+
   // Admin: Create a new agent (generates temp password, creates user + agent records)
   async createAgent(data: {
     email: string
@@ -617,6 +625,24 @@ class XanoService {
     })
   }
 
+  // Log an error (fire and forget - doesn't throw)
+  async logError(source: string, scenarioName: string, message: string, severity: 'error' | 'warning' | 'critical' = 'error') {
+    try {
+      await this.request<any>('/log-error', {
+        method: 'POST',
+        body: JSON.stringify({
+          source,
+          scenario_name: scenarioName,
+          message,
+          severity,
+        }),
+      })
+    } catch (e) {
+      // Silently fail - we don't want error logging to cause more errors
+      console.error('Failed to log error:', e)
+    }
+  }
+
   // File upload
   async uploadFile(file: File) {
     const formData = new FormData()
@@ -672,6 +698,13 @@ class XanoService {
       occupiedSeats: number
       canInvite: boolean
     }>('/my_agent_stats')
+  }
+
+  // Admin: Recalculate seats_used for all agents
+  async recalculateAllSeats() {
+    return this.request<{ success: boolean; agentsUpdated: number; totalAgents: number }>('/admin_recalculate_seats', {
+      method: 'POST',
+    })
   }
 
   // Stripe/Subscription endpoints (public, no auth required)
@@ -839,12 +872,12 @@ class XanoService {
     })
   }
 
-  // Admin: Delete a realtor
+  // Admin: Delete a realtor (also deletes user account and recalculates agent's seats_used)
   async adminDeleteRealtor(realtorId: number) {
     return this.request<{
       success: boolean
-      deletedRealtorId: number
-      message: string
+      agentId: number
+      seatsUsed: number
     }>('/admin_delete_realtor', {
       method: 'POST',
       body: JSON.stringify({ realtor_id: realtorId }),
@@ -878,6 +911,33 @@ class XanoService {
         template_id: templateId,
         realtor_ids: realtorIds && realtorIds.length > 0 ? realtorIds : null
       }),
+    })
+  }
+
+  // Agent: Resend invite to an invited realtor (generates new password and sends onboarding email)
+  async resendRealtorInvite(realtorId: number) {
+    return this.request<{
+      success: boolean
+      realtorId: number
+      email: string
+      message: string
+    }>('/resend_realtor_invite', {
+      method: 'POST',
+      body: JSON.stringify({ realtor_id: realtorId }),
+    })
+  }
+
+  // Admin: Resend invite to an invited realtor (email appears from linked agent)
+  async adminResendRealtorInvite(realtorId: number) {
+    return this.request<{
+      success: boolean
+      realtorId: number
+      email: string
+      agentName: string
+      message: string
+    }>('/admin_resend_realtor_invite', {
+      method: 'POST',
+      body: JSON.stringify({ realtor_id: realtorId }),
     })
   }
 }

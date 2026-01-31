@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Search, Building2, Mail, Phone, Calendar, Users, Plus, KeyRound, Copy, CheckCircle2, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Search, Building2, Mail, Phone, Calendar, Users, Plus, KeyRound, Copy, CheckCircle2, Eye, EyeOff, Loader2, Minus, RefreshCw } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Label } from '@/components/ui/label'
 import xano from '@/services/xano'
@@ -80,6 +80,13 @@ export default function AdminAgentsPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [copiedPassword, setCopiedPassword] = useState(false)
 
+  // Seat limit state
+  const [editingSeatLimit, setEditingSeatLimit] = useState<number | null>(null)
+  const [isUpdatingSeatLimit, setIsUpdatingSeatLimit] = useState(false)
+
+  // Recalculate seats state
+  const [isRecalculating, setIsRecalculating] = useState(false)
+
   useEffect(() => {
     loadAgents()
   }, [statusFilter])
@@ -97,6 +104,21 @@ export default function AdminAgentsPage() {
       console.error('Failed to load agents:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleRecalculateSeats = async () => {
+    setIsRecalculating(true)
+    try {
+      const { data, error } = await xano.recalculateAllSeats()
+      if (data && !error) {
+        // Reload agents to show updated seats
+        loadAgents()
+      }
+    } catch (error) {
+      console.error('Failed to recalculate seats:', error)
+    } finally {
+      setIsRecalculating(false)
     }
   }
 
@@ -230,6 +252,27 @@ export default function AdminAgentsPage() {
     setSelectedAgentId(null)
     setAgentDetails(null)
     setDetailsError(null)
+    setEditingSeatLimit(null)
+  }
+
+  const handleUpdateSeatLimit = async (newLimit: number) => {
+    if (!agentDetails || newLimit < 1) return
+
+    setIsUpdatingSeatLimit(true)
+    try {
+      const { data, error } = await xano.updateAgentSeatLimit(agentDetails.id, newLimit)
+      if (data && !error) {
+        // Update local state
+        setAgentDetails({ ...agentDetails, seatLimit: newLimit })
+        setEditingSeatLimit(newLimit)
+        // Also update the agents list
+        setAgents(agents.map(a => a.id === agentDetails.id ? { ...a, seatLimit: newLimit } : a))
+      }
+    } catch (error) {
+      console.error('Failed to update seat limit:', error)
+    } finally {
+      setIsUpdatingSeatLimit(false)
+    }
   }
 
   const closeCredentialsModal = () => {
@@ -296,10 +339,20 @@ export default function AdminAgentsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Agents</h1>
           <p className="text-gray-500 mt-1">Manage all mortgage agents on the platform</p>
         </div>
-        <Button onClick={() => setShowCreateModal(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Agent
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleRecalculateSeats} disabled={isRecalculating}>
+            {isRecalculating ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            Recalculate Seats
+          </Button>
+          <Button onClick={() => setShowCreateModal(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Agent
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -441,6 +494,38 @@ export default function AdminAgentsPage() {
                   <Users className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-600">{agentDetails.seatsUsed} of {agentDetails.seatLimit} seats used</span>
                 </div>
+              </div>
+
+              {/* Seat Limit Control */}
+              <div>
+                <Label className="text-xs text-gray-500 uppercase tracking-wide">Seat Limit</Label>
+                <div className="mt-2 flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleUpdateSeatLimit(agentDetails.seatLimit - 1)}
+                    disabled={isUpdatingSeatLimit || agentDetails.seatLimit <= 1 || agentDetails.seatLimit <= agentDetails.seatsUsed}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="text-lg font-semibold w-12 text-center">{agentDetails.seatLimit}</span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleUpdateSeatLimit(agentDetails.seatLimit + 1)}
+                    disabled={isUpdatingSeatLimit}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                  {isUpdatingSeatLimit && <Loader2 className="h-4 w-4 animate-spin text-gray-400" />}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {agentDetails.seatsUsed > 0 && agentDetails.seatLimit <= agentDetails.seatsUsed
+                    ? "Cannot reduce below current usage"
+                    : "Adjust the maximum number of realtors this agent can invite"}
+                </p>
               </div>
 
               {/* Linked Realtors */}

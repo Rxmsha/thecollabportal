@@ -22,10 +22,14 @@ import {
   UserCheck,
   UserX,
   Loader2,
+  Trash2,
+  AlertTriangle,
+  Send,
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import xano from '@/services/xano'
 import { RealtorStatus } from '@/types'
+import { toast } from '@/hooks/use-toast'
 
 interface RealtorDetails {
   id: number
@@ -62,6 +66,7 @@ interface RealtorDetailModalProps {
     tempPassword: string
     agentName: string
   }) => void
+  onDelete?: (realtorId: number) => void
 }
 
 export default function RealtorDetailModal({
@@ -70,11 +75,15 @@ export default function RealtorDetailModal({
   realtorId,
   onStatusChange,
   onPasswordReset,
+  onDelete,
 }: RealtorDetailModalProps) {
   const [details, setDetails] = useState<RealtorDetails | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isResettingPassword, setIsResettingPassword] = useState(false)
   const [isChangingStatus, setIsChangingStatus] = useState(false)
+  const [isResendingInvite, setIsResendingInvite] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -83,6 +92,7 @@ export default function RealtorDetailModal({
     } else {
       setDetails(null)
       setError(null)
+      setShowDeleteConfirm(false)
     }
   }, [isOpen, realtorId])
 
@@ -171,6 +181,50 @@ export default function RealtorDetailModal({
       setError('Failed to activate realtor')
     } finally {
       setIsChangingStatus(false)
+    }
+  }
+
+  const handleResendInvite = async () => {
+    if (!realtorId) return
+    setIsResendingInvite(true)
+    setError(null)
+    try {
+      const { data, error } = await xano.adminResendRealtorInvite(realtorId)
+      if (error) {
+        setError(error)
+      } else if (data) {
+        // Update the invite_sent_at timestamp in local state
+        setDetails((prev) => (prev ? { ...prev, inviteSentAt: new Date().toISOString() } : null))
+        toast({
+          title: 'Invite sent',
+          description: `Onboarding email has been resent to ${data.email} (from ${data.agentName})`,
+          variant: 'success',
+        })
+      }
+    } catch (err) {
+      setError('Failed to resend invite')
+    } finally {
+      setIsResendingInvite(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!realtorId) return
+    setIsDeleting(true)
+    try {
+      const { data, error } = await xano.adminDeleteRealtor(realtorId)
+      if (error) {
+        setError(error)
+        setShowDeleteConfirm(false)
+      } else if (data) {
+        onDelete?.(realtorId)
+        onClose()
+      }
+    } catch (err) {
+      setError('Failed to delete realtor')
+      setShowDeleteConfirm(false)
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -315,7 +369,22 @@ export default function RealtorDetailModal({
                   </Button>
                 )}
 
-                {details.status === 'active' ? (
+                {details.status === 'invited' && (
+                  <Button
+                    variant="outline"
+                    onClick={handleResendInvite}
+                    disabled={isResendingInvite}
+                  >
+                    {isResendingInvite ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4 mr-2" />
+                    )}
+                    Resend Invite
+                  </Button>
+                )}
+
+                {(details.status === 'active' || details.status === 'invited') ? (
                   <Button
                     variant="outline"
                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -351,8 +420,62 @@ export default function RealtorDetailModal({
                   ? 'Password reset email will be sent from the linked agent.'
                   : details.status === 'inactive'
                   ? 'Activating will generate a new password and send an email from the linked agent.'
-                  : 'This realtor has not yet accepted their invitation.'}
+                  : 'Resend invite will generate a new password and resend the onboarding email from the linked agent.'}
               </p>
+            </div>
+
+            {/* Delete Section */}
+            <Separator />
+            <div className="space-y-3">
+              <Label className="text-xs text-gray-500 uppercase tracking-wide">
+                Danger Zone
+              </Label>
+
+              {showDeleteConfirm ? (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-red-800">Are you sure you want to delete this realtor?</p>
+                      <p className="text-sm text-red-600 mt-1">
+                        This will permanently delete {details.firstName} {details.lastName}&apos;s account and all their data. This action cannot be undone.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowDeleteConfirm(false)}
+                      disabled={isDeleting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4 mr-2" />
+                      )}
+                      Delete Permanently
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Realtor
+                </Button>
+              )}
             </div>
           </div>
         ) : null}

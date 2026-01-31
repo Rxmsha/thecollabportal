@@ -212,14 +212,26 @@ export default function TemplateDetailPage() {
         // If publishing, send notifications to both agents and realtors
         if (newStatus === 'published') {
           // Send to agents (fire and forget - don't block UI)
-          xano.sendTemplateNotification(template.id).then(({ data }) => {
-            console.log('Agent notifications sent:', data?.agentEmailsSent || 0)
-          }).catch(err => console.error('Agent notification error:', err))
+          xano.sendTemplateNotification(template.id).then(({ data, error }) => {
+            if (error) {
+              xano.logError('template_publish', 'agent_notification_failed', `Failed to notify agents for template ${template.id}: ${error}`)
+            } else {
+              console.log('Agent notifications sent:', data?.agentEmailsSent || 0)
+            }
+          }).catch(err => {
+            xano.logError('template_publish', 'agent_notification_failed', `Exception notifying agents for template ${template.id}: ${err.message}`)
+          })
 
           // Send to realtors (fire and forget - don't block UI)
-          xano.sendTemplateNotificationToRealtors(template.id).then(({ data }) => {
-            console.log('Realtor notifications sent:', data?.realtorEmailsSent || 0)
-          }).catch(err => console.error('Realtor notification error:', err))
+          xano.sendTemplateNotificationToRealtors(template.id).then(({ data, error }) => {
+            if (error) {
+              xano.logError('template_publish', 'realtor_notification_failed', `Failed to notify realtors for template ${template.id}: ${error}`)
+            } else {
+              console.log('Realtor notifications sent:', data?.realtorEmailsSent || 0)
+            }
+          }).catch(err => {
+            xano.logError('template_publish', 'realtor_notification_failed', `Exception notifying realtors for template ${template.id}: ${err.message}`)
+          })
         }
       }
     } catch (error) {
@@ -295,9 +307,11 @@ export default function TemplateDetailPage() {
         })
       } else {
         setNotificationResult({ success: false, agentCount: 0 })
+        xano.logError('manual_notification', 'agent_notification_failed', `Failed to manually notify agents for template ${template.id}: ${error}`)
       }
-    } catch (error) {
+    } catch (error: any) {
       setNotificationResult({ success: false, agentCount: 0 })
+      xano.logError('manual_notification', 'agent_notification_failed', `Exception manually notifying agents for template ${template.id}: ${error?.message}`)
     } finally {
       setIsSendingNotification(false)
     }
@@ -355,9 +369,11 @@ export default function TemplateDetailPage() {
         })
       } else {
         setRealtorNotificationResult({ success: false, count: 0 })
+        xano.logError('manual_notification', 'realtor_notification_failed', `Failed to manually notify realtors for template ${template.id}: ${error}`)
       }
-    } catch (error) {
+    } catch (error: any) {
       setRealtorNotificationResult({ success: false, count: 0 })
+      xano.logError('manual_notification', 'realtor_notification_failed', `Exception manually notifying realtors for template ${template.id}: ${error?.message}`)
     } finally {
       setIsSendingRealtorNotification(false)
     }

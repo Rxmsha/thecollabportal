@@ -110,6 +110,10 @@ export default function AdminRealtorsPage() {
     setShowCredentialsModal(true)
   }
 
+  const handleDelete = (realtorId: number) => {
+    setRealtors((prev) => prev.filter((r) => r.id !== realtorId))
+  }
+
   return (
     <React.Fragment>
       <RealtorCredentialsModal
@@ -132,6 +136,7 @@ export default function AdminRealtorsPage() {
         realtorId={selectedRealtorId}
         onStatusChange={handleStatusChange}
         onPasswordReset={handlePasswordReset}
+        onDelete={handleDelete}
       />
     <div className="space-y-6">
       <div>

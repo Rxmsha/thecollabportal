@@ -21,10 +21,12 @@ import {
   UserCheck,
   UserX,
   Loader2,
+  Send,
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import xano from '@/services/xano'
 import { RealtorStatus } from '@/types'
+import { toast } from '@/hooks/use-toast'
 
 interface RealtorDetails {
   id: number
@@ -65,6 +67,7 @@ export default function AgentRealtorDetailModal({
   const [isLoading, setIsLoading] = useState(false)
   const [isResettingPassword, setIsResettingPassword] = useState(false)
   const [isChangingStatus, setIsChangingStatus] = useState(false)
+  const [isResendingInvite, setIsResendingInvite] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -159,6 +162,30 @@ export default function AgentRealtorDetailModal({
       setError('Failed to activate realtor')
     } finally {
       setIsChangingStatus(false)
+    }
+  }
+
+  const handleResendInvite = async () => {
+    if (!realtorId) return
+    setIsResendingInvite(true)
+    setError(null)
+    try {
+      const { data, error } = await xano.resendRealtorInvite(realtorId)
+      if (error) {
+        setError(error)
+      } else if (data) {
+        // Update the invite_sent_at timestamp in local state
+        setDetails((prev) => (prev ? { ...prev, inviteSentAt: new Date().toISOString() } : null))
+        toast({
+          title: 'Invite sent',
+          description: `Onboarding email has been resent to ${data.email}`,
+          variant: 'success',
+        })
+      }
+    } catch (err) {
+      setError('Failed to resend invite')
+    } finally {
+      setIsResendingInvite(false)
     }
   }
 
@@ -272,7 +299,22 @@ export default function AgentRealtorDetailModal({
                   </Button>
                 )}
 
-                {details.status === 'active' ? (
+                {details.status === 'invited' && (
+                  <Button
+                    variant="outline"
+                    onClick={handleResendInvite}
+                    disabled={isResendingInvite}
+                  >
+                    {isResendingInvite ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4 mr-2" />
+                    )}
+                    Resend Invite
+                  </Button>
+                )}
+
+                {(details.status === 'active' || details.status === 'invited') ? (
                   <Button
                     variant="outline"
                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -308,7 +350,7 @@ export default function AgentRealtorDetailModal({
                   ? 'Resetting password will generate a new temporary password and send an email to the realtor.'
                   : details.status === 'inactive'
                   ? 'Activating will generate a new password and send a welcome email.'
-                  : 'This realtor has not yet accepted their invitation.'}
+                  : 'Resend invite will generate a new password and resend the onboarding email.'}
               </p>
             </div>
           </div>

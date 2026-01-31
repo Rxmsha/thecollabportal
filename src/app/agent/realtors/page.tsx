@@ -20,6 +20,7 @@ import { formatDate } from '@/lib/utils'
 import { Realtor, RealtorStatus } from '@/types'
 import RealtorCredentialsModal from '@/components/RealtorCredentialsModal'
 import AgentRealtorDetailModal from '@/components/AgentRealtorDetailModal'
+import { toast } from '@/hooks/use-toast'
 
 interface RealtorCredentials {
   email: string
@@ -85,8 +86,36 @@ export default function AgentRealtorsPage() {
   }
 
   const handleResendInvite = async (realtorId: number) => {
-    // This would trigger a Zapier workflow or SendGrid API
-    console.log('Resending invite to realtor:', realtorId)
+    try {
+      const { data, error } = await xano.resendRealtorInvite(realtorId)
+      if (error) {
+        console.error('Failed to resend invite:', error)
+        toast({
+          title: 'Failed to resend invite',
+          description: error,
+          variant: 'destructive',
+        })
+      } else if (data) {
+        // Update invite_sent_at in local state
+        setRealtors((prev) =>
+          prev.map((r) =>
+            r.id === realtorId ? { ...r, inviteSentAt: new Date().toISOString() } : r
+          )
+        )
+        toast({
+          title: 'Invite sent',
+          description: `Onboarding email has been resent to ${data.email}`,
+          variant: 'success',
+        })
+      }
+    } catch (error) {
+      console.error('Failed to resend invite:', error)
+      toast({
+        title: 'Failed to resend invite',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      })
+    }
   }
 
   const handleOpenDetails = (realtorId: number) => {
