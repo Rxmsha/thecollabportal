@@ -16,13 +16,24 @@ import {
   Wrench,
   Calculator,
   Check,
+  ExternalLink,
 } from 'lucide-react'
 import xano from '@/services/xano'
 import { getOnboardingProgress, type OnboardingProgress } from '@/lib/onboarding'
 
+interface Resource {
+  id: number
+  title: string
+  description: string
+  buttonText: string
+  resourceUrl: string
+  resourceType: 'link' | 'file'
+}
+
 export default function AgentDashboardPage() {
   const { user } = useAuth()
   const [showFirstLoginModal, setShowFirstLoginModal] = useState(false)
+  const [resources, setResources] = useState<Resource[]>([])
   const [onboarding, setOnboarding] = useState<OnboardingProgress>({
     visitedBranding: false,
     visitedInvite: false,
@@ -61,9 +72,21 @@ export default function AgentDashboardPage() {
 
   const loadDashboardData = async () => {
     try {
-      const { data, error } = await xano.getAgentStats()
-      if (data) {
-        setStats(data)
+      const [statsResponse, resourcesResponse] = await Promise.all([
+        xano.getAgentStats(),
+        xano.getResources(),
+      ])
+      if (statsResponse.data) {
+        setStats(statsResponse.data)
+      }
+      if (statsResponse.error) {
+        console.error('Failed to load stats:', statsResponse.error)
+      }
+      if (resourcesResponse.data) {
+        setResources(resourcesResponse.data)
+      }
+      if (resourcesResponse.error) {
+        console.error('Failed to load resources:', resourcesResponse.error)
       }
     } catch (error) {
       console.error('Failed to load dashboard data:', error)
@@ -198,6 +221,44 @@ export default function AgentDashboardPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Resources for Your Clients */}
+      {resources.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Resources for Your Clients</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {resources.map((resource, index) => (
+                <div
+                  key={resource.id}
+                  className={`p-4 rounded-lg ${
+                    index % 2 === 0 ? 'bg-blue-50' : 'bg-green-50'
+                  }`}
+                >
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    {resource.title}
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    {resource.description}
+                  </p>
+                  <Button size="sm" variant="outline" asChild>
+                    <a
+                      href={resource.resourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {resource.buttonText}
+                      <ExternalLink className="h-3 w-3 ml-2" />
+                    </a>
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Getting Started - Only show if not completed */}
       {!onboarding.completed && (

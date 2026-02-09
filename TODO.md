@@ -1,6 +1,60 @@
 # TheCollabPortal - TODO List
 
-This document tracks all integration tasks for TheCollabPortal (formerly GetRealtorConnect).
+This document tracks all integration tasks for TheCollabPortal (formerly GetRealtorConnect / Preferred Partner Tools).
+
+---
+
+## Kelly's Vision Summary
+
+**What It Is:** A co-branded platform where mortgage agents invite Realtor partners to access tools, AI assistants, and marketing resources. Each mortgage agent has their own sub-portal. The goal: Help mortgage agents look like heroes to their Realtors by giving them done-for-you marketing leverage.
+
+**Reference:** In April 2025 it was working 70% - [Loom Video](https://www.loom.com/share/d949cfc9f61940479ea6b00345a55129)
+
+**Key URLs:**
+- Sales Page: getrealtorconnect.com
+- Portal: thecollabportal.com
+- Sample Realtor View: https://kellys-collab-portal.lovable.app/
+- Sample Agent View: https://kellys-collab-portal.lovable.app/mortgage-agent-dashboard
+
+**Core Features:**
+- [ ] Each agent has own sub-portal (`kellyhaick.thecollabportal.com` or `/kellyhaick`)
+- [ ] Realtors log in through agent's portal → everything co-branded (mortgage agent + realtor)
+- [x] AI assistants and content generators
+- [x] Marketing resources (templates)
+- [ ] Links to recommended tools with affiliate revenue opportunities
+
+---
+
+## Implementation Status vs Kelly's Vision
+
+### What's Working
+- [x] Admin can create agents manually
+- [x] Agents can log in and set up branding (logo, color, bio, links)
+- [x] Agents can invite realtors (with seat limits)
+- [x] Realtors receive invite email, log in, change password, become active
+- [x] Seat tracking (active + invited count toward seats_used)
+- [x] Agent/Admin can deactivate, reactivate, delete realtors
+- [x] Resend invite functionality
+- [x] Template library with categories
+- [x] Template notification emails to realtors
+- [x] AI tools for agents and realtors
+- [x] Calculators (Bendigi embeds)
+- [x] Toast notifications
+
+### Conflicts / Not Yet Implemented
+| Feature | Kelly's Vision | Current State |
+|---------|---------------|---------------|
+| Agent Subdomains | `kellyhaick.thecollabportal.com` or `/kellyhaick` | Not implemented - all users share same URL |
+| Multiple Logos/Headshots | Up to 3 logos + 3 headshots with default selection | Single logo only |
+| Seat Packs | Base 50 + purchasable packs (50 each) | Fixed seat_limit per agent |
+| Affiliate Toolkit | `/go/:slug` redirects with UTM + click tracking | Not implemented |
+| Usage Logging | Full generation logging + 30-day summary | Partial - usage_logs table exists but not fully used |
+| Stripe Integration | Full subscription flow with webhooks | Not implemented (admin creates agents manually) |
+| Public Pages | Terms, Privacy, Help/FAQ, Cookies | Not implemented |
+| AI Tool Names | Specific branding (Showcase, Spotlight, etc.) | Generic tool names |
+| "Start Here" Tour | Mini onboarding tour for realtors | Not implemented |
+| WeWeb | Kelly's old plan used WeWeb | Using Next.js (custom code) - KEEP THIS |
+| Helcim | Old payment processor | Changed to Stripe |
 
 ---
 
@@ -18,219 +72,170 @@ This document tracks all integration tasks for TheCollabPortal (formerly GetReal
 
 ---
 
-## 1. Payment Flow (Stripe)
+## 1. Agent Subdomains / Custom URLs
+
+**Kelly's Vision:** Each agent has `kellyhaick.thecollabportal.com` or `thecollabportal.com/kellyhaick`
+
+| Status | Task |
+|--------|------|
+| [ ] | Add `slug` field to agents table (unique URL identifier) |
+| [ ] | Create public agent landing page at `/[slug]` |
+| [ ] | Realtor login redirects to their agent's branded portal |
+| [ ] | Agent branding (logo, color) applied to their portal |
+| [ ] | Optional: Subdomain routing (kellyhaick.thecollabportal.com) |
+
+---
+
+## 2. Payment Flow (Stripe)
+
+### Pricing
+- **Base Plan:** $97/month (includes 50 realtor seats)
+- **Seat Pack Add-on:** $50/month per additional block of 50 realtors
 
 ### Subscription Setup
 | Status | Task |
 |--------|------|
 | [ ] | Set up Stripe account and get API keys |
-| [ ] | Create subscription product/price in Stripe |
-| [ ] | Define seat limits per plan (e.g., 50 Realtors) |
+| [ ] | Create base subscription product ($97/month) |
+| [ ] | Create seat pack add-on product ($50/month per 50 seats) |
+| [ ] | Base plan: 50 seats included |
+| [ ] | Seat pack add-on: 50 seats per pack |
 
 ### Payment Page
 | Status | Task |
 |--------|------|
-| [ ] | Create payment/signup page at `/subscribe` or similar |
+| [ ] | Create payment/signup page at `/subscribe` |
 | [ ] | Form fields: first name, last name, email, company name (optional) |
 | [ ] | Integrate Stripe Checkout or Payment Element |
 | [ ] | Handle successful payment redirect |
 
-### Post-Payment Automation
+### Post-Payment Automation (Webhooks)
 | Status | Task |
 |--------|------|
-| [ ] | Create webhook endpoint for `checkout.session.completed` |
-| [ ] | On success: generate random password |
-| [ ] | On success: create `users` record (email, hashed password, name = first + last, role = "agent") |
-| [ ] | On success: create `agents` record (first_name, last_name, email, company_name, status = "active", seat_limit from plan) |
-| [ ] | Link `agent_id` back to `users` record |
-| [ ] | Trigger welcome email with credentials |
-| [ ] | Log event to `usage_logs` (event: "agent_created") |
+| [ ] | `checkout.session.completed` → create agent + user |
+| [ ] | Generate random password |
+| [ ] | Send welcome email with credentials |
+| [ ] | `customer.subscription.updated` → update seat packs |
+| [ ] | `customer.subscription.deleted` → set agent status to suspended |
 
-### Billing Management
+### Seat Packs ($50/month per 50 seats)
 | Status | Task |
 |--------|------|
-| [ ] | Webhook for `customer.subscription.updated` (plan changes) |
-| [ ] | Webhook for `customer.subscription.deleted` (cancellation) |
-| [ ] | Update agent status on subscription change (active → suspended → cancelled) |
-| [ ] | Seat upgrade flow (increase seat_limit) |
+| [ ] | Add `base_seats` (default 50) and `seat_packs` fields to agents |
+| [ ] | Calculate `seats_total = base_seats + (seat_packs * 50)` |
+| [ ] | API endpoint: `GET /agents/me/limits` |
+| [ ] | UI for purchasing additional seat packs |
+| [ ] | Stripe metered billing or quantity-based add-on |
 
 ---
 
-## 2. Email Templates (SendGrid)
+## 3. Email Templates (SendGrid)
 
 ### Setup
 | Status | Task |
 |--------|------|
-| [ ] | Create SendGrid account |
-| [ ] | Authenticate sending domain (SPF + DKIM) |
-| [ ] | Get API key and add to environment |
-| [ ] | Create email templates in SendGrid |
+| [x] | Create SendGrid account |
+| [x] | Authenticate sending domain (SPF + DKIM) |
+| [x] | Get API key and add to environment |
+| [x] | Create email templates in SendGrid |
 
-### Agent Welcome Email
-| Status | Task |
-|--------|------|
-| [ ] | Subject: "Welcome to TheCollabPortal" |
-| [ ] | Body includes: login link, email, temporary password |
-| [ ] | Placeholders: `{{AgentFirstName}}`, `{{Email}}`, `{{TempPassword}}`, `{{LoginURL}}` |
+### Templates Needed
+| Status | Template | Description |
+|--------|----------|-------------|
+| [ ] | Agent Signup Confirm | Welcome email after payment |
+| [x] | Realtor Invite | Onboarding email with temp password (d-e49964b80f60429eb72e5937ce35d44b) |
+| [x] | Password Reset | For active realtors |
+| [x] | Reactivation | For inactive realtors |
+| [x] | Template Drop | New resource notification |
+| [ ] | Contact Form | Realtor → Agent message |
+| [ ] | Subscription Paused | When payment fails |
 
-**Email Copy:**
-```
-Hi {{AgentFirstName}},
-
-Your TheCollabPortal account is ready.
-
-Here's what to do next:
-1. Log in to your portal → {{LoginURL}}
-2. Upload your logo and brand colour
-3. Invite your Realtors using the embedded form
-
-We'll handle all updates and notifications automatically.
-
-— The TheCollabPortal Team
-```
-
-### Realtor Invite Email
-| Status | Task |
-|--------|------|
-| [ ] | Subject: "{{MortgageAgentName}} has created your private Realtor portal" |
-| [ ] | Body includes: invite link, agent info |
-| [ ] | Placeholders: `{{RealtorFirstName}}`, `{{MortgageAgentName}}`, `{{InviteURL}}` |
-
-**Email Copy:**
-```
-Hi {{RealtorFirstName}},
-
-{{MortgageAgentName}} just invited you to a private partner space inside TheCollabPortal.
-
-Inside, you'll find ready-to-use marketing templates, listing copy tools, and resources tailored for your business.
-
-Click below to access your private portal:
-[Access Portal] → {{InviteURL}}
-
-— {{MortgageAgentName}}
-```
-
-### New Template Drop Email
-| Status | Task |
-|--------|------|
-| [ ] | Subject: "New resource: {{TemplateTitle}}" |
-| [ ] | Body includes: template title, description, link to portal |
-| [ ] | Placeholders: `{{RealtorFirstName}}`, `{{MortgageAgentName}}`, `{{TemplateTitle}}`, `{{TemplateDescription}}`, `{{PortalURL}}` |
-
-**Email Copy:**
-```
-Hi {{RealtorFirstName}},
-
-I just added a new resource — {{TemplateTitle}} — to your private toolkit.
-
-What's inside:
-{{TemplateDescription}}
-
-Open it here:
-[View in Your Portal] → {{PortalURL}}
-
-— {{MortgageAgentName}}
-{{MortgageAgentCompany}}
-```
-
-### Contact Form Email (Realtor → Agent)
-| Status | Task |
-|--------|------|
-| [ ] | Subject: "Message from {{RealtorName}}" |
-| [ ] | Body includes: realtor name, message content |
-
-### Subscription Paused/Cancelled Email
-| Status | Task |
-|--------|------|
-| [ ] | Subject: "Your TheCollabPortal access is paused" |
-| [ ] | Body includes: reason, link to update billing |
+**Branding Rule:** All emails should have agent's logo/color. If agent has none, use default palette.
 
 ---
 
-## 3. Agent Dashboard & Settings
+## 4. Agent Dashboard & Settings
 
 ### Agent Dashboard Page
 | Status | Task |
 |--------|------|
-| [ ] | Welcome message with agent name |
-| [ ] | Stats: total realtors, seats used/limit, templates accessed |
-| [ ] | Quick actions: Invite Realtor, View Realtors, Access Templates |
-| [ ] | Recent activity log |
+| [x] | Welcome message with agent name |
+| [x] | Stats: total realtors, seats used/limit |
+| [x] | Quick actions: Invite Realtor, View Realtors |
+| [ ] | Usage summary (last 30 days of AI generations) |
 
 ### Agent Branding Settings
 | Status | Task |
 |--------|------|
-| [ ] | Create settings page for logged-in agents |
-| [ ] | Form fields: phone, brand color (color picker), logo upload, calendly link, CMA link, bio |
-| [ ] | Logo upload with preview |
-| [ ] | Save changes to agent record |
-| [ ] | API endpoint: `PATCH /agents/me` |
+| [x] | Form fields: phone, brand color, calendly link, CMA link, bio |
+| [x] | Single logo upload with preview |
+| [ ] | **NEW:** Up to 3 logos with default selection |
+| [ ] | **NEW:** Up to 3 headshots with default selection |
+| [x] | Save changes to agent record |
 
 ### Change Password
 | Status | Task |
 |--------|------|
-| [ ] | Current password verification |
-| [ ] | New password + confirm password fields |
-| [ ] | API endpoint: `POST /change_password` |
+| [x] | Current password verification |
+| [x] | New password + confirm password fields |
+| [x] | First login password change flow |
 
 ---
 
-## 4. Realtor Invitation Flow
+## 5. Realtor Invitation Flow
 
 ### Invite Form (Agent Side)
 | Status | Task |
 |--------|------|
-| [ ] | Form fields: first name, last name, email, brokerage (optional), phone (optional) |
-| [ ] | Check seats used < seat limit before allowing invite |
-| [ ] | API endpoint: `POST /invite_realtor` |
+| [x] | Form fields: first name, last name, email, brokerage, phone |
+| [x] | Check seats used < seat limit before allowing invite |
+| [x] | Shows current seat usage (X / Y seats used) |
 
 ### Backend Processing
 | Status | Task |
 |--------|------|
-| [ ] | Generate unique invite token |
-| [ ] | Create `realtors` record (status = "invited", invite_sent_at = now) |
-| [ ] | Increment agent's `seats_used` |
-| [ ] | Send co-branded invite email via SendGrid |
-| [ ] | Log event to `usage_logs` (event: "realtor_invited") |
-
-### Invite Acceptance (Realtor Side)
-| Status | Task |
-|--------|------|
-| [ ] | Create invite acceptance page at `/invite/{token}` |
-| [ ] | Validate invite token |
-| [ ] | Show agent branding on page |
-| [ ] | Form: set password (password + confirm) |
-| [ ] | On submit: create `users` record (role = "realtor") |
-| [ ] | Update `realtors` record (status = "active", activated_at = now, user_id linked) |
-| [ ] | Auto-login and redirect to realtor dashboard |
-| [ ] | Log event to `usage_logs` (event: "realtor_activated") |
+| [x] | Generate temp password for realtor |
+| [x] | Create `users` record (role = "realtor") |
+| [x] | Create `realtors` record (status = "invited") |
+| [x] | Increment agent's `seats_used` |
+| [x] | Send co-branded invite email via SendGrid |
+| [x] | Prevent duplicate invites |
 
 ### Realtor Management (Agent Side)
 | Status | Task |
 |--------|------|
-| [ ] | View list of invited/active realtors |
-| [ ] | Resend invite email option |
-| [ ] | Deactivate realtor option |
+| [x] | View list of invited/active/inactive realtors |
+| [x] | Search and filter realtors |
+| [x] | Resend invite email (for invited status) |
+| [x] | Deactivate realtor (for active AND invited status) |
+| [x] | Reactivate realtor (for inactive status) |
+| [x] | Reset password (for active status) |
+| [x] | Toast notifications for actions |
 
 ---
 
-## 5. Realtor Experience
+## 6. Realtor Experience
 
 ### Realtor Dashboard
 | Status | Task |
 |--------|------|
-| [ ] | Welcome message: "Hi {{RealtorFirst}}, This is your private collaboration space with {{AgentName}}" |
-| [ ] | Agent branding displayed (logo, color) |
-| [ ] | Templates library (filtered by audience = "realtor") |
-| [ ] | AI Tools section |
-| [ ] | About Your Mortgage Partner section (agent info, booking links) |
+| [x] | Welcome message with agent branding |
+| [x] | Agent banner (logo, name, contact info) |
+| [x] | Templates library |
+| [x] | AI Tools section |
+| [x] | About Your Mortgage Partner section |
+| [ ] | **NEW:** "Start Here" mini onboarding tour |
 
 ### About Your Mortgage Partner Section
 | Status | Task |
 |--------|------|
-| [ ] | Agent logo and name |
-| [ ] | Agent bio |
-| [ ] | Quick links: Book a Call (Calendly), Request a CMA, Email Agent |
+| [x] | Agent logo and name |
+| [x] | Agent bio |
+| [x] | Book a Call (Calendly link) |
+| [x] | Request a CMA (CMA link) |
+| [ ] | Send a Referral (popup form) |
+| [ ] | Download My App (Canadian Mortgage App link) |
+| [ ] | OneWell Landing Page link |
 
 ### Contact Agent Form
 | Status | Task |
@@ -240,340 +245,471 @@ Open it here:
 
 ---
 
-## 6. Templates Library
+## 7. AI Assistants
+
+**Kelly's Vision:** Specific branding for each tool with structured outputs.
+
+### Realtor AI Tools
+| Status | Tool Name | Inputs | Outputs |
+|--------|-----------|--------|---------|
+| [x] | **Showcase – Listing Specialist** | Address, specs, tone, up to 3 photos | MLS desc, social caption, 30-60s video script |
+| [x] | **Spotlight – Social Specialist** | Post type, key details, platform, photos | Caption, keyword suggestions, Reels script |
+| [x] | **Seller Insight – Reporting Specialist** | Views, saves, inquiries, feedback | Seller update email + next steps |
+| [x] | **Client Concierge – Relationship Specialist** | Occasion, notes, format | 2-3 sentence message + CTA |
+
+### Agent AI Tools
+| Status | Tool Name | Inputs | Outputs |
+|--------|-----------|--------|---------|
+| [x] | **FilePrep – Deal Notes Specialist** | Raw notes, goal (purchase/refi/renewal) | Underwriter notes, client recap, red-flags |
+| [x] | **Content Coach – Personal Brand Specialist** | Topic, tone, key point | LinkedIn post, IG caption, email snippet |
+
+### AI Features
+| Status | Task |
+|--------|------|
+| [x] | Create `/api/generate` backend route |
+| [x] | Connect to OpenAI API |
+| [x] | Handle different tool prompts |
+| [ ] | "Copy" button on all outputs |
+| [ ] | "Send via Email" button (opens modal, uses SendGrid) |
+| [ ] | Rate limiting (20/hour per user) |
+| [ ] | **Compliance:** System prompt with Canadian mortgage tone, "review before use" |
+
+---
+
+## 8. Templates Library
 
 ### Admin Template Management
 | Status | Task |
 |--------|------|
-| [ ] | Create template form: title, category, format, audience, description, preview image, download link |
-| [ ] | Template categories: Listing, Social, Email, Video, Document |
-| [ ] | Template formats: Canva, PDF, Google Doc, Video |
-| [ ] | Audience options: Mortgage Agents, Realtors, Both |
-| [ ] | Status: Draft / Published |
-| [ ] | Publish template action |
+| [x] | Create template form with all fields |
+| [x] | Categories: Listing, Social, Email, Video, Document |
+| [x] | Formats: Canva, PDF, Google Doc, Video |
+| [x] | Audience: Mortgage Agents, Realtors, Both |
+| [x] | Status: Draft / Published |
+| [x] | Publish template action |
 
 ### Template Drop Automation
+**Kelly's Key Feature:** When admin drops content, ALL agents' realtors get notified. Email appears from their agent.
+
 | Status | Task |
 |--------|------|
-| [ ] | When template status → Published |
-| [ ] | For each active agent → get their active realtors |
-| [ ] | Send co-branded "New Template" email to each realtor |
-| [ ] | Log event to `usage_logs` (event: "template_published") |
+| [x] | Agent can send template notifications to their realtors |
+| [ ] | **Admin global drop:** Notify all realtors across all agents |
+| [ ] | Email appears to come from each realtor's linked agent |
+| [ ] | Weekly/regular content drops by Kelly |
 
 ---
 
-## 7. AI Tools
+## 9. Affiliate Toolkit
 
-### Mortgage Agent AI Tools
+**Kelly's Vision:** Cards by category with redirect tracking and kickback revenue.
+
+### Setup
 | Status | Task |
 |--------|------|
-| [ ] | FilePrep / Deal Notes Specialist - Turn call notes into underwriter summaries |
-| [ ] | Content Coach / Brand Story Specialist - Draft posts and newsletters |
-| [ ] | Renewal Email Builder - Create renewal outreach emails |
-| [ ] | Referral Thank-You Note Writer - Generate thank-you messages |
+| [ ] | Create `affiliate_links` table: id, name, slug, category, default_url, active |
+| [ ] | Categories: Mortgage, Automation, Voice/Video, Content, Property |
+| [ ] | API: `GET /affiliates?active=true` |
 
-### Realtor AI Tools
+### Redirect & Tracking
 | Status | Task |
 |--------|------|
-| [ ] | Listing Copy Generator - Write MLS descriptions from property details |
-| [ ] | Social Caption Builder - Turn facts into ready-to-post captions |
-| [ ] | Relationship Message Creator - Create thoughtful notes for clients |
-| [ ] | Seller Update Writer - Build seller update emails from showing feedback |
+| [ ] | Create `/go/:slug` redirect endpoint |
+| [ ] | Add UTM parameters to redirect URL |
+| [ ] | Log clicks (user_id, agent_id, timestamp) |
+| [ ] | Optional: Per-agent URL override |
 
-### AI Backend
+### UI
 | Status | Task |
 |--------|------|
-| [ ] | Create `/api/generate` backend route |
-| [ ] | Connect to OpenAI API |
-| [ ] | Handle different tool prompts |
-| [ ] | Rate limiting per user |
+| [ ] | Toolkit page with cards by category |
+| [ ] | "Open" button links to `/go/:slug` |
+
+### Partnerships to Set Up
+| Status | Partner | Benefit |
+|--------|---------|---------|
+| [ ] | Bendigi (Calculators) | 20% discount for agents, kickback to Kelly |
+| [ ] | Canadian Mortgage App | Discount + kickback |
+| [ ] | OneWell | Integration + kickback |
 
 ---
 
-## 8. Admin Dashboard (Kelly)
+## 10. Calculators
+
+| Status | Task |
+|--------|------|
+| [x] | Mortgage calculator (Bendigi embed) |
+| [x] | Purchase calculator |
+| [x] | Closing costs calculator |
+| [ ] | Land transfer tax calculator |
+| [ ] | Required income calculator |
+| [ ] | "Get this through your website" CTA → Bendigi affiliate link |
+
+---
+
+## 11. Usage Logging & Analytics
+
+| Status | Task |
+|--------|------|
+| [ ] | Log every AI generation: user_id, agent_id, realtor_id, assistant_id, timestamp |
+| [ ] | API: `GET /usage/summary?agent_id=me` (last 30 days) |
+| [ ] | Agent dashboard widget showing usage stats |
+| [ ] | Admin view of usage across all agents |
+
+---
+
+## 12. Admin Dashboard (Kelly)
 
 ### Stats Dashboard
 | Status | Task |
 |--------|------|
-| [ ] | Total active agents |
-| [ ] | Total active realtors |
-| [ ] | Templates published |
+| [x] | Total active agents |
+| [x] | Total active realtors |
+| [x] | Templates published |
 | [ ] | Emails sent (past 30 days) |
-| [ ] | Automation errors (last 24h) |
+| [ ] | AI generations (past 30 days) |
 
-### Logs & Monitoring
+### Agent Management
 | Status | Task |
 |--------|------|
-| [ ] | Usage logs view (filterable by event type) |
-| [ ] | Error logs view (with resolve action) |
-| [ ] | Agent activity overview |
+| [x] | View all agents with search/filter |
+| [x] | Create new agent |
+| [x] | Reset agent password |
+| [x] | View agent details modal |
+| [x] | Recalculate seats for all agents |
+| [ ] | Seat override (manually set seats) |
+| [ ] | View agent's subscription status |
+
+### Realtor Management
+| Status | Task |
+|--------|------|
+| [x] | View all realtors with search/filter |
+| [x] | View realtor details modal |
+| [x] | Reset realtor password |
+| [x] | Deactivate/Reactivate realtor |
+| [x] | Resend invite for invited realtors |
+| [x] | Delete realtor |
+
+### Global Template Drop
+| Status | Task |
+|--------|------|
+| [ ] | "Drop to All" button on template |
+| [ ] | Sends notification to ALL realtors across ALL agents |
+| [ ] | Each email branded with realtor's linked agent |
 
 ---
 
-## Xano Database Tables (6 Active)
+## 13. Public Pages
 
-| Status | Table | ID | Fields |
-|--------|-------|-----|--------|
-| [x] | **users** | #39 | id, email, password, name, role (enum), agent_id, created_at |
-| [x] | **agents** | #40 | id, user_id, first_name, last_name, email, phone, company_name, status (enum), brand_color, logo_url, calendly_link, cma_link, bio |
-| [x] | **realtors** | #41 | id, agent_id, user_id, first_name, last_name, email, brokerage, phone, status (enum), created_at, invite_sent_at |
-| [x] | **templates** | #42 | id, title, category (enum), format (enum), audience [text], short_description, preview_image_url, download_link, status (enum), published_at, created_at, release_notes, created_by |
-| [x] | **usage_logs** | #43 | id, event_type (enum), agent_id, realtor_id, template_id, details (json), created_at |
-| [x] | **error_logs** | #44 | id, source (enum), scenario_name, message, severity (enum), resolved (bool), resolved_by, created_at |
-
-> Note: `mortgage_rates` table exists but is NOT being used (crossed out)
+| Status | Page | Notes |
+|--------|------|-------|
+| [ ] | `/terms` | Terms of Use |
+| [ ] | `/privacy` | Privacy Policy |
+| [ ] | `/help` | FAQ / Help page |
+| [ ] | Cookies notice | Banner/popup |
 
 ---
 
-## Xano API Endpoints (52 Total)
+## 14. Legal & Compliance
 
-### Authentication (4 endpoints)
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | GET | `/auth/me` | Private | Get current user from token |
-| [x] | POST | `/auth/login` | Public | Login & return auth token |
-| [x] | POST | `/auth/signup` | Public | Sign up a new user |
-| [x] | POST | `/auth/accept_invite` | Public | Accept realtor invitation, create user, return token |
+| Status | Task |
+|--------|------|
+| [ ] | FSRA disclaimer on agent-facing screens |
+| [ ] | "AI content is for review. Verify facts before sending." on all AI outputs |
+| [ ] | No legal/tax advice disclaimer on calculators |
+| [ ] | MLS/FSRA reminders where relevant |
 
-### Agents (5 endpoints)
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | GET | `/agents` | Private | Query all agents records |
-| [x] | POST | `/agents` | Private | Add agents record |
-| [x] | GET | `/agents/{agents_id}` | Private | Get agents record |
-| [x] | PATCH | `/agents/{agents_id}` | Private | Edit agents record |
-| [x] | DELETE | `/agents/{agents_id}` | Private | Delete agents record |
+---
 
-### Agent-Specific Endpoints
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | POST | `/create_agent` | Private | Creates new agent + user account |
-| [x] | POST | `/signup_agent` | Public | Creates new agent account with temp password |
-| [x] | POST | `/update_agent_branding` | Private | Updates branding for a specific agent |
-| [x] | GET | `/stats/agent` | Private | Retrieve agent stats (realtor counts, seat usage) |
-| [x] | POST | `/reset_agent_password` | Private | Reset agent password (Admin only) |
+## Seats Management
 
-### Realtors (5 endpoints)
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | GET | `/realtors` | Private | Query all realtors records |
-| [x] | POST | `/realtors` | Private | Add realtors record |
-| [x] | GET | `/realtors/{realtors_id}` | Private | Get realtors record |
-| [x] | PATCH | `/realtors/{realtors_id}` | Private | Edit realtors record |
-| [x] | DELETE | `/realtors/{realtors_id}` | Private | Delete realtors record |
+| Status | Task |
+|--------|------|
+| [x] | `seats_used` counts both "active" + "invited" realtors |
+| [x] | Invite realtor increments seats_used |
+| [x] | Deactivate realtor decrements seats_used |
+| [x] | Reactivate realtor increments seats_used |
+| [x] | Delete realtor recalculates seats_used |
+| [x] | Admin can recalculate seats for all agents |
+| [x] | UI shows correct seat count |
+| [ ] | **NEW:** Seat packs system (base 50 + purchasable packs) |
 
-### Realtor Invite Flow
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | POST | `/invite_realtor` | Private | Invite realtor (checks seat limits, prevents duplicates) |
-| [x] | GET | `/invites/validate` | Public | Validate invite token, get realtor + agent details |
+---
 
-### Templates (6 endpoints)
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | GET | `/templates` | Private | Query templates (with filtering) |
-| [x] | POST | `/templates` | Private | Add templates record |
-| [x] | GET | `/templates/{templates_id}` | Private | Get templates record |
-| [x] | PATCH | `/templates/{templates_id}` | Private | Edit templates record |
-| [x] | DELETE | `/templates/{templates_id}` | Private | Delete templates record |
-| [x] | POST | `/templates/publish` | Private | Publish a template |
+## Xano Database Tables
 
-### Admin Endpoints
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | GET | `/dashboard_stats` | Private | Aggregated stats for admin dashboard |
-| [x] | POST | `/create_template` | Private | Create template (admin only) |
-| [x] | POST | `/resolve_error_log` | Private | Resolve an error log by ID |
+| Status | Table | Fields |
+|--------|-------|--------|
+| [x] | **users** | id, email, password, name, role, agent_id, first_login, created_at |
+| [x] | **agents** | id, user_id, first_name, last_name, email, phone, company_name, status, brand_color, logo_url, calendly_link, cma_link, bio, seat_limit, seats_used |
+| [x] | **realtors** | id, agent_id, user_id, first_name, last_name, email, brokerage, phone, status, invite_sent_at, activated_at |
+| [x] | **templates** | id, title, category, format, audience, short_description, preview_image_url, download_link, status, published_at |
+| [x] | **usage_logs** | id, event_type, agent_id, realtor_id, template_id, details, created_at |
+| [x] | **error_logs** | id, source, scenario_name, message, severity, resolved |
+| [ ] | **affiliate_links** | id, name, slug, category, default_url, active |
+| [ ] | **generations** | id, user_id, agent_id, realtor_id, assistant_id, created_at |
+| [ ] | **plans** | id, name, base_seats (50), pack_size (50), base_price ($97), pack_price ($50) |
+| [ ] | **billing_events** | id, agent_id, event_type, stripe_event_id, created_at |
 
-### Usage Logs (5 endpoints)
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | GET | `/usage_logs` | Private | Query all usage_logs records |
-| [x] | POST | `/usage_logs` | Private | Add usage_logs record |
-| [x] | GET | `/usage_logs/{usage_logs_id}` | Private | Get usage_logs record |
-| [x] | PATCH | `/usage_logs/{usage_logs_id}` | Private | Edit usage_logs record |
-| [x] | DELETE | `/usage_logs/{usage_logs_id}` | Private | Delete usage_logs record |
-
-### Error Logs (5 endpoints)
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | GET | `/error_logs` | Private | Query all error_logs records |
-| [x] | POST | `/error_logs` | Private | Add error_logs record |
-| [x] | GET | `/error_logs/{error_logs_id}` | Private | Get error_logs record |
-| [x] | PATCH | `/error_logs/{error_logs_id}` | Private | Edit error_logs record |
-| [x] | DELETE | `/error_logs/{error_logs_id}` | Private | Delete error_logs record |
-
-### Users (5 endpoints)
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | GET | `/users` | Private | Query all users records |
-| [x] | POST | `/users` | Private | Add users record |
-| [x] | GET | `/users/{users_id}` | Private | Get users record |
-| [x] | PATCH | `/users/{users_id}` | Private | Edit users record |
-| [x] | DELETE | `/users/{users_id}` | Private | Delete users record |
-
-### File Upload
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | POST | `/upload/image` | Private | Upload image with validation |
-
-### Stripe (2 endpoints)
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | POST | `/stripe/create-checkout-session` | Private | Create Stripe checkout session |
-| [ ] | POST | `/stripe/webhook` | Public | Handle Stripe webhooks (DRAFT) |
-
-### Other/Unused
-| Status | Method | Endpoint | Access | Description |
-|--------|--------|----------|--------|-------------|
-| [x] | POST | `/generate_placid_pdf` | Private | Generate Placid PDF |
-| [x] | GET | `/placid/get_status` | Private | Get Placid status |
-| [x] | POST | `/placid/webhook_receiver` | Public | Placid webhook receiver |
-| [x] | POST | `/helcim/approval-post` | Public | Helcim approval (likely unused) |
+**NEW fields needed on agents:**
+- `slug` (unique URL identifier)
+- `base_seats` (default 50)
+- `seat_packs` (number of additional packs purchased)
+- `headshot_urls` (array of up to 3)
+- `logo_urls` (array of up to 3)
+- `default_logo_idx`
+- `default_headshot_idx`
+- `stripe_customer_id`
+- `subscription_status`
 
 ---
 
 ## External Integrations
 
-### Stripe (Payments)
+### Stripe (Payments) - Priority
 | Status | Feature |
 |--------|---------|
 | [ ] | Create Stripe account and products |
-| [ ] | Create price in Stripe Dashboard ($99/month) |
-| [ ] | Add STRIPE_SECRET_KEY to Xano environment |
-| [ ] | Add STRIPE_WEBHOOK_SECRET to Xano environment |
-| [ ] | Create /create_checkout_session endpoint |
-| [ ] | Create /verify_checkout_session endpoint |
-| [ ] | Create /webhooks/stripe endpoint |
-| [ ] | Test webhook locally using Stripe CLI |
-| [ ] | Billing portal link for agents (use Stripe Customer Portal) |
+| [ ] | Base plan: $97/month (50 seats) |
+| [ ] | Seat pack add-on: $50/month per 50 additional seats |
+| [ ] | Webhook endpoint for subscription events |
+| [ ] | Customer portal for billing management |
 
 ### SendGrid (Emails)
 | Status | Feature |
 |--------|---------|
-| [ ] | Account setup + domain authentication |
-| [ ] | Add SENDGRID_API_KEY to Xano environment variables |
-| [ ] | Create Agent Welcome email template (template ID: d-xxxxx) |
-| [ ] | Create Realtor Invite email template (template ID: d-xxxxx) |
-| [ ] | Create New Template Drop email template (template ID: d-xxxxx) |
-| [ ] | Create Contact Form email template (template ID: d-xxxxx) |
-| [ ] | Create Subscription Paused email template (template ID: d-xxxxx) |
-
-**Xano SendGrid Integration:**
-In Xano, use the External API Request function to call SendGrid:
-```
-POST https://api.sendgrid.com/v3/mail/send
-Headers:
-  - Authorization: Bearer {{SENDGRID_API_KEY}}
-  - Content-Type: application/json
-Body:
-{
-  "personalizations": [{
-    "to": [{"email": "recipient@email.com"}],
-    "dynamic_template_data": {
-      "AgentFirstName": "John",
-      "Email": "john@example.com",
-      "TempPassword": "abc123xyz",
-      "LoginURL": "https://app.thecollabportal.com/login"
-    }
-  }],
-  "from": {"email": "noreply@thecollabportal.com", "name": "TheCollabPortal"},
-  "template_id": "d-xxxxxxxxxxxx"
-}
-```
-
-**Send Welcome Email Function (add to webhook/create_agent):**
-```
-1. Build email payload with dynamic data
-2. External API Request to SendGrid
-3. Log to usage_logs: { event_type: "email_sent", agent_id, details: "welcome_email" }
-```
+| [x] | Account setup + domain authentication |
+| [x] | Realtor Invite template |
+| [x] | Template Drop notification |
+| [ ] | Agent Welcome email |
+| [ ] | Contact Form email |
+| [ ] | Subscription Paused email |
 
 ### OpenAI (AI Tools)
 | Status | Feature |
 |--------|---------|
-| [ ] | API key setup |
-| [ ] | Create `/api/generate` backend route |
-| [ ] | Deal Notes Specialist prompt |
-| [ ] | Content Coach prompt |
-| [ ] | Email Builder prompt |
-| [ ] | Thank You Notes prompt |
-| [ ] | Listing Copy Generator prompt |
-| [ ] | Social Caption Builder prompt |
+| [x] | API key setup |
+| [x] | Generate endpoint |
+| [x] | All tool prompts |
+| [ ] | Rate limiting |
+| [ ] | Usage logging |
 
-### Bendigi (Calculators)
-| Status | Feature |
-|--------|---------|
-| [ ] | Get embed codes for mortgage calculator |
-| [ ] | Get embed codes for purchase calculator |
-| [ ] | Get embed codes for closing cost calculator |
+### Partnerships
+| Status | Partner | Integration |
+|--------|---------|-------------|
+| [x] | Bendigi | Calculator embeds |
+| [ ] | Bendigi | Affiliate tracking |
+| [ ] | Canadian Mortgage App | Affiliate link |
+| [ ] | OneWell | Affiliate link |
 
 ---
 
-## File Storage (Xano)
-| Status | Task |
-|--------|------|
-| [ ] | Configure file upload endpoint |
-| [ ] | Set up `/logos` folder |
-| [ ] | Set up `/templates` folder |
-| [ ] | Return public URLs for uploaded files |
+## Tech Stack Notes
 
----
+**Current Stack (KEEP):**
+- Frontend: Next.js (custom code)
+- Backend: Xano
+- Auth: Xano JWT
+- Email: SendGrid
+- Payments: Stripe (to implement)
 
-## Privacy & Permissions
-
-### Rules
-- Mortgage agents cannot see other agents or their Realtors
-- Realtors cannot see each other or any other agent's materials
-- Realtors are read-only (can view templates, cannot post/edit)
-- Admins have full visibility
-
-### Implementation
-| Status | Task |
-|--------|------|
-| [ ] | All agent endpoints filter by authenticated user's agent_id |
-| [ ] | All realtor endpoints filter by authenticated user's realtor_id |
-| [ ] | Realtor templates filtered by audience includes "realtor" |
-| [ ] | Verify realtor can only see their linked agent's info |
+**NOT Using (from old plans):**
+- ~~WeWeb~~ → Using Next.js
+- ~~Circle~~ → Custom portal
+- ~~Helcim~~ → Stripe
 
 ---
 
 ## Testing Checklist
 
-| Test | Expected Result |
-|------|-----------------|
-| [ ] | New agent subscribes → user + agent created, welcome email sent |
-| [ ] | Agent uploads branding → settings saved correctly |
-| [ ] | Agent invites realtor → invite email sent, realtor record created |
-| [ ] | Realtor accepts invite → can log in, sees agent branding |
-| [ ] | New template published → all realtors receive co-branded email |
-| [ ] | Realtors see only their agent's templates and info |
-| [ ] | Agent can only see their own realtors |
-| [ ] | Subscription cancelled → agent status updated |
-| [ ] | AI tools return valid responses |
+| Test | Status |
+|------|--------|
+| [x] | Admin creates agent → user + agent created |
+| [x] | Agent uploads branding → settings saved |
+| [x] | Agent invites realtor → email sent, seats incremented |
+| [x] | Realtor logs in → password change, status active |
+| [x] | Agent deactivates realtor → seats decremented |
+| [x] | Agent reactivates realtor → new password sent |
+| [x] | Agent resends invite → email resent |
+| [x] | Admin deletes realtor → removed, seats recalculated |
+| [ ] | Agent subscribes via Stripe → auto account creation |
+| [ ] | Subscription cancelled → agent suspended |
+| [ ] | Global template drop → all realtors notified |
+| [ ] | Affiliate click → redirect with tracking |
 
 ---
 
-## Notes
+## Priority Order (Suggested)
 
-- Xano Base URL: `https://xzkg-6hxh-f8to.n7d.xano.io/api:Y8CjHB2a`
-- Authentication table: `users` (ID 39) - must have authentication ENABLED
-- All authenticated endpoints need "users authentication" selected
-- Always publish changes in Xano after editing endpoints
-- All emails should be co-branded with agent's logo and color where applicable
-- Footer for realtor-facing content: "This portal is maintained by {{AgentName}} through TheCollabPortal"
+1. **Agent Subdomains/Slugs** - Core branding feature
+2. **Stripe Integration** - Enable self-service signups
+3. **Global Template Drop** - Kelly's key automation
+4. **Affiliate Toolkit** - Revenue generation
+5. **Multiple Logos/Headshots** - Enhanced branding
+6. **Usage Logging** - Analytics
+7. **Public Pages** - Legal compliance
+8. **"Start Here" Tour** - Onboarding UX
 
 ---
 
 ## Out of Scope (Future Phases)
 
-- Multi-language support
-- Mobile app
-- Advanced analytics/heatmaps
-- CRM/LOS integrations
-- Bulk import/export
-- SMS/WhatsApp notifications
+Kelly mentioned these features for later phases:
+
+| Feature | Notes |
+|---------|-------|
+| [ ] | **Placid/Canva Templates** - Automated template generation with dynamic branding |
+| [ ] | **Advanced Analytics Dashboard** - Deeper usage insights and reporting |
+| [ ] | **White-label Mobile App** - Native app for realtors |
+| [ ] | **CRM Integration** - Connect with popular real estate CRMs |
+| [ ] | **Automated Content Scheduling** - Schedule AI-generated posts |
 
 ---
 
-*Last updated: January 27, 2026*
+## UI Design Reference (QuickPath Inspired)
+
+**Source:** `extracted-quickpath-ui-reference/` folder (add to .gitignore)
+
+### Color Palette
+
+| Variable | Hex | Usage |
+|----------|-----|-------|
+| `--deep-navy` | `#1a2332` | Primary text, headings, foreground |
+| `--pure-white` | `#FFFFFF` | Backgrounds, card backgrounds |
+| `--light-bg` | `#f8f9fa` | Secondary backgrounds, muted areas |
+| `--bc-teal` | `#0077B6` | Primary brand color, buttons, links, focus rings |
+| `--success-green` | `#10b981` | Success states, accents, active indicators |
+| `--soft-grey` | `#e5e7eb` | Borders, input borders, dividers |
+| `--text-grey` | `#6b7280` | Muted text, descriptions, placeholders |
+| `--destructive` | `#ef4444` | Error states, destructive actions |
+
+### Typography
+
+| Element | Style |
+|---------|-------|
+| **Font Family** | `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif` |
+| **Headings (H1-H3)** | Use `.dot-matrix` class: `font-family: 'Courier New', monospace; letter-spacing: 0.1em; text-transform: uppercase;` |
+| **H1 (Page Title)** | `dot-matrix text-3xl mb-2` (uppercase, monospace, large) |
+| **H2 (Section Title)** | `dot-matrix text-xl mb-6` or `dot-matrix text-lg mb-4` |
+| **H3 (Card Title)** | `dot-matrix text-sm mb-1` or `font-mono text-lg tracking-wider uppercase` |
+| **Body Text** | Regular Inter font, `text-sm` |
+| **Muted/Description** | `text-sm text-muted-foreground` or `text-xs text-muted-foreground` |
+| **Stats/Numbers** | `dot-matrix text-2xl` (monospace, prominent) |
+
+### Button Styles
+
+| Variant | Classes |
+|---------|---------|
+| **Primary (Default)** | `bg-primary text-primary-foreground hover:bg-primary/90` (teal background) |
+| **Destructive** | `bg-destructive text-destructive-foreground hover:bg-destructive/90` (red background) |
+| **Outline** | `border border-input bg-background hover:bg-muted` (transparent with border) |
+| **Secondary** | `bg-secondary text-secondary-foreground hover:bg-secondary/80` (light grey background) |
+| **Ghost** | `hover:bg-muted` (no background until hover) |
+| **Link** | `text-primary underline-offset-4 hover:underline` |
+
+**Button Sizes:**
+- Default: `h-10 px-4 py-2`
+- Small: `h-8 px-3 text-xs`
+- Large: `h-12 px-8`
+- Icon: `h-9 w-9`
+
+**Button Typography:** `text-sm font-medium tracking-wide`
+
+### Card Design
+
+| Element | Style |
+|---------|-------|
+| **Card Container** | `border border-border bg-card` (no rounded corners, sharp industrial look) |
+| **Card Header** | `flex flex-col space-y-1.5 p-6` |
+| **Card Title** | `font-mono text-lg tracking-wider uppercase` |
+| **Card Content** | `p-6 pt-0` |
+| **Hover State** | `hover:bg-muted/50 transition-colors` |
+
+### Form Inputs
+
+| Element | Style |
+|---------|-------|
+| **Input** | `h-10 w-full border border-input bg-background px-3 py-2 text-sm` |
+| **Focus State** | `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring` |
+| **Placeholder** | `placeholder:text-muted-foreground` |
+| **Disabled** | `disabled:cursor-not-allowed disabled:opacity-50` |
+
+### Layout Patterns
+
+| Pattern | Usage |
+|---------|-------|
+| **Page Header** | `<div className="mb-8"><h1 className="dot-matrix text-3xl mb-2">TITLE</h1><p className="text-muted-foreground">Description</p></div>` |
+| **Stats Grid** | `grid md:grid-cols-4 gap-6` with bordered cards |
+| **Two Column Layout** | `grid lg:grid-cols-2 gap-8` |
+| **Action Cards** | `border border-border p-6 hover:bg-muted/50` with arrow icon |
+| **Progress Bar** | `<div className="w-full h-2 bg-muted overflow-hidden"><div className="h-full bg-primary" style={{ width: '50%' }} /></div>` |
+
+### Icon Styling
+
+| Context | Style |
+|---------|-------|
+| **In Stat Cards** | `w-10 h-10 bg-{color}-100 rounded flex items-center justify-center` + `w-5 h-5 text-{color}-600` |
+| **Inline with Text** | `w-4 h-4 text-muted-foreground` |
+| **Action Indicators** | `w-5 h-5` or `w-4 h-4` at end of row |
+
+### Color Usage for States
+
+| State | Background | Text | Border |
+|-------|------------|------|--------|
+| **Active/Success** | `bg-green-100` | `text-green-600` | - |
+| **Warning/Pending** | `bg-yellow-100` | `text-yellow-600` | - |
+| **Info/Primary** | `bg-blue-100` | `text-blue-600` | - |
+| **Error/Danger** | `bg-red-50` | `text-red-600` | `border-red-200` |
+
+### Design Principles
+
+1. **Industrial/Technical Aesthetic** - Sharp corners (no border-radius on cards), monospace headings, grid patterns
+2. **Minimal Color** - Primarily black/white/grey with teal as accent
+3. **Uppercase Headings** - All section titles in uppercase with letter-spacing
+4. **Clear Hierarchy** - Large stats numbers, distinct sections with borders
+5. **Subtle Background Pattern** - Dot matrix pattern overlay (`body::before` with radial gradient)
+6. **Consistent Spacing** - `p-6` for card padding, `gap-6` or `gap-8` for grids, `mb-8` for sections
+
+### CSS Variables (for globals.css)
+
+```css
+:root {
+  --deep-navy: #1a2332;
+  --pure-white: #FFFFFF;
+  --light-bg: #f8f9fa;
+  --bc-teal: #0077B6;
+  --success-green: #10b981;
+  --soft-grey: #e5e7eb;
+  --text-grey: #6b7280;
+
+  --background: var(--pure-white);
+  --foreground: var(--deep-navy);
+  --card: var(--pure-white);
+  --card-foreground: var(--deep-navy);
+  --primary: var(--bc-teal);
+  --primary-foreground: var(--pure-white);
+  --secondary: var(--light-bg);
+  --secondary-foreground: var(--deep-navy);
+  --muted: var(--light-bg);
+  --muted-foreground: var(--text-grey);
+  --accent: var(--success-green);
+  --accent-foreground: var(--pure-white);
+  --destructive: #ef4444;
+  --destructive-foreground: var(--pure-white);
+  --border: var(--soft-grey);
+  --input: var(--soft-grey);
+  --ring: var(--bc-teal);
+  --radius: 0.25rem;
+}
+
+.dot-matrix {
+  font-family: 'Courier New', 'Courier', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+```
+
+---
+
+*Last updated: February 9, 2026*
+*Source: Kelly's email Jan 31, 2026 + Loom video transcript*

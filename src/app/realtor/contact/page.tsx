@@ -46,16 +46,18 @@ export default function RealtorContactPage() {
   const [isSent, setIsSent] = useState(false)
 
   useEffect(() => {
-    if (user?.agentId) {
+    if (user) {
       loadAgentInfo()
     }
   }, [user])
 
   const loadAgentInfo = async () => {
     try {
-      const { data, error } = await xano.getAgent(user!.agentId!)
+      const { data, error } = await xano.getMyAgent()
       if (data) {
         setAgent(data)
+      } else if (error) {
+        console.error('Failed to load agent info:', error)
       }
     } catch (error) {
       console.error('Failed to load agent info:', error)
@@ -80,7 +82,8 @@ export default function RealtorContactPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          agentId: user?.agentId,
+          agentEmail: agent?.email,
+          agentName: agent ? `${agent.firstName} ${agent.lastName}` : '',
           realtorName: user?.name,
           realtorEmail: user?.email,
           subject: formData.subject,

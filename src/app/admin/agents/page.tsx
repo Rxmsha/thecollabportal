@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Search, Building2, Mail, Phone, Calendar, Users, Plus, KeyRound, Copy, CheckCircle2, Eye, EyeOff, Loader2, Minus, RefreshCw } from 'lucide-react'
+import { Search, Building2, Mail, Phone, Calendar, Users, Plus, KeyRound, Copy, CheckCircle2, Eye, EyeOff, Loader2, Minus, RefreshCw, Trash2, AlertTriangle } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Label } from '@/components/ui/label'
 import xano from '@/services/xano'
@@ -63,7 +63,7 @@ export default function AdminAgentsPage() {
     lastName: '',
     companyName: '',
     phone: '',
-    seatLimit: 10,
+    seatLimit: 50,
   })
 
   // Agent detail modal state
@@ -86,6 +86,10 @@ export default function AdminAgentsPage() {
 
   // Recalculate seats state
   const [isRecalculating, setIsRecalculating] = useState(false)
+
+  // Delete agent state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     loadAgents()
@@ -253,6 +257,28 @@ export default function AdminAgentsPage() {
     setAgentDetails(null)
     setDetailsError(null)
     setEditingSeatLimit(null)
+    setShowDeleteConfirm(false)
+  }
+
+  const handleDeleteAgent = async () => {
+    if (!selectedAgentId) return
+    setIsDeleting(true)
+    try {
+      const { data, error } = await xano.adminDeleteAgent(selectedAgentId)
+      if (error) {
+        setDetailsError(error)
+        setShowDeleteConfirm(false)
+      } else if (data) {
+        // Remove agent from list
+        setAgents((prev) => prev.filter((a) => a.id !== selectedAgentId))
+        closeDetailModal()
+      }
+    } catch (err) {
+      setDetailsError('Failed to delete agent')
+      setShowDeleteConfirm(false)
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   const handleUpdateSeatLimit = async (newLimit: number) => {
@@ -308,7 +334,7 @@ export default function AdminAgentsPage() {
           lastName: '',
           companyName: '',
           phone: '',
-          seatLimit: 10,
+          seatLimit: 50,
         })
       }
     } catch (error) {
@@ -328,8 +354,29 @@ export default function AdminAgentsPage() {
       lastName: '',
       companyName: '',
       phone: '',
-      seatLimit: 10,
+      seatLimit: 50,
     })
+  }
+
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-digit characters
+    const digits = value.replace(/\D/g, '')
+    // Limit to 10 digits
+    const limited = digits.slice(0, 10)
+    // Format as (XXX) XXX-XXXX
+    if (limited.length >= 7) {
+      return `(${limited.slice(0, 3)}) ${limited.slice(3, 6)}-${limited.slice(6)}`
+    } else if (limited.length >= 4) {
+      return `(${limited.slice(0, 3)}) ${limited.slice(3)}`
+    } else if (limited.length > 0) {
+      return `(${limited}`
+    }
+    return ''
+  }
+
+  const handlePhoneChange = (value: string) => {
+    const formatted = formatPhoneNumber(value)
+    setNewAgent((prev) => ({ ...prev, phone: formatted }))
   }
 
   return (
@@ -562,11 +609,20 @@ export default function AdminAgentsPage() {
               <div>
                 <Label className="text-xs text-gray-500 uppercase tracking-wide">Password</Label>
                 <div className="mt-2">
-                  <Button variant="outline" onClick={handleResetPassword} disabled={isResettingPassword}>
+                  <Button
+                    variant="outline"
+                    onClick={handleResetPassword}
+                    disabled={isResettingPassword || agentDetails.status === 'inactive'}
+                    className={agentDetails.status === 'inactive' ? 'opacity-50 cursor-not-allowed' : ''}
+                  >
                     {isResettingPassword ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <KeyRound className="h-4 w-4 mr-2" />}
                     Reset Password
                   </Button>
-                  <p className="text-xs text-gray-500 mt-1">This will generate a new password and send an email to the agent.</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {agentDetails.status === 'inactive'
+                      ? 'Activate the agent first to reset their password.'
+                      : 'This will generate a new password and send an email to the agent.'}
+                  </p>
                 </div>
               </div>
 
@@ -586,6 +642,67 @@ export default function AdminAgentsPage() {
                     <span className="text-sm text-gray-500">Agent will be activated on first login</span>
                   )}
                 </div>
+              </div>
+
+              <Separator />
+
+              {/* Delete Agent */}
+              <div>
+                <Label className="text-xs text-gray-500 uppercase tracking-wide">Danger Zone</Label>
+                {showDeleteConfirm ? (
+                  <div className="mt-2 bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-red-800">Are you sure you want to delete this agent?</p>
+                        <p className="text-sm text-red-600 mt-1">
+                          This will permanently delete {agentDetails.firstName} {agentDetails.lastName}&apos;s account.
+                          {agentDetails.realtors && agentDetails.realtors.length > 0 && (
+                            <> Their {agentDetails.realtors.length} linked realtor(s) will be unlinked and deactivated (not deleted).</>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setShowDeleteConfirm(false)}
+                        disabled={isDeleting}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={handleDeleteAgent}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? (
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4 mr-2" />
+                        )}
+                        Delete Permanently
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => setShowDeleteConfirm(true)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Agent
+                    </Button>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Deleting will unlink and deactivate any linked realtors (they won&apos;t be deleted).
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           ) : null}
@@ -695,11 +812,11 @@ export default function AdminAgentsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone (optional)</Label>
-                  <Input id="phone" type="tel" value={newAgent.phone} onChange={(e) => setNewAgent({ ...newAgent, phone: e.target.value })} />
+                  <Input id="phone" type="tel" placeholder="(555) 555-5555" value={newAgent.phone} onChange={(e) => handlePhoneChange(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="seatLimit">Seat Limit</Label>
-                  <Input id="seatLimit" type="number" min="1" value={newAgent.seatLimit} onChange={(e) => setNewAgent({ ...newAgent, seatLimit: parseInt(e.target.value) || 10 })} />
+                  <Input id="seatLimit" type="number" min="1" value={newAgent.seatLimit} onChange={(e) => setNewAgent({ ...newAgent, seatLimit: parseInt(e.target.value) || 50 })} />
                 </div>
               </div>
 

@@ -139,6 +139,11 @@ export default function AgentRealtorsPage() {
     setShowCredentialsModal(true)
   }
 
+  const handleUnlink = (realtorId: number) => {
+    // Remove the realtor from the list when unlinked
+    setRealtors((prev) => prev.filter((r) => r.id !== realtorId))
+  }
+
   return (
     <React.Fragment>
       <RealtorCredentialsModal
@@ -156,6 +161,7 @@ export default function AgentRealtorsPage() {
         realtorId={selectedRealtorId}
         onStatusChange={handleStatusChange}
         onPasswordReset={handlePasswordReset}
+        onUnlink={handleUnlink}
       />
       <div className="space-y-6">
         <div className="flex items-center justify-between">

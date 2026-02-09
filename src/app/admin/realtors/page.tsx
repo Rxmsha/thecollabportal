@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -12,10 +13,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, Users, Building } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Search, Users, Building, Plus, Loader2 } from 'lucide-react'
 import xano from '@/services/xano'
 import { formatDate } from '@/lib/utils'
-import { Realtor, RealtorStatus } from '@/types'
+import { Realtor, RealtorStatus, Agent } from '@/types'
 import RealtorCredentialsModal from '@/components/RealtorCredentialsModal'
 import RealtorDetailModal from '@/components/RealtorDetailModal'
 
@@ -38,6 +46,27 @@ export default function AdminRealtorsPage() {
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [selectedRealtorId, setSelectedRealtorId] = useState<number | null>(null)
 
+  // Create realtor modal state
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
+  const [createError, setCreateError] = useState('')
+  const [createSuccess, setCreateSuccess] = useState<{
+    email: string
+    tempPassword: string
+    agentName: string | null
+    status: string
+  } | null>(null)
+  const [agents, setAgents] = useState<Agent[]>([])
+  const [isLoadingAgents, setIsLoadingAgents] = useState(false)
+  const [newRealtor, setNewRealtor] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    brokerage: '',
+    phone: '',
+    agentId: 'none' as string | number,
+  })
+
   useEffect(() => {
     loadRealtors()
   }, [statusFilter])
@@ -55,6 +84,20 @@ export default function AdminRealtorsPage() {
       console.error('Failed to load realtors:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const loadAgents = async () => {
+    setIsLoadingAgents(true)
+    try {
+      const { data, error } = await xano.getAgents({ status: 'active' })
+      if (data) {
+        setAgents(data)
+      }
+    } catch (error) {
+      console.error('Failed to load agents:', error)
+    } finally {
+      setIsLoadingAgents(false)
     }
   }
 
@@ -114,6 +157,89 @@ export default function AdminRealtorsPage() {
     setRealtors((prev) => prev.filter((r) => r.id !== realtorId))
   }
 
+  const openCreateModal = () => {
+    setShowCreateModal(true)
+    loadAgents()
+  }
+
+  const closeCreateModal = () => {
+    setShowCreateModal(false)
+    setCreateError('')
+    setCreateSuccess(null)
+    setNewRealtor({
+      firstName: '',
+      lastName: '',
+      email: '',
+      brokerage: '',
+      phone: '',
+      agentId: 'none',
+    })
+  }
+
+  const formatPhoneNumber = (value: string) => {
+    const digits = value.replace(/\D/g, '')
+    const limited = digits.slice(0, 10)
+    if (limited.length >= 7) {
+      return `(${limited.slice(0, 3)}) ${limited.slice(3, 6)}-${limited.slice(6)}`
+    } else if (limited.length >= 4) {
+      return `(${limited.slice(0, 3)}) ${limited.slice(3)}`
+    } else if (limited.length > 0) {
+      return `(${limited}`
+    }
+    return ''
+  }
+
+  const handlePhoneChange = (value: string) => {
+    const formatted = formatPhoneNumber(value)
+    setNewRealtor((prev) => ({ ...prev, phone: formatted }))
+  }
+
+  const handleCreateRealtor = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsCreating(true)
+    setCreateError('')
+    setCreateSuccess(null)
+
+    try {
+      const agentId = newRealtor.agentId === 'none' ? null : Number(newRealtor.agentId)
+      const { data, error } = await xano.adminCreateRealtor({
+        firstName: newRealtor.firstName,
+        lastName: newRealtor.lastName,
+        email: newRealtor.email,
+        brokerage: newRealtor.brokerage,
+        phone: newRealtor.phone,
+        agentId,
+      })
+
+      if (error) {
+        setCreateError(error)
+        return
+      }
+
+      if (data) {
+        setCreateSuccess({
+          email: data.email,
+          tempPassword: data.tempPassword,
+          agentName: data.agentName,
+          status: data.status,
+        })
+        loadRealtors()
+        setNewRealtor({
+          firstName: '',
+          lastName: '',
+          email: '',
+          brokerage: '',
+          phone: '',
+          agentId: 'none',
+        })
+      }
+    } catch (error) {
+      setCreateError('Failed to create realtor')
+    } finally {
+      setIsCreating(false)
+    }
+  }
+
   return (
     <React.Fragment>
       <RealtorCredentialsModal
@@ -139,11 +265,17 @@ export default function AdminRealtorsPage() {
         onDelete={handleDelete}
       />
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Realtors</h1>
-        <p className="text-gray-500 mt-1">
-          View all realtors across all agents on the platform
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Realtors</h1>
+          <p className="text-gray-500 mt-1">
+            View all realtors across all agents on the platform
+          </p>
+        </div>
+        <Button onClick={openCreateModal}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Realtor
+        </Button>
       </div>
 
       {/* Filters */}
@@ -214,7 +346,7 @@ export default function AdminRealtorsPage() {
                           </div>
                         </td>
                         <td className="p-4">{getStatusBadge(realtor.status)}</td>
-                        <td className="p-4 text-gray-500">Agent #{realtor.agentId}</td>
+                        <td className="p-4 text-gray-500">{realtor.agentId ? `Agent #${realtor.agentId}` : 'Unlinked'}</td>
                         <td className="p-4 text-gray-500">{formatDate(realtor.inviteSentAt)}</td>
                         <td className="p-4 text-gray-500">{realtor.activatedAt ? formatDate(realtor.activatedAt) : 'Never'}</td>
                         <td className="p-4 text-right">
@@ -235,6 +367,164 @@ export default function AdminRealtorsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Create Realtor Modal */}
+      <Dialog open={showCreateModal} onOpenChange={closeCreateModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Realtor</DialogTitle>
+            <DialogDescription>
+              Add a new realtor to the platform. You can optionally link them to an agent.
+            </DialogDescription>
+          </DialogHeader>
+
+          {createSuccess ? (
+            <div className="space-y-4">
+              <div className={`${createSuccess.status === 'invited' ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'} border rounded-lg p-4`}>
+                <p className={`${createSuccess.status === 'invited' ? 'text-green-800' : 'text-amber-800'} font-medium`}>
+                  Realtor created successfully!
+                </p>
+                {createSuccess.status === 'invited' ? (
+                  <p className="text-green-700 text-sm mt-1">
+                    An onboarding email has been sent from {createSuccess.agentName}.
+                  </p>
+                ) : (
+                  <p className="text-amber-700 text-sm mt-1">
+                    No email was sent. The realtor is inactive until linked to an agent.
+                  </p>
+                )}
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <div>
+                  <Label className="text-gray-500 text-xs">Email</Label>
+                  <p className="font-mono text-sm">{createSuccess.email}</p>
+                </div>
+                <div>
+                  <Label className="text-gray-500 text-xs">Temporary Password</Label>
+                  <p className="font-mono text-sm bg-yellow-100 px-2 py-1 rounded inline-block">{createSuccess.tempPassword}</p>
+                </div>
+                {createSuccess.agentName && (
+                  <div>
+                    <Label className="text-gray-500 text-xs">Linked Agent</Label>
+                    <p className="text-sm">{createSuccess.agentName}</p>
+                  </div>
+                )}
+                <div>
+                  <Label className="text-gray-500 text-xs">Status</Label>
+                  <p className="text-sm capitalize">{createSuccess.status}</p>
+                </div>
+              </div>
+              <Button onClick={closeCreateModal} className="w-full">Done</Button>
+            </div>
+          ) : (
+            <form onSubmit={handleCreateRealtor} className="space-y-4">
+              {createError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{createError}</div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    value={newRealtor.firstName}
+                    onChange={(e) => setNewRealtor({ ...newRealtor, firstName: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    value={newRealtor.lastName}
+                    onChange={(e) => setNewRealtor({ ...newRealtor, lastName: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={newRealtor.email}
+                  onChange={(e) => setNewRealtor({ ...newRealtor, email: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="brokerage">Brokerage</Label>
+                <Input
+                  id="brokerage"
+                  value={newRealtor.brokerage}
+                  onChange={(e) => setNewRealtor({ ...newRealtor, brokerage: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone (optional)</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="(555) 555-5555"
+                  value={newRealtor.phone}
+                  onChange={(e) => handlePhoneChange(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="agentId">Link to Agent</Label>
+                {isLoadingAgents ? (
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Loading agents...
+                  </div>
+                ) : (
+                  <Select
+                    value={String(newRealtor.agentId)}
+                    onValueChange={(value) => setNewRealtor({ ...newRealtor, agentId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select an agent" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No Linked Agent (Inactive)</SelectItem>
+                      {agents.map((agent) => (
+                        <SelectItem key={agent.id} value={String(agent.id)}>
+                          {agent.firstName} {agent.lastName} - {agent.companyName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                <p className="text-xs text-gray-500">
+                  {newRealtor.agentId === 'none'
+                    ? 'Realtor will be created as inactive and no email will be sent.'
+                    : 'Realtor will receive an onboarding email that appears to come from the selected agent.'}
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1">
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isCreating} className="flex-1">
+                  {isCreating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    'Create Realtor'
+                  )}
+                </Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
     </React.Fragment>
   )

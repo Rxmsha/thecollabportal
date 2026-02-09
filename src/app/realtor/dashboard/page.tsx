@@ -34,15 +34,25 @@ interface AgentInfo {
   bio: string
 }
 
+interface Resource {
+  id: number
+  title: string
+  description: string
+  buttonText: string
+  resourceUrl: string
+  resourceType: 'link' | 'file'
+}
+
 export default function RealtorDashboardPage() {
   const { user } = useAuth()
   const [agent, setAgent] = useState<AgentInfo | null>(null)
+  const [resources, setResources] = useState<Resource[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showFirstLoginModal, setShowFirstLoginModal] = useState(false)
 
   useEffect(() => {
-    if (user?.agentId) {
-      loadAgentInfo()
+    if (user) {
+      loadDashboardData()
     }
   }, [user])
 
@@ -53,14 +63,28 @@ export default function RealtorDashboardPage() {
     }
   }, [user])
 
-  const loadAgentInfo = async () => {
+  const loadDashboardData = async () => {
     try {
-      const { data, error } = await xano.getAgent(user!.agentId!)
-      if (data) {
-        setAgent(data)
+      // Load resources and agent info in parallel
+      const [resourcesResponse, agentResponse] = await Promise.all([
+        xano.getResources(),
+        xano.getMyAgent(),
+      ])
+
+      if (resourcesResponse.data) {
+        setResources(resourcesResponse.data)
+      }
+      if (resourcesResponse.error) {
+        console.error('Failed to load resources:', resourcesResponse.error)
+      }
+
+      if (agentResponse.data) {
+        setAgent(agentResponse.data)
+      } else if (agentResponse.error) {
+        console.error('Failed to load agent:', agentResponse.error)
       }
     } catch (error) {
-      console.error('Failed to load agent info:', error)
+      console.error('Failed to load dashboard data:', error)
     } finally {
       setIsLoading(false)
     }
@@ -148,40 +172,43 @@ export default function RealtorDashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Resources */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Resources for Your Clients</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-2">
-                    Pre-Approval Process
-                  </h4>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Help your clients understand the mortgage pre-approval process
-                    and what documents they need.
-                  </p>
-                  <Button size="sm" variant="outline">
-                    Learn More
-                  </Button>
+          {/* Resources for Your Clients */}
+          {resources.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Resources for Your Clients</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {resources.map((resource, index) => (
+                    <div
+                      key={resource.id}
+                      className={`p-4 rounded-lg ${
+                        index % 2 === 0 ? 'bg-blue-50' : 'bg-green-50'
+                      }`}
+                    >
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        {resource.title}
+                      </h4>
+                      <p className="text-sm text-gray-600 mb-3">
+                        {resource.description}
+                      </p>
+                      <Button size="sm" variant="outline" asChild>
+                        <a
+                          href={resource.resourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {resource.buttonText}
+                          <ExternalLink className="h-3 w-3 ml-2" />
+                        </a>
+                      </Button>
+                    </div>
+                  ))}
                 </div>
-                <div className="p-4 bg-green-50 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-2">
-                    First-Time Homebuyer Guide
-                  </h4>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Share this comprehensive guide with first-time buyers to help
-                    them navigate the process.
-                  </p>
-                  <Button size="sm" variant="outline">
-                    Download Guide
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Agent Info Sidebar */}

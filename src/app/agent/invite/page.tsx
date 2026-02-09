@@ -111,6 +111,27 @@ export default function AgentInvitePage() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-digits
+    const digits = value.replace(/\D/g, '')
+    // Limit to 10 digits
+    const limited = digits.slice(0, 10)
+    // Format as (XXX) XXX-XXXX
+    if (limited.length >= 7) {
+      return `(${limited.slice(0, 3)}) ${limited.slice(3, 6)}-${limited.slice(6)}`
+    } else if (limited.length >= 4) {
+      return `(${limited.slice(0, 3)}) ${limited.slice(3)}`
+    } else if (limited.length > 0) {
+      return `(${limited}`
+    }
+    return ''
+  }
+
+  const handlePhoneChange = (value: string) => {
+    const formatted = formatPhoneNumber(value)
+    setFormData((prev) => ({ ...prev, phone: formatted }))
+  }
+
   return (
     <React.Fragment>
       <RealtorCredentialsModal
@@ -226,8 +247,9 @@ export default function AgentInvitePage() {
                   <Input
                     id="phone"
                     type="tel"
+                    inputMode="numeric"
                     value={formData.phone}
-                    onChange={(e) => handleChange('phone', e.target.value)}
+                    onChange={(e) => handlePhoneChange(e.target.value)}
                     placeholder="(555) 123-4567"
                   />
                 </div>
