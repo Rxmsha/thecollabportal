@@ -78,9 +78,9 @@ export default function AdminSettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-500 mt-1">
+      <div className="border-b border-gray-200 pb-4">
+        <h1 className="dot-matrix text-xl text-gray-900">SETTINGS</h1>
+        <p className="text-sm text-gray-500 mt-1">
           Manage your admin account settings
         </p>
       </div>
@@ -211,6 +211,7 @@ export default function AdminSettingsPage() {
                         Cancel
                       </Button>
                       <Button
+                        className="bg-[#1a2332] hover:bg-[#2a3342]"
                         onClick={handleChangePassword}
                         disabled={isChangingPassword}
                       >

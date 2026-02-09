@@ -154,15 +154,15 @@ export default function AdminTemplatesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Templates</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="dot-matrix text-xl text-gray-900">TEMPLATES</h1>
+          <p className="text-sm text-gray-500 mt-1">
             Create and publish content for your users
           </p>
         </div>
         <Button
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-[#1a2332] hover:bg-[#2a3342]"
           onClick={() => router.push('/admin/templates/new')}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -172,12 +172,12 @@ export default function AdminTemplatesPage() {
 
       {/* Selection Bar - Shows when templates are selected */}
       {selectedIds.length > 0 && (
-        <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+        <div className="flex items-center justify-between bg-[#0077B6]/10 border border-[#0077B6]/20 px-4 py-3">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-blue-700">
+            <span className="text-sm font-medium text-[#0077B6]">
               {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''} selected
             </span>
-            <Button variant="ghost" size="sm" onClick={selectAll} className="text-blue-600 hover:text-blue-700">
+            <Button variant="ghost" size="sm" onClick={selectAll} className="text-[#0077B6] hover:text-[#006399]">
               {selectedIds.length === templates.length ? 'Deselect All' : 'Select All'}
             </Button>
           </div>
@@ -392,7 +392,7 @@ export default function AdminTemplatesPage() {
             <p className="text-gray-500 mb-4">Get started by creating your first template</p>
             <Button
               onClick={() => router.push('/admin/templates/new')}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-[#1a2332] hover:bg-[#2a3342]"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Template

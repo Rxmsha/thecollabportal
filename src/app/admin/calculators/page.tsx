@@ -68,9 +68,9 @@ export default function AdminCalculatorsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Calculators</h1>
-        <p className="text-gray-500 mt-1">
+      <div className="border-b border-gray-200 pb-4">
+        <h1 className="dot-matrix text-xl text-gray-900">CALCULATORS</h1>
+        <p className="text-sm text-gray-500 mt-1">
           Preview all calculators available to agents and realtors
         </p>
       </div>
@@ -83,7 +83,7 @@ export default function AdminCalculatorsPage() {
             <Card
               key={calc.id}
               className={`cursor-pointer transition-all ${
-                isActive ? 'ring-2 ring-blue-500 border-blue-500' : 'hover:border-gray-300'
+                isActive ? 'ring-2 ring-[#0077B6] border-[#0077B6]' : 'hover:border-gray-300'
               }`}
               onClick={() => setActiveCalculator(calc.id)}
             >

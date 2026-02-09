@@ -74,16 +74,16 @@ export default function AdminToolsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">AI Tools</h1>
-        <p className="text-gray-500 mt-1">
+      <div className="border-b border-gray-200 pb-4">
+        <h1 className="dot-matrix text-xl text-gray-900">AI TOOLS</h1>
+        <p className="text-sm text-gray-500 mt-1">
           Preview and test all AI-powered tools available to agents and realtors.
         </p>
       </div>
 
       {/* Agent Tools */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Agent Tools</h2>
+        <h2 className="font-mono text-sm tracking-wider uppercase text-gray-900 mb-4">Agent Tools</h2>
         <div className="grid gap-6 md:grid-cols-2">
           {agentTools.map((tool) => {
             const Icon = tool.icon
@@ -106,7 +106,7 @@ export default function AdminToolsPage() {
 
       {/* Realtor Tools */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Realtor Tools</h2>
+        <h2 className="font-mono text-sm tracking-wider uppercase text-gray-900 mb-4">Realtor Tools</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {realtorTools.map((tool) => {
             const Icon = tool.icon

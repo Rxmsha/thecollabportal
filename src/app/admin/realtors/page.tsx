@@ -265,14 +265,14 @@ export default function AdminRealtorsPage() {
         onDelete={handleDelete}
       />
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Realtors</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="dot-matrix text-xl text-gray-900">REALTORS</h1>
+          <p className="text-sm text-gray-500 mt-1">
             View all realtors across all agents on the platform
           </p>
         </div>
-        <Button onClick={openCreateModal}>
+        <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={openCreateModal}>
           <Plus className="h-4 w-4 mr-2" />
           Create Realtor
         </Button>
@@ -314,15 +314,15 @@ export default function AdminRealtorsPage() {
           ) : filteredRealtors.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">Realtor</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">Brokerage</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">Status</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">Agent</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">Invited</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">Last Active</th>
-                    <th className="text-right p-4 text-sm font-medium text-gray-500">Actions</th>
+                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Realtor</th>
+                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Brokerage</th>
+                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Agent</th>
+                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Invited</th>
+                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Last Active</th>
+                    <th className="text-right p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -414,7 +414,7 @@ export default function AdminRealtorsPage() {
                   <p className="text-sm capitalize">{createSuccess.status}</p>
                 </div>
               </div>
-              <Button onClick={closeCreateModal} className="w-full">Done</Button>
+              <Button onClick={closeCreateModal} className="w-full bg-[#1a2332] hover:bg-[#2a3342]">Done</Button>
             </div>
           ) : (
             <form onSubmit={handleCreateRealtor} className="space-y-4">
@@ -510,7 +510,7 @@ export default function AdminRealtorsPage() {
                 <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1">
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isCreating} className="flex-1">
+                <Button type="submit" disabled={isCreating} className="flex-1 bg-[#1a2332] hover:bg-[#2a3342]">
                   {isCreating ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />

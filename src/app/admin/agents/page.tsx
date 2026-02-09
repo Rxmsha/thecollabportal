@@ -381,10 +381,10 @@ export default function AdminAgentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Agents</h1>
-          <p className="text-gray-500 mt-1">Manage all mortgage agents on the platform</p>
+          <h1 className="dot-matrix text-xl text-gray-900">AGENTS</h1>
+          <p className="text-sm text-gray-500 mt-1">Manage all mortgage agents on the platform</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={handleRecalculateSeats} disabled={isRecalculating}>
@@ -395,7 +395,7 @@ export default function AdminAgentsPage() {
             )}
             Recalculate Seats
           </Button>
-          <Button onClick={() => setShowCreateModal(true)}>
+          <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={() => setShowCreateModal(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Create Agent
           </Button>
@@ -438,14 +438,14 @@ export default function AdminAgentsPage() {
           ) : filteredAgents.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">Agent</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">Company</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">Status</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">Realtors</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-500">Joined</th>
-                    <th className="text-right p-4 text-sm font-medium text-gray-500">Actions</th>
+                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Agent</th>
+                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Realtors</th>
+                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                    <th className="text-right p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -455,7 +455,7 @@ export default function AdminAgentsPage() {
                           <div className="flex items-center gap-3">
                             <div
                               className="h-10 w-10 rounded-full flex items-center justify-center text-white font-medium"
-                              style={{ backgroundColor: agent.brandColor || '#2563eb' }}
+                              style={{ backgroundColor: agent.brandColor || '#0077B6' }}
                             >
                               {agent.firstName[0]}{agent.lastName[0]}
                             </div>
@@ -750,7 +750,7 @@ export default function AdminAgentsPage() {
               </div>
 
               <p className="text-xs text-amber-600">The agent will be prompted to change their password on first login.</p>
-              <Button onClick={closeCredentialsModal} className="w-full">Done</Button>
+              <Button onClick={closeCredentialsModal} className="w-full bg-[#1a2332] hover:bg-[#2a3342]">Done</Button>
             </div>
           )}
         </DialogContent>
@@ -780,7 +780,7 @@ export default function AdminAgentsPage() {
                   <p className="font-mono text-sm bg-yellow-100 px-2 py-1 rounded inline-block">{createSuccess.tempPassword}</p>
                 </div>
               </div>
-              <Button onClick={closeCreateModal} className="w-full">Done</Button>
+              <Button onClick={closeCreateModal} className="w-full bg-[#1a2332] hover:bg-[#2a3342]">Done</Button>
             </div>
           ) : (
             <form onSubmit={handleCreateAgent} className="space-y-4">
@@ -822,7 +822,7 @@ export default function AdminAgentsPage() {
 
               <div className="flex gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1">Cancel</Button>
-                <Button type="submit" disabled={isCreating} className="flex-1">{isCreating ? 'Creating...' : 'Create Agent'}</Button>
+                <Button type="submit" disabled={isCreating} className="flex-1 bg-[#1a2332] hover:bg-[#2a3342]">{isCreating ? 'Creating...' : 'Create Agent'}</Button>
               </div>
             </form>
           )}

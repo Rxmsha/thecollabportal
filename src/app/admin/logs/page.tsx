@@ -299,10 +299,10 @@ export default function AdminLogsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4">
+      <div className="flex items-center justify-between flex-wrap gap-4 border-b border-gray-200 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Usage Logs</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="dot-matrix text-xl text-gray-900">USAGE LOGS</h1>
+          <p className="text-sm text-gray-500 mt-1">
             Track all activity across the platform
           </p>
         </div>
@@ -358,7 +358,7 @@ export default function AdminLogsPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-[#0077B6]">
               {logs.filter(l => getEventConfig(l.eventType).category === 'agent').length}
             </div>
             <div className="text-sm text-gray-500">Agent Events</div>

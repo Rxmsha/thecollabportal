@@ -314,14 +314,14 @@ export default function AdminResourcesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Resources</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="dot-matrix text-xl text-gray-900">RESOURCES</h1>
+          <p className="text-sm text-gray-500 mt-1">
             Manage helpful resources for agents and realtors
           </p>
         </div>
-        <Button onClick={openCreateModal}>
+        <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={openCreateModal}>
           <Plus className="h-4 w-4 mr-2" />
           Add Resource
         </Button>
@@ -422,7 +422,7 @@ export default function AdminResourcesPage() {
           <CardContent className="py-12 text-center">
             <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500 mb-4">No resources yet</p>
-            <Button onClick={openCreateModal}>
+            <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={openCreateModal}>
               <Plus className="h-4 w-4 mr-2" />
               Add Your First Resource
             </Button>
@@ -576,7 +576,7 @@ export default function AdminResourcesPage() {
               >
                 Cancel
               </Button>
-              <Button onClick={handleCreate} disabled={isSaving}>
+              <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={handleCreate} disabled={isSaving}>
                 {isSaving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -738,7 +738,7 @@ export default function AdminResourcesPage() {
               >
                 Cancel
               </Button>
-              <Button onClick={handleEdit} disabled={isSaving}>
+              <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={handleEdit} disabled={isSaving}>
                 {isSaving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
