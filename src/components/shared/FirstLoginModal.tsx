@@ -116,30 +116,32 @@ export default function FirstLoginModal({ isOpen, onComplete }: FirstLoginModalP
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleDoItLater() }}>
-      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle className="text-xl">Welcome! Set Your Password</DialogTitle>
-          <DialogDescription className="text-base">
-            For your security, we recommend changing your temporary password to something memorable.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden max-h-[90vh] flex flex-col" onPointerDownOutside={(e) => e.preventDefault()}>
+        <div className="bg-[#1a2332] px-6 py-4 flex-shrink-0">
+          <DialogHeader>
+            <DialogTitle className="text-white font-mono uppercase tracking-wider">Set Your Password</DialogTitle>
+            <DialogDescription className="text-gray-400 font-mono text-sm">
+              For your security, change your temporary password to something memorable.
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-        <div className="space-y-4 pt-2">
+        <div className="p-6 space-y-4 overflow-y-auto flex-1">
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 text-red-700 text-sm font-mono">
               <AlertCircle className="h-4 w-4 flex-shrink-0" />
               {error}
             </div>
           )}
           {success && (
-            <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+            <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 text-green-700 text-sm font-mono">
               <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
               Password changed successfully!
             </div>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="tempPassword">Temporary Password</Label>
+            <Label htmlFor="tempPassword" className="font-mono text-xs uppercase tracking-wider text-gray-600">Temporary Password</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -149,15 +151,15 @@ export default function FirstLoginModal({ isOpen, onComplete }: FirstLoginModalP
                 onChange={(e) =>
                   setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))
                 }
-                className="pl-10"
+                className="pl-10 font-mono"
                 disabled={isChanging || success}
               />
             </div>
-            <p className="text-xs text-gray-500">This is the password from your welcome email</p>
+            <p className="text-xs text-gray-500 font-mono">This is the password from your welcome email</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="newPass">New Password</Label>
+            <Label htmlFor="newPass" className="font-mono text-xs uppercase tracking-wider text-gray-600">New Password</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -167,14 +169,14 @@ export default function FirstLoginModal({ isOpen, onComplete }: FirstLoginModalP
                 onChange={(e) =>
                   setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))
                 }
-                className="pl-10"
+                className="pl-10 font-mono"
                 disabled={isChanging || success}
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPass">Confirm New Password</Label>
+            <Label htmlFor="confirmPass" className="font-mono text-xs uppercase tracking-wider text-gray-600">Confirm New Password</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -184,17 +186,17 @@ export default function FirstLoginModal({ isOpen, onComplete }: FirstLoginModalP
                 onChange={(e) =>
                   setPasswordForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
                 }
-                className="pl-10"
+                className="pl-10 font-mono"
                 disabled={isChanging || success}
               />
             </div>
           </div>
 
-          <div className="flex flex-col items-center gap-3 pt-4">
+          <div className="flex flex-col items-center gap-3 pt-4 border-t border-gray-200">
             <Button
               onClick={handleChangePassword}
               disabled={isChanging || success}
-              className="w-full"
+              className="w-full bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider"
             >
               {isChanging ? 'Changing Password...' : 'Change Password'}
             </Button>
@@ -202,7 +204,7 @@ export default function FirstLoginModal({ isOpen, onComplete }: FirstLoginModalP
             <button
               onClick={handleDoItLater}
               disabled={isDismissing || isChanging || success}
-              className="text-sm text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+              className="text-sm text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 font-mono"
             >
               {isDismissing ? 'Please wait...' : "I'll do it later"}
             </button>

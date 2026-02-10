@@ -174,22 +174,23 @@ export default function AdminTemplatesPage() {
       {selectedIds.length > 0 && (
         <div className="flex items-center justify-between bg-[#0077B6]/10 border border-[#0077B6]/20 px-4 py-3">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-[#0077B6]">
+            <span className="text-sm font-mono font-medium text-[#0077B6]">
               {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''} selected
             </span>
-            <Button variant="ghost" size="sm" onClick={selectAll} className="text-[#0077B6] hover:text-[#006399]">
+            <Button variant="ghost" size="sm" onClick={selectAll} className="text-[#0077B6] hover:text-[#006399] font-mono uppercase tracking-wider text-xs">
               {selectedIds.length === templates.length ? 'Deselect All' : 'Select All'}
             </Button>
           </div>
           <div className="flex items-center gap-2">
             {showDeleteConfirm ? (
               <>
-                <span className="text-sm text-red-600 mr-2">Delete {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''}?</span>
+                <span className="text-sm font-mono text-red-600 mr-2">Delete {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''}?</span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowDeleteConfirm(false)}
                   disabled={isDeleting}
+                  className="font-mono uppercase tracking-wider text-xs"
                 >
                   Cancel
                 </Button>
@@ -198,6 +199,7 @@ export default function AdminTemplatesPage() {
                   size="sm"
                   onClick={handleBulkDelete}
                   disabled={isDeleting}
+                  className="font-mono uppercase tracking-wider text-xs"
                 >
                   {isDeleting ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -209,7 +211,7 @@ export default function AdminTemplatesPage() {
               </>
             ) : (
               <>
-                <Button variant="ghost" size="sm" onClick={clearSelection}>
+                <Button variant="ghost" size="sm" onClick={clearSelection} className="font-mono uppercase tracking-wider text-xs">
                   <X className="h-4 w-4 mr-1" />
                   Clear
                 </Button>
@@ -217,6 +219,7 @@ export default function AdminTemplatesPage() {
                   variant="destructive"
                   size="sm"
                   onClick={() => setShowDeleteConfirm(true)}
+                  className="font-mono uppercase tracking-wider text-xs"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete Selected
@@ -281,16 +284,16 @@ export default function AdminTemplatesPage() {
       {isLoading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
-            <Card key={i} className="overflow-hidden border rounded-xl">
+            <Card key={i} className="overflow-hidden border-0 rounded-none">
               <div className="aspect-[4/3] bg-gray-100 animate-pulse" />
-              <CardContent className="p-4 space-y-3">
-                <div className="h-5 bg-gray-100 rounded animate-pulse" />
-                <div className="h-4 bg-gray-100 rounded w-2/3 animate-pulse" />
+              <div className="bg-[#1a2332] p-4 space-y-3">
+                <div className="h-5 bg-gray-700 rounded animate-pulse" />
+                <div className="h-4 bg-gray-700 rounded w-2/3 animate-pulse" />
                 <div className="flex justify-between items-center pt-2">
-                  <div className="h-6 w-16 bg-gray-100 rounded animate-pulse" />
-                  <div className="h-9 w-20 bg-gray-100 rounded animate-pulse" />
+                  <div className="h-5 w-16 bg-gray-700 rounded animate-pulse" />
+                  <div className="h-8 w-24 bg-gray-700 rounded animate-pulse" />
                 </div>
-              </CardContent>
+              </div>
             </Card>
           ))}
         </div>
@@ -301,8 +304,8 @@ export default function AdminTemplatesPage() {
             return (
               <Card
                 key={template.id}
-                className={`overflow-hidden border rounded-xl hover:shadow-lg transition-all cursor-pointer ${
-                  isSelected ? 'ring-2 ring-blue-500 border-blue-500' : ''
+                className={`overflow-hidden border-0 rounded-none hover:shadow-lg transition-all cursor-pointer ${
+                  isSelected ? 'ring-2 ring-[#0077B6]' : ''
                 }`}
                 onClick={() => router.push(`/admin/templates/${template.id}`)}
               >
@@ -326,10 +329,10 @@ export default function AdminTemplatesPage() {
                     onClick={(e) => toggleSelection(template.id, e)}
                   >
                     <div
-                      className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+                      className={`w-6 h-6 border-2 flex items-center justify-center transition-colors ${
                         isSelected
-                          ? 'bg-blue-600 border-blue-600 text-white'
-                          : 'bg-white/90 border-gray-300 hover:border-blue-400'
+                          ? 'bg-[#0077B6] border-[#0077B6] text-white'
+                          : 'bg-white/90 border-gray-300 hover:border-[#0077B6]'
                       }`}
                     >
                       {isSelected && <Check className="h-4 w-4" />}
@@ -338,7 +341,7 @@ export default function AdminTemplatesPage() {
 
                   {/* Category Badge - Top Right */}
                   <div className="absolute top-3 right-3">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border ${getCategoryStyle(template.category)}`}>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium uppercase tracking-wider border ${getCategoryStyle(template.category)}`}>
                       {getCategoryIcon(template.category)}
                       {formatCategoryLabel(template.category)}
                     </span>
@@ -347,30 +350,31 @@ export default function AdminTemplatesPage() {
                   {/* Draft Badge - Below checkbox */}
                   {template.status === 'draft' && (
                     <div className="absolute top-12 left-3">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                      <span className="inline-flex items-center px-2.5 py-1 text-xs font-mono font-medium uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
                         Draft
                       </span>
                     </div>
                   )}
                 </div>
 
-                {/* Content */}
-                <CardContent className="p-4">
-                  <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                {/* Content - Dark footer */}
+                <div className="bg-[#1a2332] p-4">
+                  <h3 className="font-mono font-semibold text-white text-base mb-1 truncate">
                     {template.title}
                   </h3>
-                  <p className="text-sm text-gray-500 line-clamp-2 mb-4">
+                  <p className="text-sm text-gray-400 font-mono line-clamp-1 mb-3">
                     {template.shortDescription}
                   </p>
 
                   {/* Footer */}
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    <span className="text-xs font-mono font-medium text-gray-400 uppercase tracking-wider">
                       {template.format.toUpperCase().replace('_', ' ')}
                     </span>
                     <Button
                       size="sm"
                       variant="outline"
+                      className="bg-transparent border-gray-500 text-white hover:bg-white/10 hover:text-white font-mono text-xs uppercase tracking-wider"
                       onClick={(e) => {
                         e.stopPropagation()
                         router.push(`/admin/templates/${template.id}`)
@@ -379,20 +383,20 @@ export default function AdminTemplatesPage() {
                       View Details
                     </Button>
                   </div>
-                </CardContent>
+                </div>
               </Card>
             )
           })}
         </div>
       ) : (
-        <Card className="border rounded-xl">
+        <Card className="border-0">
           <CardContent className="py-16 text-center">
             <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
-            <p className="text-gray-500 mb-4">Get started by creating your first template</p>
+            <h3 className="text-lg font-mono font-medium text-gray-900 mb-2">No templates found</h3>
+            <p className="text-gray-500 font-mono mb-4">Get started by creating your first template</p>
             <Button
               onClick={() => router.push('/admin/templates/new')}
-              className="bg-[#1a2332] hover:bg-[#2a3342]"
+              className="bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Template

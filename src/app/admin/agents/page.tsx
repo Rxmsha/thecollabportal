@@ -1,10 +1,9 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
@@ -19,8 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Search, Building2, Mail, Phone, Calendar, Users, Plus, KeyRound, Copy, CheckCircle2, Eye, EyeOff, Loader2, Minus, RefreshCw, Trash2, AlertTriangle } from 'lucide-react'
-import { Separator } from '@/components/ui/separator'
+import { Search, Building2, Users, Plus, KeyRound, Copy, CheckCircle2, Eye, EyeOff, Loader2, Minus, RefreshCw, AlertTriangle } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import xano from '@/services/xano'
 import { formatDate } from '@/lib/utils'
@@ -137,15 +135,16 @@ export default function AdminAgentsPage() {
   })
 
   const getStatusBadge = (status: string) => {
+    const baseClasses = "px-3 py-1 text-sm font-mono font-medium uppercase tracking-wider"
     switch (status) {
       case 'active':
-        return <Badge variant="success">Active</Badge>
+        return <span className={`${baseClasses} bg-emerald-100 text-emerald-700 border border-emerald-200`}>Active</span>
       case 'invited':
-        return <Badge variant="default">Invited</Badge>
+        return <span className={`${baseClasses} bg-amber-100 text-amber-700 border border-amber-200`}>Invited</span>
       case 'inactive':
-        return <Badge variant="secondary">Inactive</Badge>
+        return <span className={`${baseClasses} bg-gray-100 text-gray-600 border border-gray-200`}>Inactive</span>
       default:
-        return <Badge variant="secondary">{status}</Badge>
+        return <span className={`${baseClasses} bg-gray-100 text-gray-600 border border-gray-200`}>{status}</span>
     }
   }
 
@@ -438,45 +437,45 @@ export default function AdminAgentsPage() {
           ) : filteredAgents.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-[#1a2332] border-b border-gray-700">
                   <tr>
-                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Agent</th>
-                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Realtors</th>
-                    <th className="text-left p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                    <th className="text-right p-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Agent</th>
+                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Company</th>
+                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Status</th>
+                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Realtors</th>
+                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Joined</th>
+                    <th className="text-right p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-gray-200">
                   {filteredAgents.map((agent) => (
-                      <tr key={agent.id} className="hover:bg-gray-50">
+                      <tr key={agent.id} className="hover:bg-gray-50/50">
                         <td className="p-4">
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-4">
                             <div
-                              className="h-10 w-10 rounded-full flex items-center justify-center text-white font-medium"
-                              style={{ backgroundColor: agent.brandColor || '#0077B6' }}
+                              className="h-11 w-11 flex items-center justify-center text-white text-sm font-mono font-bold tracking-wider"
+                              style={{ backgroundColor: agent.brandColor || '#1a2332' }}
                             >
                               {agent.firstName[0]}{agent.lastName[0]}
                             </div>
                             <div>
-                              <p className="font-medium text-gray-900">{agent.firstName} {agent.lastName}</p>
-                              <p className="text-sm text-gray-500">{agent.email}</p>
+                              <p className="font-mono text-base font-medium text-gray-900 tracking-wide">{agent.firstName} {agent.lastName}</p>
+                              <p className="text-sm text-gray-500 font-mono">{agent.email}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="p-4"><p className="text-gray-900">{agent.companyName}</p></td>
+                        <td className="p-4"><p className="text-base text-gray-700 font-medium">{agent.companyName}</p></td>
                         <td className="p-4">{getStatusBadge(agent.status)}</td>
                         <td className="p-4">
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 text-gray-400" />
-                            <span className="text-gray-900">{agent.seatsUsed}/{agent.seatLimit}</span>
+                            <span className="text-base font-mono text-gray-700">{agent.seatsUsed}/{agent.seatLimit}</span>
                           </div>
                         </td>
-                        <td className="p-4 text-gray-500">{formatDate(agent.createdAt)}</td>
+                        <td className="p-4 text-base text-gray-500 font-mono">{formatDate(agent.createdAt)}</td>
                         <td className="p-4 text-right">
-                          <Button variant="outline" size="sm" onClick={() => handleOpenDetails(agent.id)}>
-                            More
+                          <Button variant="outline" className="text-sm font-medium border-gray-300 hover:bg-gray-100 hover:border-gray-400 h-9 px-4" onClick={() => handleOpenDetails(agent.id)}>
+                            MORE
                           </Button>
                         </td>
                       </tr>
@@ -495,216 +494,150 @@ export default function AdminAgentsPage() {
 
       {/* Agent Detail Modal */}
       <Dialog open={showDetailModal} onOpenChange={closeDetailModal}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Agent Details</DialogTitle>
-            <DialogDescription>View and manage agent information</DialogDescription>
-          </DialogHeader>
-
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0" closeClassName="text-white">
           {isLoadingDetails ? (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
             </div>
           ) : detailsError ? (
-            <div className="bg-red-50 text-red-600 p-4 rounded-lg">{detailsError}</div>
+            <div className="bg-red-50 text-red-600 p-4">{detailsError}</div>
           ) : agentDetails ? (
-            <div className="space-y-6">
-              {/* Agent Info */}
-              <div className="flex items-center gap-4">
+            <>
+              {/* Header */}
+              <div className="bg-[#1a2332] p-6 flex items-center gap-4">
                 <div
-                  className="h-16 w-16 rounded-full flex items-center justify-center text-white text-xl font-medium"
-                  style={{ backgroundColor: agentDetails.brandColor || '#2563eb' }}
+                  className="h-16 w-16 flex items-center justify-center text-white text-lg font-mono font-bold tracking-wider border-2 border-white/20"
+                  style={{ backgroundColor: agentDetails.brandColor || '#1a2332' }}
                 >
                   {agentDetails.firstName[0]}{agentDetails.lastName[0]}
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold">{agentDetails.firstName} {agentDetails.lastName}</h3>
-                  <p className="text-gray-500">{agentDetails.companyName}</p>
-                  {getStatusBadge(agentDetails.status)}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-white font-mono text-xl font-medium tracking-wide truncate">{agentDetails.firstName} {agentDetails.lastName}</h3>
+                  <p className="text-gray-400 text-base truncate">{agentDetails.companyName}</p>
                 </div>
+                {getStatusBadge(agentDetails.status)}
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-sm">
-                  <Mail className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">{agentDetails.email}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Phone className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">{agentDetails.phone || 'N/A'}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Calendar className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">Joined {formatDate(agentDetails.createdAt)}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Users className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">{agentDetails.seatsUsed} of {agentDetails.seatLimit} seats used</span>
-                </div>
-              </div>
-
-              {/* Seat Limit Control */}
-              <div>
-                <Label className="text-xs text-gray-500 uppercase tracking-wide">Seat Limit</Label>
-                <div className="mt-2 flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleUpdateSeatLimit(agentDetails.seatLimit - 1)}
-                    disabled={isUpdatingSeatLimit || agentDetails.seatLimit <= 1 || agentDetails.seatLimit <= agentDetails.seatsUsed}
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <span className="text-lg font-semibold w-12 text-center">{agentDetails.seatLimit}</span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleUpdateSeatLimit(agentDetails.seatLimit + 1)}
-                    disabled={isUpdatingSeatLimit}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                  {isUpdatingSeatLimit && <Loader2 className="h-4 w-4 animate-spin text-gray-400" />}
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  {agentDetails.seatsUsed > 0 && agentDetails.seatLimit <= agentDetails.seatsUsed
-                    ? "Cannot reduce below current usage"
-                    : "Adjust the maximum number of realtors this agent can invite"}
-                </p>
-              </div>
-
-              {/* Linked Realtors */}
-              <div>
-                <Label className="text-xs text-gray-500 uppercase tracking-wide">
-                  Linked Realtors ({agentDetails.realtors?.length || 0})
-                </Label>
-                <div className="mt-2 bg-gray-50 rounded-lg p-3 max-h-40 overflow-y-auto">
-                  {agentDetails.realtors && agentDetails.realtors.length > 0 ? (
-                    <div className="space-y-2">
-                      {agentDetails.realtors.map((realtor: any) => (
-                        <div key={realtor.id} className="flex items-center justify-between text-sm">
-                          <div className="flex items-center gap-2">
-                            <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center text-green-700 text-xs font-medium">
-                              {realtor.firstName?.[0]}{realtor.lastName?.[0]}
-                            </div>
-                            <span className="text-gray-700">{realtor.firstName} {realtor.lastName}</span>
-                          </div>
-                          <Badge variant={realtor.status === 'active' ? 'success' : realtor.status === 'invited' ? 'default' : 'secondary'} className="text-xs">
-                            {realtor.status}
-                          </Badge>
-                        </div>
-                      ))}
+              <div className="p-6 space-y-6">
+                {/* Contact & Stats Grid */}
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="space-y-1">
+                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Email</p>
+                    <p className="text-gray-700 font-mono text-base truncate">{agentDetails.email}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Phone</p>
+                    <p className="text-gray-700 font-mono text-base">{agentDetails.phone || 'N/A'}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Joined</p>
+                    <p className="text-gray-700 font-mono text-base">{formatDate(agentDetails.createdAt)}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Seats</p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-gray-700 font-mono text-base">{agentDetails.seatsUsed}/{agentDetails.seatLimit}</span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleUpdateSeatLimit(agentDetails.seatLimit - 1)}
+                          disabled={isUpdatingSeatLimit || agentDetails.seatLimit <= 1 || agentDetails.seatLimit <= agentDetails.seatsUsed}
+                          className="h-7 w-7 flex items-center justify-center border border-gray-300 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleUpdateSeatLimit(agentDetails.seatLimit + 1)}
+                          disabled={isUpdatingSeatLimit}
+                          className="h-7 w-7 flex items-center justify-center border border-gray-300 hover:bg-gray-100 disabled:opacity-40"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
-                  ) : (
-                    <p className="text-sm text-gray-500 text-center py-2">No realtors yet</p>
-                  )}
+                  </div>
                 </div>
-              </div>
 
-              <Separator />
+                {/* Linked Realtors - Compact */}
+                <div className="border border-gray-200">
+                  <div className="bg-gray-50 px-4 py-2.5 border-b border-gray-200">
+                    <p className="text-sm font-mono text-gray-500 uppercase tracking-wider">Linked Realtors ({agentDetails.realtors?.length || 0})</p>
+                  </div>
+                  <div className="max-h-32 overflow-y-auto">
+                    {agentDetails.realtors && agentDetails.realtors.length > 0 ? (
+                      <div className="divide-y divide-gray-100">
+                        {agentDetails.realtors.map((realtor: any) => (
+                          <div key={realtor.id} className="flex items-center justify-between px-4 py-2.5">
+                            <div className="flex items-center gap-3">
+                              <span className="h-7 w-7 bg-[#1a2332] text-white flex items-center justify-center text-xs font-mono">
+                                {realtor.firstName?.[0]}{realtor.lastName?.[0]}
+                              </span>
+                              <span className="text-gray-700 font-mono text-base">{realtor.firstName} {realtor.lastName}</span>
+                            </div>
+                            <span className={`text-sm font-mono uppercase ${realtor.status === 'active' ? 'text-emerald-600' : 'text-gray-400'}`}>
+                              {realtor.status}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-base text-gray-400 text-center py-4 font-mono">No realtors</p>
+                    )}
+                  </div>
+                </div>
 
-              {/* Password Reset */}
-              <div>
-                <Label className="text-xs text-gray-500 uppercase tracking-wide">Password</Label>
-                <div className="mt-2">
+                {/* Actions Row */}
+                <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
                     onClick={handleResetPassword}
                     disabled={isResettingPassword || agentDetails.status === 'inactive'}
-                    className={agentDetails.status === 'inactive' ? 'opacity-50 cursor-not-allowed' : ''}
+                    className="flex-1 h-11"
                   >
                     {isResettingPassword ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <KeyRound className="h-4 w-4 mr-2" />}
                     Reset Password
                   </Button>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {agentDetails.status === 'inactive'
-                      ? 'Activate the agent first to reset their password.'
-                      : 'This will generate a new password and send an email to the agent.'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Status Change */}
-              <div>
-                <Label className="text-xs text-gray-500 uppercase tracking-wide">Change Status</Label>
-                <div className="flex gap-2 mt-2">
                   {agentDetails.status === 'active' ? (
-                    <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={handleDeactivate}>
+                    <Button variant="outline" className="flex-1 h-11 text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-amber-200" onClick={handleDeactivate}>
                       Deactivate
                     </Button>
                   ) : agentDetails.status === 'inactive' ? (
-                    <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700 hover:bg-green-50" onClick={handleReactivate} disabled={isResettingPassword}>
+                    <Button variant="outline" className="flex-1 h-11 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200" onClick={handleReactivate} disabled={isResettingPassword}>
                       {isResettingPassword ? 'Activating...' : 'Activate'}
                     </Button>
-                  ) : (
-                    <span className="text-sm text-gray-500">Agent will be activated on first login</span>
-                  )}
+                  ) : null}
                 </div>
-              </div>
 
-              <Separator />
-
-              {/* Delete Agent */}
-              <div>
-                <Label className="text-xs text-gray-500 uppercase tracking-wide">Danger Zone</Label>
+                {/* Delete Section */}
                 {showDeleteConfirm ? (
-                  <div className="mt-2 bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
-                    <div className="flex items-start gap-3">
-                      <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
-                      <div>
-                        <p className="font-medium text-red-800">Are you sure you want to delete this agent?</p>
-                        <p className="text-sm text-red-600 mt-1">
-                          This will permanently delete {agentDetails.firstName} {agentDetails.lastName}&apos;s account.
-                          {agentDetails.realtors && agentDetails.realtors.length > 0 && (
-                            <> Their {agentDetails.realtors.length} linked realtor(s) will be unlinked and deactivated (not deleted).</>
-                          )}
-                        </p>
-                      </div>
+                  <div className="bg-red-50 border border-red-200 p-4 space-y-3">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-base text-red-700 font-mono">
+                        Permanently delete <strong>{agentDetails.firstName}</strong>?
+                        {agentDetails.realtors && agentDetails.realtors.length > 0 && (
+                          <> {agentDetails.realtors.length} realtor(s) will be unlinked.</>
+                        )}
+                      </p>
                     </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setShowDeleteConfirm(false)}
-                        disabled={isDeleting}
-                      >
+                    <div className="flex gap-3">
+                      <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} className="flex-1 h-10 font-mono">
                         Cancel
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={handleDeleteAgent}
-                        disabled={isDeleting}
-                      >
-                        {isDeleting ? (
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4 mr-2" />
-                        )}
-                        Delete Permanently
+                      <Button variant="destructive" onClick={handleDeleteAgent} disabled={isDeleting} className="flex-1 h-10 font-mono">
+                        {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Delete'}
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <div className="mt-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      onClick={() => setShowDeleteConfirm(true)}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Agent
-                    </Button>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Deleting will unlink and deactivate any linked realtors (they won&apos;t be deleted).
-                    </p>
-                  </div>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="w-full text-base text-red-500 hover:text-red-600 font-mono py-4 border-t border-gray-100"
+                  >
+                    Delete Agent
+                  </button>
                 )}
               </div>
-            </div>
+            </>
           ) : null}
         </DialogContent>
       </Dialog>
@@ -758,74 +691,76 @@ export default function AdminAgentsPage() {
 
       {/* Create Agent Modal */}
       <Dialog open={showCreateModal} onOpenChange={closeCreateModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Create New Agent</DialogTitle>
-            <DialogDescription>Add a new mortgage agent to the platform. A temporary password will be generated.</DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-md p-0" closeClassName="text-white">
+          <div className="bg-[#1a2332] p-5">
+            <h2 className="text-white font-mono text-lg font-medium tracking-wide">CREATE NEW AGENT</h2>
+            <p className="text-gray-400 text-sm font-mono mt-1">Add a new mortgage agent to the platform</p>
+          </div>
 
-          {createSuccess ? (
-            <div className="space-y-4">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <p className="text-green-800 font-medium">Agent created successfully!</p>
-                <p className="text-green-700 text-sm mt-1">Send these credentials to the agent:</p>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div>
-                  <Label className="text-gray-500 text-xs">Email</Label>
-                  <p className="font-mono text-sm">{createSuccess.email}</p>
+          <div className="p-6">
+            {createSuccess ? (
+              <div className="space-y-4">
+                <div className="bg-emerald-50 border border-emerald-200 p-4">
+                  <p className="text-emerald-800 font-mono font-medium">Agent created successfully!</p>
+                  <p className="text-emerald-700 text-sm font-mono mt-1">Send these credentials to the agent:</p>
                 </div>
-                <div>
-                  <Label className="text-gray-500 text-xs">Temporary Password</Label>
-                  <p className="font-mono text-sm bg-yellow-100 px-2 py-1 rounded inline-block">{createSuccess.tempPassword}</p>
+                <div className="bg-gray-50 p-4 space-y-3">
+                  <div>
+                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Email</p>
+                    <p className="font-mono text-base text-gray-700">{createSuccess.email}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Temporary Password</p>
+                    <p className="font-mono text-base bg-amber-100 px-2 py-1 inline-block text-gray-900">{createSuccess.tempPassword}</p>
+                  </div>
                 </div>
+                <Button onClick={closeCreateModal} className="w-full bg-[#1a2332] hover:bg-[#2a3342] font-mono h-11">Done</Button>
               </div>
-              <Button onClick={closeCreateModal} className="w-full bg-[#1a2332] hover:bg-[#2a3342]">Done</Button>
-            </div>
-          ) : (
-            <form onSubmit={handleCreateAgent} className="space-y-4">
-              {createError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{createError}</div>
-              )}
+            ) : (
+              <form onSubmit={handleCreateAgent} className="space-y-5">
+                {createError && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm font-mono">{createError}</div>
+                )}
 
-              <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName" className="text-sm font-mono text-gray-500 uppercase tracking-wider">First Name <span className="text-red-500">*</span></Label>
+                    <Input id="firstName" className="font-mono" value={newAgent.firstName} onChange={(e) => setNewAgent({ ...newAgent, firstName: e.target.value })} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName" className="text-sm font-mono text-gray-500 uppercase tracking-wider">Last Name <span className="text-red-500">*</span></Label>
+                    <Input id="lastName" className="font-mono" value={newAgent.lastName} onChange={(e) => setNewAgent({ ...newAgent, lastName: e.target.value })} required />
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" value={newAgent.firstName} onChange={(e) => setNewAgent({ ...newAgent, firstName: e.target.value })} required />
+                  <Label htmlFor="email" className="text-sm font-mono text-gray-500 uppercase tracking-wider">Email <span className="text-red-500">*</span></Label>
+                  <Input id="email" type="email" className="font-mono" value={newAgent.email} onChange={(e) => setNewAgent({ ...newAgent, email: e.target.value })} required />
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" value={newAgent.lastName} onChange={(e) => setNewAgent({ ...newAgent, lastName: e.target.value })} required />
+                  <Label htmlFor="companyName" className="text-sm font-mono text-gray-500 uppercase tracking-wider">Company Name <span className="text-red-500">*</span></Label>
+                  <Input id="companyName" className="font-mono" value={newAgent.companyName} onChange={(e) => setNewAgent({ ...newAgent, companyName: e.target.value })} required />
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" value={newAgent.email} onChange={(e) => setNewAgent({ ...newAgent, email: e.target.value })} required />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="companyName">Company Name</Label>
-                <Input id="companyName" value={newAgent.companyName} onChange={(e) => setNewAgent({ ...newAgent, companyName: e.target.value })} required />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone (optional)</Label>
-                  <Input id="phone" type="tel" placeholder="(555) 555-5555" value={newAgent.phone} onChange={(e) => handlePhoneChange(e.target.value)} />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-mono text-gray-500 uppercase tracking-wider">Phone</Label>
+                    <Input id="phone" type="tel" className="font-mono" value={newAgent.phone} onChange={(e) => handlePhoneChange(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="seatLimit" className="text-sm font-mono text-gray-500 uppercase tracking-wider">Seat Limit <span className="text-red-500">*</span></Label>
+                    <Input id="seatLimit" type="number" className="font-mono" min="1" value={newAgent.seatLimit} onChange={(e) => setNewAgent({ ...newAgent, seatLimit: parseInt(e.target.value) || 50 })} />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="seatLimit">Seat Limit</Label>
-                  <Input id="seatLimit" type="number" min="1" value={newAgent.seatLimit} onChange={(e) => setNewAgent({ ...newAgent, seatLimit: parseInt(e.target.value) || 50 })} />
-                </div>
-              </div>
 
-              <div className="flex gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1">Cancel</Button>
-                <Button type="submit" disabled={isCreating} className="flex-1 bg-[#1a2332] hover:bg-[#2a3342]">{isCreating ? 'Creating...' : 'Create Agent'}</Button>
-              </div>
-            </form>
-          )}
+                <div className="flex gap-3 pt-4">
+                  <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1 font-mono h-11">Cancel</Button>
+                  <Button type="submit" disabled={isCreating} className="flex-1 bg-[#1a2332] hover:bg-[#2a3342] font-mono h-11">{isCreating ? 'Creating...' : 'Create Agent'}</Button>
+                </div>
+              </form>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>

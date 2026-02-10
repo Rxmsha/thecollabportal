@@ -321,15 +321,16 @@ export default function RealtorDetailModal({
   }
 
   const getStatusBadge = (status: string) => {
+    const baseClasses = "px-3 py-1 text-sm font-mono font-medium uppercase tracking-wider"
     switch (status) {
       case 'active':
-        return <Badge variant="success">Active</Badge>
+        return <span className={`${baseClasses} bg-emerald-100 text-emerald-700 border border-emerald-200`}>Active</span>
       case 'invited':
-        return <Badge variant="default">Invited</Badge>
+        return <span className={`${baseClasses} bg-amber-100 text-amber-700 border border-amber-200`}>Invited</span>
       case 'inactive':
-        return <Badge variant="secondary">Inactive</Badge>
+        return <span className={`${baseClasses} bg-gray-100 text-gray-600 border border-gray-200`}>Inactive</span>
       default:
-        return <Badge variant="secondary">{status}</Badge>
+        return <span className={`${baseClasses} bg-gray-100 text-gray-600 border border-gray-200`}>{status}</span>
     }
   }
 
@@ -337,10 +338,10 @@ export default function RealtorDetailModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Realtor Details</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0" closeClassName="text-white hover:text-gray-300">
+        <DialogHeader className="bg-[#1a2332] text-white p-6">
+          <DialogTitle className="font-mono text-lg font-bold uppercase tracking-wider">Realtor Details</DialogTitle>
+          <DialogDescription className="text-gray-300 font-mono text-sm">
             View realtor information and manage their account
           </DialogDescription>
         </DialogHeader>
@@ -350,318 +351,217 @@ export default function RealtorDetailModal({
             <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
           </div>
         ) : error ? (
-          <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+          <div className="bg-red-50 text-red-600 p-4 font-mono">
             {error}
           </div>
         ) : details ? (
-          <div className="space-y-6">
-            {/* Realtor Info */}
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-medium text-lg">
-                    {details.firstName[0]}
-                    {details.lastName[0]}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {details.firstName} {details.lastName}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      {getStatusBadge(details.status)}
-                      {!hasAgent && <Badge variant="outline">Unlinked</Badge>}
-                    </div>
-                  </div>
+          <div className="p-6 space-y-5">
+            {/* Header - Avatar, Name, Brokerage, Status */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-14 w-14 bg-[#1a2332] flex items-center justify-center text-white font-mono font-bold text-lg tracking-wider">
+                  {details.firstName[0]}{details.lastName[0]}
+                </div>
+                <div>
+                  <p className="font-mono font-semibold text-gray-900 text-base">
+                    {details.firstName} {details.lastName}
+                  </p>
+                  {details.brokerage && (
+                    <p className="font-mono text-sm text-gray-500">{details.brokerage}</p>
+                  )}
                 </div>
               </div>
+              {getStatusBadge(details.status)}
+            </div>
 
-              <Separator />
-
-              <div className="grid grid-cols-1 gap-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <Mail className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">{details.email}</span>
-                </div>
-                {details.phone && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Phone className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-600">{details.phone}</span>
-                  </div>
-                )}
-                {details.brokerage && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Building className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-600">{details.brokerage}</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">
-                    Invited: {formatDate(details.inviteSentAt)}
-                  </span>
-                </div>
-                {details.activatedAt && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-600">
-                      Last Active: {formatDate(details.activatedAt)}
-                    </span>
-                  </div>
-                )}
+            {/* Info Grid - 2 columns */}
+            <div className="grid grid-cols-2 gap-4 pt-2">
+              <div>
+                <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Email</Label>
+                <p className="font-mono text-sm text-gray-900 mt-1">{details.email}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Phone</Label>
+                <p className="font-mono text-sm text-gray-900 mt-1">{details.phone || '-'}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Invited</Label>
+                <p className="font-mono text-sm text-gray-900 mt-1">{formatDate(details.inviteSentAt)}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Last Active</Label>
+                <p className="font-mono text-sm text-gray-900 mt-1">{details.activatedAt ? formatDate(details.activatedAt) : 'Never'}</p>
               </div>
             </div>
 
-            {/* Linked Agent Info */}
-            <div>
-              <Label className="text-xs text-gray-500 uppercase tracking-wide">
-                Linked Agent
+            {/* Linked Agent Section */}
+            <div className="border border-gray-200 p-4">
+              <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">
+                Linked Agent {hasAgent && details.agent ? '(1)' : '(0)'}
               </Label>
               {hasAgent && details.agent ? (
-                <div className="bg-blue-50 rounded-lg p-4 mt-2 space-y-2">
+                <div className="mt-3 space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-blue-600" />
-                      <span className="font-medium text-blue-900">
+                      <div className="h-8 w-8 bg-[#1a2332] flex items-center justify-center text-white font-mono font-bold text-xs">
+                        {details.agent.firstName[0]}{details.agent.lastName[0]}
+                      </div>
+                      <span className="font-mono text-sm text-gray-900">
                         {details.agent.firstName} {details.agent.lastName}
                       </span>
                     </div>
                     {details.agent.status === 'inactive' ? (
-                      <Badge variant="secondary">Inactive</Badge>
+                      <span className="px-2 py-0.5 text-xs font-mono font-medium uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">Inactive</span>
                     ) : (
-                      <Badge variant="success">Active</Badge>
+                      <span className="px-2 py-0.5 text-xs font-mono font-medium uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200">Active</span>
                     )}
                   </div>
-                  {details.agent.companyName && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Building className="h-4 w-4 text-blue-400" />
-                      <span className="text-blue-700">{details.agent.companyName}</span>
-                    </div>
-                  )}
                   <div className="flex items-center gap-2 text-sm">
-                    <Mail className="h-4 w-4 text-blue-400" />
-                    <span className="text-blue-700">{details.agent.email}</span>
+                    <Building className="h-3.5 w-3.5 text-gray-400" />
+                    <span className="text-gray-600 font-mono">{details.agent.companyName || '-'}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="h-3.5 w-3.5 text-gray-400" />
+                    <span className="text-gray-600 font-mono">{details.agent.email}</span>
                   </div>
                   {details.agent.phone && (
                     <div className="flex items-center gap-2 text-sm">
-                      <Phone className="h-4 w-4 text-blue-400" />
-                      <span className="text-blue-700">{details.agent.phone}</span>
+                      <Phone className="h-3.5 w-3.5 text-gray-400" />
+                      <span className="text-gray-600 font-mono">{details.agent.phone}</span>
                     </div>
                   )}
-                  <Separator className="my-2" />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                  <button
+                    className="flex items-center gap-2 text-orange-600 hover:text-orange-700 font-mono text-sm uppercase tracking-wider mt-2 disabled:opacity-50"
                     onClick={handleUnlink}
                     disabled={isUnlinking}
                   >
-                    {isUnlinking ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Unlink className="h-4 w-4 mr-2" />
-                    )}
+                    {isUnlinking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Unlink className="h-4 w-4" />}
                     Unlink from Agent
-                  </Button>
-                  <p className="text-xs text-gray-500">
-                    Unlinking will deactivate the realtor and remove them from this agent.
-                  </p>
+                  </button>
                 </div>
               ) : (
-                <div className="bg-gray-100 rounded-lg p-4 mt-2 space-y-3">
-                  <div className="flex items-center gap-2 text-gray-500">
-                    <Unlink className="h-4 w-4" />
-                    <span className="text-sm">No agent linked</span>
-                  </div>
+                <div className="mt-3 space-y-3">
+                  <p className="font-mono text-sm text-gray-500">No agent linked</p>
                   {showLinkSelect ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
-                        <SelectTrigger>
-                          <SelectValue placeholder={isLoadingAgents ? 'Loading agents...' : 'Select an agent'} />
+                        <SelectTrigger className="font-mono text-sm">
+                          <SelectValue placeholder={isLoadingAgents ? 'Loading...' : 'Select an agent'} />
                         </SelectTrigger>
                         <SelectContent>
                           {agents.map((agent) => (
-                            <SelectItem key={agent.id} value={agent.id.toString()}>
+                            <SelectItem key={agent.id} value={agent.id.toString()} className="font-mono text-sm">
                               {agent.firstName} {agent.lastName} - {agent.companyName}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                       <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          onClick={handleLink}
-                          disabled={!selectedAgentId || isLinking}
-                        >
-                          {isLinking ? (
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          ) : (
-                            <Link2 className="h-4 w-4 mr-2" />
-                          )}
-                          Link to Agent
+                        <Button size="sm" onClick={handleLink} disabled={!selectedAgentId || isLinking} className="bg-[#1a2332] hover:bg-[#2a3342] font-mono text-xs uppercase tracking-wider">
+                          {isLinking ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Link2 className="h-3 w-3 mr-1" />}
+                          Link
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setShowLinkSelect(false)
-                            setSelectedAgentId('')
-                          }}
-                        >
+                        <Button size="sm" variant="outline" className="font-mono text-xs uppercase tracking-wider" onClick={() => { setShowLinkSelect(false); setSelectedAgentId(''); }}>
                           Cancel
                         </Button>
                       </div>
                     </div>
                   ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    <button
+                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-mono text-sm uppercase tracking-wider"
                       onClick={handleShowLinkSelect}
                     >
-                      <Link2 className="h-4 w-4 mr-2" />
+                      <Link2 className="h-4 w-4" />
                       Link to an Agent
-                    </Button>
+                    </button>
                   )}
-                  <p className="text-xs text-gray-500">
-                    The realtor will remain inactive until activated after linking.
-                  </p>
                 </div>
               )}
             </div>
 
-            {/* Actions */}
-            <div className="space-y-3">
-              <Label className="text-xs text-gray-500 uppercase tracking-wide">
-                Actions
-              </Label>
-
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="outline"
-                  onClick={handleResetPassword}
-                  disabled={isResettingPassword || details.status === 'inactive' || !hasAgent}
-                  className={details.status === 'inactive' || !hasAgent ? 'opacity-50 cursor-not-allowed' : ''}
-                >
-                  {isResettingPassword ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <KeyRound className="h-4 w-4 mr-2" />
-                  )}
-                  Reset Password
-                </Button>
-
-                {details.status === 'invited' && hasAgent && (
-                  <Button
-                    variant="outline"
-                    onClick={handleResendInvite}
-                    disabled={isResendingInvite}
-                  >
-                    {isResendingInvite ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Send className="h-4 w-4 mr-2" />
-                    )}
-                    Resend Invite
-                  </Button>
+            {/* Actions Row - Reset Password & Resend Invite side by side */}
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className={`${details.status === 'invited' && hasAgent ? 'flex-1' : 'w-full'} font-mono uppercase tracking-wider justify-center`}
+                onClick={handleResetPassword}
+                disabled={isResettingPassword || details.status === 'inactive' || !hasAgent}
+              >
+                {isResettingPassword ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <KeyRound className="h-4 w-4 mr-2" />
                 )}
+                Reset Password
+              </Button>
 
-                {(details.status === 'active' || details.status === 'invited') && hasAgent ? (
-                  <Button
-                    variant="outline"
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    onClick={handleDeactivate}
-                    disabled={isChangingStatus}
-                  >
-                    {isChangingStatus ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <UserX className="h-4 w-4 mr-2" />
-                    )}
-                    Deactivate
-                  </Button>
-                ) : details.status === 'inactive' && hasAgent ? (
-                  <Button
-                    variant="outline"
-                    className={details.agent?.status === 'inactive'
-                      ? 'opacity-50 cursor-not-allowed'
-                      : 'text-green-600 hover:text-green-700 hover:bg-green-50'}
-                    onClick={handleActivate}
-                    disabled={isChangingStatus || details.agent?.status === 'inactive'}
-                  >
-                    {isChangingStatus ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <UserCheck className="h-4 w-4 mr-2" />
-                    )}
-                    Activate
-                  </Button>
-                ) : null}
-              </div>
-
-              <p className="text-xs text-gray-500">
-                {!hasAgent
-                  ? 'Link the realtor to an agent first to enable actions.'
-                  : details.status === 'inactive' && details.agent?.status === 'inactive'
-                  ? 'Cannot activate realtor while their linked agent is inactive. Activate the agent first.'
-                  : details.status === 'inactive'
-                  ? 'Activate the realtor first to reset their password.'
-                  : 'Password reset email will be sent from the linked agent.'}
-              </p>
-            </div>
-
-            {/* Delete Section */}
-            <Separator />
-            <div className="space-y-3">
-              <Label className="text-xs text-gray-500 uppercase tracking-wide">
-                Danger Zone
-              </Label>
-
-              {showDeleteConfirm ? (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
-                  <div className="flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-red-800">Are you sure you want to delete this realtor?</p>
-                      <p className="text-sm text-red-600 mt-1">
-                        This will permanently delete {details.firstName} {details.lastName}&apos;s account and all their data. This action cannot be undone.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowDeleteConfirm(false)}
-                      disabled={isDeleting}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={handleDelete}
-                      disabled={isDeleting}
-                    >
-                      {isDeleting ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-4 w-4 mr-2" />
-                      )}
-                      Delete Permanently
-                    </Button>
-                  </div>
-                </div>
-              ) : (
+              {details.status === 'invited' && hasAgent && (
                 <Button
                   variant="outline"
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  onClick={() => setShowDeleteConfirm(true)}
+                  className="flex-1 font-mono uppercase tracking-wider justify-center"
+                  onClick={handleResendInvite}
+                  disabled={isResendingInvite}
                 >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Realtor
+                  {isResendingInvite ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+                  Resend Invite
                 </Button>
               )}
             </div>
+
+            {(details.status === 'active' || details.status === 'invited') && hasAgent && (
+              <Button
+                variant="outline"
+                className="w-full font-mono uppercase tracking-wider justify-center text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                onClick={handleDeactivate}
+                disabled={isChangingStatus}
+              >
+                {isChangingStatus ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <UserX className="h-4 w-4 mr-2" />}
+                Deactivate
+              </Button>
+            )}
+
+            {details.status === 'inactive' && hasAgent && (
+              <Button
+                variant="outline"
+                className={`w-full font-mono uppercase tracking-wider justify-center ${details.agent?.status === 'inactive' ? 'opacity-50 cursor-not-allowed' : 'text-green-600 hover:text-green-700 hover:bg-green-50'}`}
+                onClick={handleActivate}
+                disabled={isChangingStatus || details.agent?.status === 'inactive'}
+              >
+                {isChangingStatus ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <UserCheck className="h-4 w-4 mr-2" />}
+                Activate
+              </Button>
+            )}
+
+            {/* Delete Link */}
+            {showDeleteConfirm ? (
+              <div className="bg-red-50 border border-red-200 p-4 space-y-3">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
+                  <div>
+                    <p className="font-mono font-medium text-red-800 text-sm">Delete this realtor?</p>
+                    <p className="text-xs text-red-600 mt-1 font-mono">
+                      This will permanently delete {details.firstName} {details.lastName}&apos;s account. This cannot be undone.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} className="font-mono text-xs uppercase tracking-wider">
+                    Cancel
+                  </Button>
+                  <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isDeleting} className="font-mono text-xs uppercase tracking-wider">
+                    {isDeleting ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Trash2 className="h-3 w-3 mr-1" />}
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <button
+                className="w-full text-center text-red-600 hover:text-red-700 font-mono text-sm uppercase tracking-wider py-2"
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                Delete Realtor
+              </button>
+            )}
           </div>
         ) : null}
       </DialogContent>

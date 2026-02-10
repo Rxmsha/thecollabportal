@@ -302,13 +302,13 @@ export default function AdminResourcesPage() {
   const getAudienceBadge = (aud: string) => {
     switch (aud) {
       case 'agents':
-        return <Badge variant="default" className="bg-blue-100 text-blue-700">Agents Only</Badge>
+        return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-mono font-medium uppercase tracking-wider bg-blue-100 text-blue-700 border border-blue-200"><Building2 className="h-3 w-3" />Agents</span>
       case 'realtors':
-        return <Badge variant="default" className="bg-green-100 text-green-700">Realtors Only</Badge>
+        return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-mono font-medium uppercase tracking-wider bg-green-100 text-green-700 border border-green-200"><Users className="h-3 w-3" />Realtors</span>
       case 'both':
-        return <Badge variant="default" className="bg-purple-100 text-purple-700">Both</Badge>
+        return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-mono font-medium uppercase tracking-wider bg-purple-100 text-purple-700 border border-purple-200">Both</span>
       default:
-        return <Badge variant="secondary">{aud}</Badge>
+        return <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono font-medium uppercase tracking-wider bg-gray-100 text-gray-700 border border-gray-200">{aud}</span>
     }
   }
 
@@ -317,11 +317,11 @@ export default function AdminResourcesPage() {
       <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <div>
           <h1 className="dot-matrix text-xl text-gray-900">RESOURCES</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1 font-mono">
             Manage helpful resources for agents and realtors
           </p>
         </div>
-        <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={openCreateModal}>
+        <Button className="bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider" onClick={openCreateModal}>
           <Plus className="h-4 w-4 mr-2" />
           Add Resource
         </Button>
@@ -331,10 +331,15 @@ export default function AdminResourcesPage() {
       {isLoading ? (
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <Card key={i}>
-              <CardContent className="p-6">
-                <div className="h-6 bg-gray-100 rounded w-1/3 animate-pulse mb-2" />
-                <div className="h-4 bg-gray-100 rounded w-2/3 animate-pulse" />
+            <Card key={i} className="border-0 overflow-hidden">
+              <CardContent className="p-0">
+                <div className="p-6 bg-white">
+                  <div className="h-6 bg-gray-100 w-1/3 animate-pulse mb-2" />
+                  <div className="h-4 bg-gray-100 w-2/3 animate-pulse" />
+                </div>
+                <div className="bg-[#1a2332] p-4">
+                  <div className="h-4 bg-gray-700 w-1/4 animate-pulse" />
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -344,87 +349,99 @@ export default function AdminResourcesPage() {
           {resources.map((resource) => (
             <Card
               key={resource.id}
-              className={`${!resource.isActive ? 'opacity-50' : ''}`}
+              className="border-0 overflow-hidden"
             >
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-4 flex-1">
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <GripVertical className="h-5 w-5" />
-                      <span className="text-sm font-mono">{resource.displayOrder}</span>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-gray-900">{resource.title}</h3>
-                        {getAudienceBadge(resource.audience)}
-                        {!resource.isActive && (
-                          <Badge variant="secondary">Inactive</Badge>
-                        )}
-                        {resource.resourceType === 'file' && (
-                          <Badge variant="outline" className="text-xs">
-                            <FileText className="h-3 w-3 mr-1" />
-                            File
-                          </Badge>
-                        )}
+              <CardContent className="p-0">
+                {/* Main Content */}
+                <div className="p-6 bg-white">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-4 flex-1">
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <GripVertical className="h-5 w-5" />
+                        <span className="text-sm font-mono font-medium">{resource.displayOrder}</span>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{resource.description}</p>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <span className="px-2 py-0.5 bg-gray-100 rounded text-xs">
-                          Button: "{resource.buttonText}"
-                        </span>
-                        <a
-                          href={resource.resourceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-blue-600 hover:underline"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                          View Resource
-                        </a>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <h3 className="font-mono font-semibold text-gray-900">{resource.title}</h3>
+                          {getAudienceBadge(resource.audience)}
+                          {!resource.isActive && (
+                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono font-medium uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">Inactive</span>
+                          )}
+                          {resource.resourceType === 'file' && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-mono font-medium uppercase tracking-wider bg-gray-100 text-gray-700 border border-gray-200">
+                              <FileText className="h-3 w-3" />
+                              File
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 font-mono mb-3">{resource.description}</p>
+                        <div className="flex items-center gap-3 text-sm">
+                          <span className="px-2 py-1 bg-gray-100 text-xs font-mono text-gray-600 border border-gray-200">
+                            Button: "{resource.buttonText}"
+                          </span>
+                          <a
+                            href={resource.resourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-[#0077B6] hover:underline font-mono text-xs uppercase tracking-wider"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            View Resource
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant={resource.isActive ? "ghost" : "default"}
-                      size="sm"
-                      className={resource.isActive ? "" : "bg-green-500 hover:bg-green-600 text-black font-medium"}
-                      onClick={() => handleToggleActive(resource)}
-                    >
-                      {resource.isActive ? 'Deactivate' : 'Activate'}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEditModal(resource)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      onClick={() => {
-                        setSelectedResource(resource)
-                        setShowDeleteDialog(true)
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                </div>
+                {/* Dark Footer with Actions */}
+                <div className="bg-[#1a2332] px-6 py-3 flex items-center justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`font-mono uppercase tracking-wider text-xs ${
+                      resource.isActive
+                        ? 'bg-transparent border-gray-500 text-gray-300 hover:bg-white/10 hover:text-white'
+                        : 'bg-green-500 border-green-500 text-white hover:bg-green-600'
+                    }`}
+                    onClick={() => handleToggleActive(resource)}
+                  >
+                    {resource.isActive ? 'Deactivate' : 'Activate'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-transparent border-gray-500 text-gray-300 hover:bg-white/10 hover:text-white font-mono uppercase tracking-wider text-xs"
+                    onClick={() => openEditModal(resource)}
+                  >
+                    <Pencil className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-transparent border-red-500/50 text-red-400 hover:bg-red-500/20 hover:text-red-300 font-mono uppercase tracking-wider text-xs"
+                    onClick={() => {
+                      setSelectedResource(resource)
+                      setShowDeleteDialog(true)
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    Delete
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
       ) : (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 mb-4">No resources yet</p>
-            <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={openCreateModal}>
+        <Card className="border-0">
+          <CardContent className="py-16 text-center">
+            <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-mono font-medium text-gray-900 mb-2">No resources yet</h3>
+            <p className="text-gray-500 font-mono mb-4">Get started by creating your first resource</p>
+            <Button className="bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider" onClick={openCreateModal}>
               <Plus className="h-4 w-4 mr-2" />
-              Add Your First Resource
+              Add Resource
             </Button>
           </CardContent>
         </Card>
@@ -432,60 +449,63 @@ export default function AdminResourcesPage() {
 
       {/* Create Modal */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Add Resource</DialogTitle>
-            <DialogDescription>
-              Create a new helpful resource for agents and/or realtors
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
+        <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col">
+          <div className="bg-[#1a2332] px-6 py-4 flex-shrink-0">
+            <DialogHeader>
+              <DialogTitle className="text-white font-mono uppercase tracking-wider">Add Resource</DialogTitle>
+              <DialogDescription className="text-gray-400 font-mono text-sm">
+                Create a new helpful resource for agents and/or realtors
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="p-6 space-y-4 overflow-y-auto flex-1">
             <div className="space-y-2">
-              <Label htmlFor="create-title">Title *</Label>
+              <Label htmlFor="create-title" className="font-mono text-xs uppercase tracking-wider text-gray-600">Title *</Label>
               <Input
                 id="create-title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g., Pre-Approval Process"
+                className="font-mono"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="create-description">Description *</Label>
+              <Label htmlFor="create-description" className="font-mono text-xs uppercase tracking-wider text-gray-600">Description *</Label>
               <Textarea
                 id="create-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="e.g., Help your clients understand the mortgage pre-approval process..."
                 rows={3}
+                className="font-mono"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="create-buttonText">Button Text *</Label>
+              <Label htmlFor="create-buttonText" className="font-mono text-xs uppercase tracking-wider text-gray-600">Button Text *</Label>
               <Input
                 id="create-buttonText"
                 value={buttonText}
                 onChange={(e) => setButtonText(e.target.value)}
                 placeholder="e.g., Learn More, Download Guide"
+                className="font-mono"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Resource Type</Label>
+              <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Resource Type</Label>
               <Select value={resourceType} onValueChange={(v: 'link' | 'file') => setResourceType(v)}>
-                <SelectTrigger>
+                <SelectTrigger className="font-mono">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="link">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 font-mono">
                       <LinkIcon className="h-4 w-4" />
                       External Link
                     </div>
                   </SelectItem>
                   <SelectItem value="file">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 font-mono">
                       <FileText className="h-4 w-4" />
                       Upload File
                     </div>
@@ -495,7 +515,7 @@ export default function AdminResourcesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="create-resourceUrl">
+              <Label htmlFor="create-resourceUrl" className="font-mono text-xs uppercase tracking-wider text-gray-600">
                 {resourceType === 'link' ? 'URL *' : 'File *'}
               </Label>
               {resourceType === 'link' ? (
@@ -503,7 +523,7 @@ export default function AdminResourcesPage() {
                   id="create-resourceUrl"
                   value={resourceUrl}
                   onChange={(e) => setResourceUrl(e.target.value)}
-                  placeholder="https://example.com/resource"
+                  className="font-mono"
                 />
               ) : (
                 <div className="space-y-2">
@@ -512,13 +532,13 @@ export default function AdminResourcesPage() {
                       type="file"
                       onChange={handleFileUpload}
                       disabled={isUploading}
-                      className="flex-1"
+                      className="flex-1 font-mono"
                     />
-                    {isUploading && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {isUploading && <Loader2 className="h-4 w-4 animate-spin text-[#0077B6]" />}
                   </div>
                   {resourceUrl && (
-                    <p className="text-sm text-gray-500 truncate">
-                      Uploaded: {resourceUrl}
+                    <p className="text-xs text-emerald-600 font-mono flex items-center gap-1">
+                      <FileText className="h-3 w-3" /> File uploaded successfully
                     </p>
                   )}
                 </div>
@@ -526,26 +546,26 @@ export default function AdminResourcesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Audience *</Label>
+              <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Audience *</Label>
               <Select value={audience} onValueChange={(v: 'agents' | 'realtors' | 'both') => setAudience(v)}>
-                <SelectTrigger>
+                <SelectTrigger className="font-mono">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="both">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 font-mono">
                       <Users className="h-4 w-4" />
                       Both Agents & Realtors
                     </div>
                   </SelectItem>
                   <SelectItem value="agents">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 font-mono">
                       <Building2 className="h-4 w-4" />
                       Agents Only
                     </div>
                   </SelectItem>
                   <SelectItem value="realtors">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 font-mono">
                       <Users className="h-4 w-4" />
                       Realtors Only
                     </div>
@@ -554,29 +574,18 @@ export default function AdminResourcesPage() {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="create-displayOrder">Display Order</Label>
-              <Input
-                id="create-displayOrder"
-                type="number"
-                value={displayOrder}
-                onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
-                placeholder="0"
-              />
-              <p className="text-xs text-gray-500">Lower numbers appear first</p>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
               <Button
                 variant="outline"
                 onClick={() => {
                   setShowCreateModal(false)
                   resetForm()
                 }}
+                className="font-mono uppercase tracking-wider"
               >
                 Cancel
               </Button>
-              <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={handleCreate} disabled={isSaving}>
+              <Button className="bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider" onClick={handleCreate} disabled={isSaving}>
                 {isSaving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -593,60 +602,63 @@ export default function AdminResourcesPage() {
 
       {/* Edit Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Edit Resource</DialogTitle>
-            <DialogDescription>
-              Update this resource's details
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
+        <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col">
+          <div className="bg-[#1a2332] px-6 py-4 flex-shrink-0">
+            <DialogHeader>
+              <DialogTitle className="text-white font-mono uppercase tracking-wider">Edit Resource</DialogTitle>
+              <DialogDescription className="text-gray-400 font-mono text-sm">
+                Update this resource's details
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="p-6 space-y-4 overflow-y-auto flex-1">
             <div className="space-y-2">
-              <Label htmlFor="edit-title">Title *</Label>
+              <Label htmlFor="edit-title" className="font-mono text-xs uppercase tracking-wider text-gray-600">Title *</Label>
               <Input
                 id="edit-title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g., Pre-Approval Process"
+                className="font-mono"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-description">Description *</Label>
+              <Label htmlFor="edit-description" className="font-mono text-xs uppercase tracking-wider text-gray-600">Description *</Label>
               <Textarea
                 id="edit-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="e.g., Help your clients understand the mortgage pre-approval process..."
                 rows={3}
+                className="font-mono"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-buttonText">Button Text *</Label>
+              <Label htmlFor="edit-buttonText" className="font-mono text-xs uppercase tracking-wider text-gray-600">Button Text *</Label>
               <Input
                 id="edit-buttonText"
                 value={buttonText}
                 onChange={(e) => setButtonText(e.target.value)}
                 placeholder="e.g., Learn More, Download Guide"
+                className="font-mono"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Resource Type</Label>
+              <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Resource Type</Label>
               <Select value={resourceType} onValueChange={(v: 'link' | 'file') => setResourceType(v)}>
-                <SelectTrigger>
+                <SelectTrigger className="font-mono">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="link">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 font-mono">
                       <LinkIcon className="h-4 w-4" />
                       External Link
                     </div>
                   </SelectItem>
                   <SelectItem value="file">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 font-mono">
                       <FileText className="h-4 w-4" />
                       Upload File
                     </div>
@@ -656,7 +668,7 @@ export default function AdminResourcesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-resourceUrl">
+              <Label htmlFor="edit-resourceUrl" className="font-mono text-xs uppercase tracking-wider text-gray-600">
                 {resourceType === 'link' ? 'URL *' : 'File *'}
               </Label>
               {resourceType === 'link' ? (
@@ -664,7 +676,7 @@ export default function AdminResourcesPage() {
                   id="edit-resourceUrl"
                   value={resourceUrl}
                   onChange={(e) => setResourceUrl(e.target.value)}
-                  placeholder="https://example.com/resource"
+                  className="font-mono"
                 />
               ) : (
                 <div className="space-y-2">
@@ -673,13 +685,13 @@ export default function AdminResourcesPage() {
                       type="file"
                       onChange={handleFileUpload}
                       disabled={isUploading}
-                      className="flex-1"
+                      className="flex-1 font-mono"
                     />
-                    {isUploading && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {isUploading && <Loader2 className="h-4 w-4 animate-spin text-[#0077B6]" />}
                   </div>
                   {resourceUrl && (
-                    <p className="text-sm text-gray-500 truncate">
-                      Current: {resourceUrl}
+                    <p className="text-xs text-emerald-600 font-mono flex items-center gap-1">
+                      <FileText className="h-3 w-3" /> File uploaded
                     </p>
                   )}
                 </div>
@@ -687,26 +699,26 @@ export default function AdminResourcesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Audience *</Label>
+              <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Audience *</Label>
               <Select value={audience} onValueChange={(v: 'agents' | 'realtors' | 'both') => setAudience(v)}>
-                <SelectTrigger>
+                <SelectTrigger className="font-mono">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="both">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 font-mono">
                       <Users className="h-4 w-4" />
                       Both Agents & Realtors
                     </div>
                   </SelectItem>
                   <SelectItem value="agents">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 font-mono">
                       <Building2 className="h-4 w-4" />
                       Agents Only
                     </div>
                   </SelectItem>
                   <SelectItem value="realtors">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 font-mono">
                       <Users className="h-4 w-4" />
                       Realtors Only
                     </div>
@@ -715,19 +727,7 @@ export default function AdminResourcesPage() {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="edit-displayOrder">Display Order</Label>
-              <Input
-                id="edit-displayOrder"
-                type="number"
-                value={displayOrder}
-                onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
-                placeholder="0"
-              />
-              <p className="text-xs text-gray-500">Lower numbers appear first</p>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
               <Button
                 variant="outline"
                 onClick={() => {
@@ -735,10 +735,11 @@ export default function AdminResourcesPage() {
                   setSelectedResource(null)
                   resetForm()
                 }}
+                className="font-mono uppercase tracking-wider"
               >
                 Cancel
               </Button>
-              <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={handleEdit} disabled={isSaving}>
+              <Button className="bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider" onClick={handleEdit} disabled={isSaving}>
                 {isSaving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -755,30 +756,40 @@ export default function AdminResourcesPage() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Resource?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{selectedResource?.title}"? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700"
-              disabled={isDeleting}
-            >
-              {isDeleting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                'Delete'
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
+        <AlertDialogContent className="p-0 overflow-hidden">
+          <div className="bg-red-600 px-6 py-4">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-white font-mono uppercase tracking-wider">Delete Resource?</AlertDialogTitle>
+              <AlertDialogDescription className="text-red-100 font-mono text-sm">
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-700 font-mono mb-6">
+              Are you sure you want to delete "<span className="font-semibold">{selectedResource?.title}</span>"?
+            </p>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="font-mono uppercase tracking-wider">Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="bg-red-600 hover:bg-red-700 font-mono uppercase tracking-wider"
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </>
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
     </div>
