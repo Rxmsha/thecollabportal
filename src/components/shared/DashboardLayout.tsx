@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { Sidebar } from './Sidebar'
 import { cn } from '@/lib/utils'
 import { Menu } from 'lucide-react'
+import { useBranding } from '@/context/BrandingContext'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -13,6 +14,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, title }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const { brandColor } = useBranding()
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -46,7 +48,8 @@ export function DashboardLayout({ children, title }: DashboardLayoutProps) {
       >
         {/* Mobile menu button */}
         <button
-          className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-[#1a2332] text-white rounded"
+          className="lg:hidden fixed top-4 left-4 z-50 p-2 text-white rounded"
+          style={{ backgroundColor: brandColor }}
           onClick={() => setSidebarOpen(true)}
         >
           <Menu className="h-5 w-5" />

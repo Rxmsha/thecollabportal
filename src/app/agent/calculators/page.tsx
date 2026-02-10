@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Calculator, Home, DollarSign, GitCompare, RefreshCw } from 'lucide-react'
+import { useBranding } from '@/context/BrandingContext'
 
 const BENDIGI_API_KEY = '6b8d4bcbd614b83d:GKInd7r_8LRhNkacBhoO2B9-ArTyV_yk'
 const BENDIGI_TERMS = 'https://canadianmortgageapp.com/terms'
@@ -12,65 +13,98 @@ const calculators = [
     id: 'simple-mtg',
     name: 'Mortgage Calculator',
     icon: Calculator,
-    color: 'bg-blue-100 text-blue-600',
   },
   {
     id: 'purchase',
     name: 'Purchase Calculator',
     icon: Home,
-    color: 'bg-green-100 text-green-600',
   },
   {
     id: 'closing-cost',
     name: 'Closing Cost Calculator',
     icon: DollarSign,
-    color: 'bg-purple-100 text-purple-600',
   },
   {
     id: 'compare',
     name: 'Compare Side-by-Side',
     icon: GitCompare,
-    color: 'bg-orange-100 text-orange-600',
   },
   {
     id: 'renewal',
     name: 'Renewal Calculator',
     icon: RefreshCw,
-    color: 'bg-teal-100 text-teal-600',
   },
 ]
 
 function BendigiCalculator({ toolId }: { toolId: string }) {
-  useEffect(() => {
-    const existingScript = document.querySelector('script[src="https://tools.bendigi.com/assets/calculators.js"]')
-    if (!existingScript) {
-      const script = document.createElement('script')
-      script.src = 'https://tools.bendigi.com/assets/calculators.js'
-      script.async = true
-      document.body.appendChild(script)
-    }
-  }, [])
+  const containerRef = React.useRef<HTMLDivElement>(null)
 
-  return (
-    <div
-      className="bendigi-calculators"
-      key={toolId}
-      // @ts-ignore
-      apikey={BENDIGI_API_KEY}
-      terms={BENDIGI_TERMS}
-      tools={toolId}
-    />
-  )
+  useEffect(() => {
+    // Load the Bendigi script if not already loaded
+    const loadScript = () => {
+      return new Promise<void>((resolve) => {
+        const existingScript = document.querySelector('script[src="https://tools.bendigi.com/assets/calculators.js"]')
+        if (existingScript) {
+          resolve()
+          return
+        }
+        const script = document.createElement('script')
+        script.src = 'https://tools.bendigi.com/assets/calculators.js'
+        script.async = true
+        script.onload = () => resolve()
+        document.body.appendChild(script)
+      })
+    }
+
+    // Initialize the calculator
+    const initCalculator = async () => {
+      if (!containerRef.current) return
+
+      // Clear previous content
+      containerRef.current.innerHTML = ''
+
+      // Create the Bendigi div with proper HTML attributes
+      const bendigiDiv = document.createElement('div')
+      bendigiDiv.className = 'bendigi-calculators'
+      bendigiDiv.setAttribute('apikey', BENDIGI_API_KEY)
+      bendigiDiv.setAttribute('terms', BENDIGI_TERMS)
+      bendigiDiv.setAttribute('tools', toolId)
+
+      containerRef.current.appendChild(bendigiDiv)
+
+      // Load script and re-initialize
+      await loadScript()
+
+      // Trigger Bendigi to scan for new calculator divs
+      // The script looks for .bendigi-calculators on load
+      // For dynamic content, we may need to reload the script
+      const oldScript = document.querySelector('script[src="https://tools.bendigi.com/assets/calculators.js"]')
+      if (oldScript) {
+        oldScript.remove()
+      }
+      const newScript = document.createElement('script')
+      newScript.src = 'https://tools.bendigi.com/assets/calculators.js'
+      newScript.async = true
+      document.body.appendChild(newScript)
+    }
+
+    initCalculator()
+  }, [toolId])
+
+  return <div ref={containerRef} className="min-h-[400px]" />
 }
 
 export default function AgentCalculatorsPage() {
+  const { brandColor } = useBranding()
   const [activeCalculator, setActiveCalculator] = useState('simple-mtg')
+  const activeCalc = calculators.find((c) => c.id === activeCalculator)
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Calculators</h1>
-        <p className="text-gray-500 mt-1">
+      {/* Page Header */}
+      <div className="border-b border-gray-200 pb-4">
+        <h1 className="dot-matrix text-2xl text-gray-900">CALCULATORS</h1>
+        <p className="text-base text-gray-700 mt-1 font-mono">
           Use these calculators to help your clients understand their options
         </p>
       </div>
@@ -82,24 +116,47 @@ export default function AgentCalculatorsPage() {
           return (
             <Card
               key={calc.id}
-              className={`cursor-pointer transition-all ${
-                isActive ? 'ring-2 ring-blue-500 border-blue-500' : 'hover:border-gray-300'
+              className={`cursor-pointer transition-all border-0 overflow-hidden ${
+                isActive ? 'ring-2 shadow-lg' : 'hover:shadow-md'
               }`}
+              style={isActive ? { ringColor: brandColor } : undefined}
               onClick={() => setActiveCalculator(calc.id)}
             >
-              <CardContent className="p-4">
-                <div className={`h-10 w-10 rounded-lg ${calc.color} flex items-center justify-center mb-3`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="font-medium text-gray-900 text-sm">{calc.name}</h3>
+              <div
+                className={`px-4 py-3 flex items-center justify-center ${
+                  isActive ? '' : 'bg-gray-100'
+                }`}
+                style={isActive ? { backgroundColor: brandColor } : undefined}
+              >
+                <Icon className={`h-6 w-6 ${isActive ? 'text-white' : 'text-gray-600'}`} />
+              </div>
+              <CardContent className="p-3 bg-white">
+                <h3
+                  className={`font-mono text-xs uppercase tracking-wider text-center ${
+                    isActive ? 'font-semibold' : 'text-gray-700'
+                  }`}
+                  style={isActive ? { color: brandColor } : undefined}
+                >
+                  {calc.name}
+                </h3>
               </CardContent>
             </Card>
           )
         })}
       </div>
 
-      <Card>
-        <CardContent className="p-6">
+      <Card className="border-0 overflow-hidden">
+        <div className="px-6 py-3 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+          {activeCalc && (
+            <>
+              <activeCalc.icon className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider">
+                {activeCalc.name}
+              </span>
+            </>
+          )}
+        </div>
+        <CardContent className="p-6 bg-white">
           <BendigiCalculator toolId={activeCalculator} />
         </CardContent>
       </Card>

@@ -2,17 +2,41 @@
 
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useBranding } from '@/context/BrandingContext'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Separator } from '@/components/ui/separator'
-import { Upload, Link as LinkIcon, Save, Image as ImageIcon, Phone, AlertCircle } from 'lucide-react'
+import {
+  Upload,
+  Link as LinkIcon,
+  Save,
+  Image as ImageIcon,
+  Phone,
+  AlertCircle,
+  Palette,
+  User,
+  ExternalLink,
+  Eye,
+  Check,
+} from 'lucide-react'
 import xano from '@/services/xano'
 import { markBrandingVisited } from '@/lib/onboarding'
 
+const BRAND_COLORS = [
+  { name: 'Navy', value: '#1e3a5f' },
+  { name: 'Slate', value: '#475569' },
+  { name: 'Charcoal', value: '#374151' },
+  { name: 'Steel', value: '#334155' },
+  { name: 'Graphite', value: '#1f2937' },
+  { name: 'Forest', value: '#14532d' },
+  { name: 'Burgundy', value: '#7f1d1d' },
+  { name: 'Deep Blue', value: '#1e40af' },
+]
+
 export default function AgentBrandingPage() {
+  const { brandColor, setBrandColor: setContextBrandColor, setProfilePhoto } = useBranding()
   // Mark branding as visited for onboarding progress
   useEffect(() => {
     markBrandingVisited()
@@ -22,7 +46,7 @@ export default function AgentBrandingPage() {
   const [agentName, setAgentName] = useState({ firstName: '', lastName: '' })
   const [branding, setBranding] = useState({
     phone: '',
-    brandColor: '#2563eb',
+    brandColor: '#1e3a5f',
     logoUrl: '',
     calendlyLink: '',
     cmaLink: '',
@@ -54,12 +78,20 @@ export default function AgentBrandingPage() {
         })
         setBranding({
           phone: data.phone || '',
-          brandColor: data.brandColor || '#2563eb',
+          brandColor: data.brandColor || '#1e3a5f',
           logoUrl: data.logoUrl || '',
           calendlyLink: data.calendlyLink || '',
           cmaLink: data.cmaLink || '',
           bio: data.bio || '',
         })
+        // Update context for sidebar display
+        if (data.logoUrl) {
+          setProfilePhoto(data.logoUrl)
+        }
+        // Update brand color in context for entire portal
+        if (data.brandColor) {
+          setContextBrandColor(data.brandColor)
+        }
       }
     } catch (err) {
       console.error('Failed to load branding:', err)
@@ -85,6 +117,8 @@ export default function AgentBrandingPage() {
       if (saveError) {
         setError(saveError)
       } else {
+        // Update brand color in context immediately after saving
+        setContextBrandColor(branding.brandColor)
         setSaveSuccess(true)
         setTimeout(() => setSaveSuccess(false), 3000)
       }
@@ -108,13 +142,12 @@ export default function AgentBrandingPage() {
       if (uploadError) {
         setError(uploadError)
       } else if (data) {
-        // Debug: log the response to see its structure
         console.log('Upload response:', JSON.stringify(data, null, 2))
-
-        // Handle different Xano response formats for file URL
         const logoUrl = data.file?.url || data.file?.path || data.url || data.path || (typeof data === 'string' ? data : null)
         if (logoUrl) {
           setBranding((prev) => ({ ...prev, logoUrl }))
+          // Update profile photo in context for immediate sidebar display
+          setProfilePhoto(logoUrl)
         } else {
           setError('Upload succeeded but no URL returned. Check console for response structure.')
         }
@@ -130,22 +163,24 @@ export default function AgentBrandingPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500">Loading...</div>
+        <div className="text-gray-700 font-mono">Loading...</div>
       </div>
     )
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Branding</h1>
-        <p className="text-gray-500 mt-1">
+      {/* Page Header */}
+      <div className="border-b border-gray-200 pb-4">
+        <h1 className="dot-matrix text-2xl text-gray-900">BRANDING</h1>
+        <p className="text-base text-gray-700 mt-1 font-mono">
           Customize how your portal appears to your realtors
         </p>
       </div>
 
+      {/* Error Message */}
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 text-red-700 text-sm font-mono">
           <AlertCircle className="h-4 w-4 flex-shrink-0" />
           {error}
         </div>
@@ -155,16 +190,21 @@ export default function AgentBrandingPage() {
         {/* Settings */}
         <div className="lg:col-span-2 space-y-6">
           {/* Contact Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
-              <CardDescription>
+          <Card className="border-0 overflow-hidden">
+            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+              <Phone className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                Contact Information
+              </span>
+            </div>
+            <CardContent className="p-6 bg-white">
+              <p className="text-base text-gray-700 font-mono mb-4">
                 Your contact details visible to realtors
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone" className="font-mono text-sm uppercase tracking-wider text-gray-500">
+                  Phone Number
+                </Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -174,7 +214,7 @@ export default function AgentBrandingPage() {
                       setBranding((prev) => ({ ...prev, phone: e.target.value }))
                     }
                     placeholder="(555) 123-4567"
-                    className="pl-10"
+                    className="pl-10 rounded-none font-mono"
                   />
                 </div>
               </div>
@@ -182,18 +222,21 @@ export default function AgentBrandingPage() {
           </Card>
 
           {/* Logo */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Logo</CardTitle>
-              <CardDescription>
+          <Card className="border-0 overflow-hidden">
+            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+              <ImageIcon className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                Logo
+              </span>
+            </div>
+            <CardContent className="p-6 bg-white">
+              <p className="text-base text-gray-700 font-mono mb-4">
                 Upload your company logo to be displayed on your portal
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
               <div className="flex items-start gap-6">
-                <div className="h-24 w-24 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center bg-gray-50 overflow-hidden">
+                <div className="h-24 w-24 border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 overflow-hidden">
                   {isUploading ? (
-                    <div className="h-6 w-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                    <div className="h-6 w-6 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
                   ) : branding.logoUrl ? (
                     <img
                       src={branding.logoUrl}
@@ -206,7 +249,7 @@ export default function AgentBrandingPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="logo-upload" className={isUploading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 transition-colors font-mono text-sm uppercase tracking-wider">
                       <Upload className="h-4 w-4" />
                       {isUploading ? 'Uploading...' : 'Upload Logo'}
                     </div>
@@ -219,7 +262,7 @@ export default function AgentBrandingPage() {
                       disabled={isUploading}
                     />
                   </Label>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm text-gray-700 font-mono">
                     Recommended: 200x200px, PNG or JPG
                   </p>
                 </div>
@@ -228,62 +271,79 @@ export default function AgentBrandingPage() {
           </Card>
 
           {/* Brand Color */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Brand Color</CardTitle>
-              <CardDescription>
+          <Card className="border-0 overflow-hidden">
+            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+              <Palette className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                Brand Color
+              </span>
+            </div>
+            <CardContent className="p-6 bg-white">
+              <p className="text-base text-gray-700 font-mono mb-4">
                 Choose a primary color for your portal
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <div className="relative">
-                  <input
-                    type="color"
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <input
+                      type="color"
+                      value={branding.brandColor}
+                      onChange={(e) =>
+                        setBranding((prev) => ({ ...prev, brandColor: e.target.value }))
+                      }
+                      className="h-12 w-12 cursor-pointer border-2 border-gray-200"
+                    />
+                  </div>
+                  <Input
                     value={branding.brandColor}
                     onChange={(e) =>
                       setBranding((prev) => ({ ...prev, brandColor: e.target.value }))
                     }
-                    className="h-12 w-12 rounded-lg cursor-pointer border-0"
+                    className="w-32 font-mono rounded-none uppercase"
+                    placeholder="#1a2332"
                   />
                 </div>
-                <Input
-                  value={branding.brandColor}
-                  onChange={(e) =>
-                    setBranding((prev) => ({ ...prev, brandColor: e.target.value }))
-                  }
-                  className="w-32 font-mono"
-                  placeholder="#2563eb"
-                />
-                <div className="flex gap-2">
-                  {['#2563eb', '#16a34a', '#dc2626', '#9333ea', '#f97316'].map(
-                    (color) => (
-                      <button
-                        key={color}
-                        onClick={() =>
-                          setBranding((prev) => ({ ...prev, brandColor: color }))
-                        }
-                        className="h-8 w-8 rounded-full border-2 border-white shadow-sm hover:scale-110 transition-transform"
-                        style={{ backgroundColor: color }}
-                      />
-                    )
-                  )}
+                <div className="flex flex-wrap gap-2">
+                  {BRAND_COLORS.map((color) => (
+                    <button
+                      key={color.value}
+                      onClick={() =>
+                        setBranding((prev) => ({ ...prev, brandColor: color.value }))
+                      }
+                      className={`group relative h-10 w-10 border-2 transition-all ${
+                        branding.brandColor === color.value
+                          ? 'border-gray-900 scale-110'
+                          : 'border-gray-200 hover:border-gray-400'
+                      }`}
+                      style={{ backgroundColor: color.value }}
+                      title={color.name}
+                    >
+                      {branding.brandColor === color.value && (
+                        <Check className="h-4 w-4 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                      )}
+                    </button>
+                  ))}
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Links */}
-          <Card>
-            <CardHeader>
-              <CardTitle>External Links</CardTitle>
-              <CardDescription>
+          {/* External Links */}
+          <Card className="border-0 overflow-hidden">
+            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+              <ExternalLink className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                External Links
+              </span>
+            </div>
+            <CardContent className="p-6 bg-white space-y-5">
+              <p className="text-base text-gray-700 font-mono">
                 Add links to your scheduling and CMA tools
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </p>
               <div className="space-y-2">
-                <Label htmlFor="calendly">Calendly Link</Label>
+                <Label htmlFor="calendly" className="font-mono text-sm uppercase tracking-wider text-gray-500">
+                  Calendly Link
+                </Label>
                 <div className="relative">
                   <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -293,12 +353,14 @@ export default function AgentBrandingPage() {
                       setBranding((prev) => ({ ...prev, calendlyLink: e.target.value }))
                     }
                     placeholder="https://calendly.com/your-link"
-                    className="pl-10"
+                    className="pl-10 rounded-none font-mono"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cma">CMA Tool Link</Label>
+                <Label htmlFor="cma" className="font-mono text-sm uppercase tracking-wider text-gray-500">
+                  CMA Tool Link
+                </Label>
                 <div className="relative">
                   <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -308,7 +370,7 @@ export default function AgentBrandingPage() {
                       setBranding((prev) => ({ ...prev, cmaLink: e.target.value }))
                     }
                     placeholder="https://cma-tool.com/your-link"
-                    className="pl-10"
+                    className="pl-10 rounded-none font-mono"
                   />
                 </div>
               </div>
@@ -316,14 +378,17 @@ export default function AgentBrandingPage() {
           </Card>
 
           {/* Bio */}
-          <Card>
-            <CardHeader>
-              <CardTitle>About You</CardTitle>
-              <CardDescription>
+          <Card className="border-0 overflow-hidden">
+            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+              <User className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                About You
+              </span>
+            </div>
+            <CardContent className="p-6 bg-white">
+              <p className="text-base text-gray-700 font-mono mb-4">
                 Write a short bio that will be displayed to your realtors
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
               <Textarea
                 value={branding.bio}
                 onChange={(e) =>
@@ -331,8 +396,9 @@ export default function AgentBrandingPage() {
                 }
                 placeholder="Tell your realtors about yourself and your services..."
                 rows={5}
+                className="rounded-none font-mono"
               />
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-sm text-gray-700 font-mono mt-2">
                 {branding.bio.length}/500 characters
               </p>
             </CardContent>
@@ -341,9 +407,17 @@ export default function AgentBrandingPage() {
           {/* Save Button */}
           <div className="flex items-center justify-end gap-4">
             {saveSuccess && (
-              <span className="text-sm text-green-600">Changes saved successfully!</span>
+              <span className="text-base text-emerald-600 font-mono flex items-center gap-2">
+                <Check className="h-4 w-4" />
+                Changes saved successfully!
+              </span>
             )}
-            <Button onClick={handleSave} disabled={isSaving}>
+            <Button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="rounded-none font-mono uppercase tracking-wider text-sm h-10"
+              style={{ backgroundColor: brandColor }}
+            >
               <Save className="h-4 w-4 mr-2" />
               {isSaving ? 'Saving...' : 'Save Changes'}
             </Button>
@@ -352,57 +426,78 @@ export default function AgentBrandingPage() {
 
         {/* Preview */}
         <div className="lg:col-span-1">
-          <Card className="sticky top-6">
-            <CardHeader>
-              <CardTitle>Preview</CardTitle>
-              <CardDescription>
+          <Card className="border-0 overflow-hidden sticky top-6">
+            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: branding.brandColor }}>
+              <Eye className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                Preview
+              </span>
+            </div>
+            <CardContent className="p-6 bg-white">
+              <p className="text-base text-gray-700 font-mono mb-4">
                 How your portal will appear to realtors
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="border rounded-lg p-4 bg-gray-50">
+              </p>
+              <div className="border border-gray-200 p-4 bg-gray-50">
                 <div className="flex items-center gap-3 mb-4">
                   <div
-                    className="h-12 w-12 rounded-lg flex items-center justify-center text-white font-bold"
+                    className="h-12 w-12 flex items-center justify-center text-white font-mono font-bold"
                     style={{ backgroundColor: branding.brandColor }}
                   >
                     {branding.logoUrl ? (
                       <img
                         src={branding.logoUrl}
                         alt="Logo"
-                        className="h-full w-full object-contain rounded-lg"
+                        className="h-full w-full object-contain"
                       />
                     ) : (
                       agentName.firstName?.[0] || 'A'
                     )}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">
+                    <h3 className="font-mono font-semibold text-gray-900 uppercase tracking-wider text-base">
                       {agentName.firstName} {agentName.lastName}
                     </h3>
-                    <p className="text-sm text-gray-500">Mortgage Agent</p>
+                    <p className="text-sm text-gray-600 font-mono">Mortgage Agent</p>
                     {branding.phone && (
-                      <p className="text-xs text-gray-400">{branding.phone}</p>
+                      <p className="text-sm text-gray-500 font-mono">{branding.phone}</p>
+                    )}
+                    {user?.email && (
+                      <p className="text-sm text-gray-500 font-mono">{user.email}</p>
                     )}
                   </div>
                 </div>
-                <Separator className="my-4" />
-                <div className="space-y-3">
+                <div className="border-t border-gray-200 my-4" />
+                <div className="space-y-2">
+                  {branding.calendlyLink && (
+                    <Button
+                      className="w-full justify-start rounded-none font-mono text-sm uppercase tracking-wider"
+                      style={{ backgroundColor: branding.brandColor }}
+                      disabled
+                    >
+                      Book a Call
+                    </Button>
+                  )}
+                  {branding.cmaLink && (
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start rounded-none font-mono text-sm uppercase tracking-wider"
+                      disabled
+                    >
+                      CMA Tool
+                    </Button>
+                  )}
                   <Button
-                    className="w-full justify-start"
-                    style={{ backgroundColor: branding.brandColor }}
+                    variant="outline"
+                    className="w-full justify-start rounded-none font-mono text-sm uppercase tracking-wider"
                     disabled
                   >
-                    Book a Call
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start" disabled>
                     View Templates
                   </Button>
                 </div>
                 {branding.bio && (
                   <>
-                    <Separator className="my-4" />
-                    <p className="text-sm text-gray-600 line-clamp-4">
+                    <div className="border-t border-gray-200 my-4" />
+                    <p className="text-base text-gray-700 font-mono line-clamp-4">
                       {branding.bio}
                     </p>
                   </>

@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
+import { useBranding } from '@/context/BrandingContext'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, Users, UserPlus, Mail, Building, Phone } from 'lucide-react'
+import { Search, Users, UserPlus, Mail, Building, Phone, MoreHorizontal } from 'lucide-react'
 import xano from '@/services/xano'
 import { formatDate } from '@/lib/utils'
 import { Realtor, RealtorStatus } from '@/types'
@@ -31,6 +31,7 @@ interface RealtorCredentials {
 
 export default function AgentRealtorsPage() {
   const { user } = useAuth()
+  const { brandColor } = useBranding()
   const [realtors, setRealtors] = useState<Realtor[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -75,13 +76,29 @@ export default function AgentRealtorsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="success">Active</Badge>
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200">
+            Active
+          </span>
+        )
       case 'invited':
-        return <Badge variant="default">Invited</Badge>
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-200">
+            Invited
+          </span>
+        )
       case 'inactive':
-        return <Badge variant="secondary">Inactive</Badge>
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">
+            Inactive
+          </span>
+        )
       default:
-        return <Badge variant="secondary">{status}</Badge>
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">
+            {status}
+          </span>
+        )
     }
   }
 
@@ -96,7 +113,6 @@ export default function AgentRealtorsPage() {
           variant: 'destructive',
         })
       } else if (data) {
-        // Update invite_sent_at in local state
         setRealtors((prev) =>
           prev.map((r) =>
             r.id === realtorId ? { ...r, inviteSentAt: new Date().toISOString() } : r
@@ -140,7 +156,6 @@ export default function AgentRealtorsPage() {
   }
 
   const handleUnlink = (realtorId: number) => {
-    // Remove the realtor from the list when unlinked
     setRealtors((prev) => prev.filter((r) => r.id !== realtorId))
   }
 
@@ -164,15 +179,19 @@ export default function AgentRealtorsPage() {
         onUnlink={handleUnlink}
       />
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        {/* Page Header */}
+        <div className="flex items-center justify-between border-b border-gray-200 pb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">My Realtors</h1>
-            <p className="text-gray-500 mt-1">
+            <h1 className="dot-matrix text-2xl text-gray-900">MY REALTORS</h1>
+            <p className="text-base text-gray-700 mt-1 font-mono">
               Manage the realtors in your network
             </p>
           </div>
           <Link href="/agent/invite">
-            <Button>
+            <Button
+              className="rounded-none font-mono uppercase tracking-wider text-sm h-10"
+              style={{ backgroundColor: brandColor }}
+            >
               <UserPlus className="h-4 w-4 mr-2" />
               Invite Realtor
             </Button>
@@ -187,18 +206,18 @@ export default function AgentRealtorsPage() {
               placeholder="Search realtors..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 rounded-none font-mono"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-40">
+            <SelectTrigger className="w-full sm:w-40 rounded-none font-mono">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="invited">Invited</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
+              <SelectItem value="all" className="font-mono">All Status</SelectItem>
+              <SelectItem value="active" className="font-mono">Active</SelectItem>
+              <SelectItem value="invited" className="font-mono">Invited</SelectItem>
+              <SelectItem value="inactive" className="font-mono">Inactive</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -207,13 +226,14 @@ export default function AgentRealtorsPage() {
         {isLoading ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <Card key={i}>
-                <CardContent className="p-6">
+              <Card key={i} className="border-0 overflow-hidden">
+                <div className="px-4 py-3 bg-gray-200 animate-pulse" />
+                <CardContent className="p-6 bg-white">
                   <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-gray-100 animate-pulse" />
+                    <div className="h-12 w-12 bg-gray-100 animate-pulse" />
                     <div className="space-y-2 flex-1">
-                      <div className="h-4 bg-gray-100 rounded w-2/3 animate-pulse" />
-                      <div className="h-3 bg-gray-100 rounded w-1/2 animate-pulse" />
+                      <div className="h-4 bg-gray-100 w-2/3 animate-pulse" />
+                      <div className="h-3 bg-gray-100 w-1/2 animate-pulse" />
                     </div>
                   </div>
                 </CardContent>
@@ -223,56 +243,68 @@ export default function AgentRealtorsPage() {
         ) : filteredRealtors.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredRealtors.map((realtor) => (
-              <Card key={realtor.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-medium">
-                        {realtor.firstName[0]}
-                        {realtor.lastName[0]}
+              <Card key={realtor.id} className="border-0 overflow-hidden hover:shadow-md transition-shadow h-[280px]">
+                <CardContent className="p-0 bg-white h-full flex flex-col">
+                  <div className="p-4 border-b border-gray-100">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="h-12 w-12 flex items-center justify-center text-white font-mono font-bold text-sm"
+                          style={{ backgroundColor: brandColor }}
+                        >
+                          {realtor.firstName[0]}
+                          {realtor.lastName[0]}
+                        </div>
+                        <div>
+                          <h3 className="font-mono font-semibold text-gray-900 text-base">
+                            {realtor.firstName} {realtor.lastName}
+                          </h3>
+                          {getStatusBadge(realtor.status)}
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">
-                          {realtor.firstName} {realtor.lastName}
-                        </h3>
-                        {getStatusBadge(realtor.status)}
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleOpenDetails(realtor.id)}
+                        className="rounded-none font-mono text-sm uppercase tracking-wider"
+                      >
+                        More
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleOpenDetails(realtor.id)}
-                    >
-                      More
-                    </Button>
                   </div>
 
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-gray-600">
+                  <div className="p-4 space-y-2 flex-1">
+                    <div className="flex items-center gap-2 text-gray-700 font-mono text-base">
                       <Mail className="h-4 w-4 text-gray-400" />
                       {realtor.email}
                     </div>
                     {realtor.brokerage && (
-                      <div className="flex items-center gap-2 text-gray-600">
+                      <div className="flex items-center gap-2 text-gray-700 font-mono text-base">
                         <Building className="h-4 w-4 text-gray-400" />
                         {realtor.brokerage}
                       </div>
                     )}
                     {realtor.phone && (
-                      <div className="flex items-center gap-2 text-gray-600">
+                      <div className="flex items-center gap-2 text-gray-700 font-mono text-base">
                         <Phone className="h-4 w-4 text-gray-400" />
                         {realtor.phone}
                       </div>
                     )}
                   </div>
 
-                  <div className="mt-4 pt-4 border-t flex items-center justify-between text-xs text-gray-400">
-                    <span>Invited {formatDate(realtor.inviteSentAt)}</span>
+                  <div
+                    className="px-4 h-12 flex items-center justify-between"
+                    style={{ backgroundColor: brandColor }}
+                  >
+                    <span className="text-base text-white/80 font-mono">
+                      Invited {formatDate(realtor.inviteSentAt)}
+                    </span>
                     {realtor.status === 'invited' && (
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleResendInvite(realtor.id)}
+                        className="rounded-none font-mono text-sm uppercase tracking-wider h-8 text-white hover:bg-white/10"
                       >
                         Resend Invite
                       </Button>
@@ -283,12 +315,21 @@ export default function AgentRealtorsPage() {
             ))}
           </div>
         ) : (
-          <Card>
-            <CardContent className="py-12 text-center">
+          <Card className="border-0 overflow-hidden">
+            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+              <Users className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                Realtors
+              </span>
+            </div>
+            <CardContent className="py-12 text-center bg-white">
               <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 mb-4">No realtors found</p>
+              <p className="text-base text-gray-700 font-mono mb-4">No realtors found</p>
               <Link href="/agent/invite">
-                <Button>
+                <Button
+                  className="rounded-none font-mono uppercase tracking-wider text-sm"
+                  style={{ backgroundColor: brandColor }}
+                >
                   <UserPlus className="h-4 w-4 mr-2" />
                   Invite Your First Realtor
                 </Button>

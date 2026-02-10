@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
+import { useBranding } from '@/context/BrandingContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -45,6 +46,7 @@ interface Resource {
 
 export default function RealtorDashboardPage() {
   const { user } = useAuth()
+  const { brandColor } = useBranding()
   const [agent, setAgent] = useState<AgentInfo | null>(null)
   const [resources, setResources] = useState<Resource[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -180,29 +182,35 @@ export default function RealtorDashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {resources.map((resource, index) => (
+                  {resources.map((resource) => (
                     <div
                       key={resource.id}
-                      className={`p-4 rounded-lg ${
-                        index % 2 === 0 ? 'bg-blue-50' : 'bg-green-50'
-                      }`}
+                      className="flex border border-gray-900 bg-white overflow-hidden"
                     >
-                      <h4 className="font-medium text-gray-900 mb-2">
-                        {resource.title}
-                      </h4>
-                      <p className="text-sm text-gray-600 mb-3">
-                        {resource.description}
-                      </p>
-                      <Button size="sm" variant="outline" asChild>
-                        <a
-                          href={resource.resourceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                      <div className="flex-1 p-4">
+                        <h4 className="font-mono font-semibold text-gray-900 uppercase tracking-wider text-base">
+                          {resource.title}
+                        </h4>
+                        <p className="text-base text-gray-700 font-mono mt-1 mb-3">
+                          {resource.description}
+                        </p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-none font-mono uppercase tracking-wider text-sm"
+                          asChild
                         >
-                          {resource.buttonText}
-                          <ExternalLink className="h-3 w-3 ml-2" />
-                        </a>
-                      </Button>
+                          <a
+                            href={resource.resourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {resource.buttonText}
+                            <ExternalLink className="h-3 w-3 ml-2" />
+                          </a>
+                        </Button>
+                      </div>
+                      <div className="w-3" style={{ backgroundColor: brandColor }} />
                     </div>
                   ))}
                 </div>

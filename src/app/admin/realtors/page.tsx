@@ -24,6 +24,7 @@ import { Search, Users, Building, Plus, Loader2 } from 'lucide-react'
 import xano from '@/services/xano'
 import { formatDate } from '@/lib/utils'
 import { Realtor, RealtorStatus, Agent } from '@/types'
+import { useBranding } from '@/context/BrandingContext'
 import RealtorCredentialsModal from '@/components/RealtorCredentialsModal'
 import RealtorDetailModal from '@/components/RealtorDetailModal'
 
@@ -35,6 +36,7 @@ interface RealtorCredentials {
 }
 
 export default function AdminRealtorsPage() {
+  const { brandColor } = useBranding()
   const [realtors, setRealtors] = useState<Realtor[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -273,7 +275,7 @@ export default function AdminRealtorsPage() {
             View all realtors across all agents on the platform
           </p>
         </div>
-        <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={openCreateModal}>
+        <Button style={{ backgroundColor: brandColor }} onClick={openCreateModal}>
           <Plus className="h-4 w-4 mr-2" />
           Create Realtor
         </Button>
@@ -315,7 +317,7 @@ export default function AdminRealtorsPage() {
           ) : filteredRealtors.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-[#1a2332] border-b border-gray-700">
+                <thead className="border-b border-gray-700" style={{ backgroundColor: brandColor }}>
                   <tr>
                     <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Realtor</th>
                     <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Brokerage</th>
@@ -331,7 +333,7 @@ export default function AdminRealtorsPage() {
                       <tr key={realtor.id} className="hover:bg-gray-50/50">
                         <td className="p-4">
                           <div className="flex items-center gap-3">
-                            <div className="h-11 w-11 bg-[#1a2332] flex items-center justify-center text-white text-sm font-mono font-bold tracking-wider">
+                            <div className="h-11 w-11 flex items-center justify-center text-white text-sm font-mono font-bold tracking-wider" style={{ backgroundColor: brandColor }}>
                               {realtor.firstName[0]}{realtor.lastName[0]}
                             </div>
                             <div>
@@ -372,7 +374,7 @@ export default function AdminRealtorsPage() {
       {/* Create Realtor Modal */}
       <Dialog open={showCreateModal} onOpenChange={closeCreateModal}>
         <DialogContent className="max-w-md p-0" closeClassName="text-white hover:text-gray-300">
-          <DialogHeader className="bg-[#1a2332] text-white p-6">
+          <DialogHeader className="text-white p-6" style={{ backgroundColor: brandColor }}>
             <DialogTitle className="font-mono text-lg font-bold uppercase tracking-wider">Create New Realtor</DialogTitle>
             <DialogDescription className="text-gray-300 font-mono text-sm">
               Add a new realtor to the platform. You can optionally link them to an agent.
@@ -415,7 +417,7 @@ export default function AdminRealtorsPage() {
                   <p className="font-mono text-base uppercase">{createSuccess.status}</p>
                 </div>
               </div>
-              <Button onClick={closeCreateModal} className="w-full bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider">Done</Button>
+              <Button onClick={closeCreateModal} className="w-full font-mono uppercase tracking-wider" style={{ backgroundColor: brandColor }}>Done</Button>
             </div>
           ) : (
             <form onSubmit={handleCreateRealtor} className="space-y-4 p-6">
@@ -515,7 +517,7 @@ export default function AdminRealtorsPage() {
                 <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1 font-mono uppercase tracking-wider">
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isCreating} className="flex-1 bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider">
+                <Button type="submit" disabled={isCreating} className="flex-1 font-mono uppercase tracking-wider" style={{ backgroundColor: brandColor }}>
                   {isCreating ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />

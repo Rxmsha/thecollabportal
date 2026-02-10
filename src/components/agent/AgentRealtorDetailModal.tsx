@@ -4,14 +4,11 @@ import React, { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
 import {
   Mail,
   Phone,
@@ -24,11 +21,13 @@ import {
   Send,
   Unlink,
   AlertTriangle,
+  User,
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import xano from '@/services/xano'
 import { RealtorStatus } from '@/types'
 import { toast } from '@/hooks/use-toast'
+import { useBranding } from '@/context/BrandingContext'
 
 interface RealtorDetails {
   id: number
@@ -67,6 +66,7 @@ export default function AgentRealtorDetailModal({
   onPasswordReset,
   onUnlink,
 }: AgentRealtorDetailModalProps) {
+  const { brandColor } = useBranding()
   const [details, setDetails] = useState<RealtorDetails | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isResettingPassword, setIsResettingPassword] = useState(false)
@@ -225,84 +225,101 @@ export default function AgentRealtorDetailModal({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="success">Active</Badge>
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200">
+            Active
+          </span>
+        )
       case 'invited':
-        return <Badge variant="default">Invited</Badge>
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-200">
+            Invited
+          </span>
+        )
       case 'inactive':
-        return <Badge variant="secondary">Inactive</Badge>
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">
+            Inactive
+          </span>
+        )
       default:
-        return <Badge variant="secondary">{status}</Badge>
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">
+            {status}
+          </span>
+        )
     }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Realtor Details</DialogTitle>
-          <DialogDescription>
-            View realtor information and manage their account
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0 rounded-none border-0" closeClassName="text-white">
+        <div className="px-6 py-4" style={{ backgroundColor: brandColor }}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 text-white font-mono uppercase tracking-wider">
+              <User className="h-5 w-5" />
+              Realtor Details
+            </DialogTitle>
+          </DialogHeader>
+        </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
           </div>
         ) : error ? (
-          <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+          <div className="bg-red-50 text-red-600 p-4 font-mono text-base">
             {error}
           </div>
         ) : details ? (
-          <div className="space-y-6">
+          <div className="p-6 space-y-6">
             {/* Realtor Info */}
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-medium text-lg">
-                    {details.firstName[0]}
-                    {details.lastName[0]}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {details.firstName} {details.lastName}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      {getStatusBadge(details.status)}
-                    </div>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className="h-12 w-12 flex items-center justify-center text-white font-mono font-bold text-sm"
+                  style={{ backgroundColor: brandColor }}
+                >
+                  {details.firstName[0]}
+                  {details.lastName[0]}
+                </div>
+                <div>
+                  <p className="font-mono font-semibold text-gray-900 text-base">
+                    {details.firstName} {details.lastName}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {getStatusBadge(details.status)}
                   </div>
                 </div>
               </div>
 
-              <Separator />
-
-              <div className="grid grid-cols-1 gap-3">
-                <div className="flex items-center gap-2 text-sm">
+              <div className="border-t border-gray-200 pt-4 space-y-3">
+                <div className="flex items-center gap-2 text-base font-mono">
                   <Mail className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">{details.email}</span>
+                  <span className="text-gray-900">{details.email}</span>
                 </div>
                 {details.phone && (
-                  <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-2 text-base font-mono">
                     <Phone className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-600">{details.phone}</span>
+                    <span className="text-gray-900">{details.phone}</span>
                   </div>
                 )}
                 {details.brokerage && (
-                  <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-2 text-base font-mono">
                     <Building className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-600">{details.brokerage}</span>
+                    <span className="text-gray-900">{details.brokerage}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-base font-mono">
                   <Calendar className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">
+                  <span className="text-gray-900">
                     Invited: {formatDate(details.inviteSentAt)}
                   </span>
                 </div>
                 {details.activatedAt && (
-                  <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-2 text-base font-mono">
                     <Calendar className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-600">
+                    <span className="text-gray-900">
                       Last Active: {formatDate(details.activatedAt)}
                     </span>
                   </div>
@@ -311,8 +328,8 @@ export default function AgentRealtorDetailModal({
             </div>
 
             {/* Actions */}
-            <div className="space-y-3">
-              <Label className="text-xs text-gray-500 uppercase tracking-wide">
+            <div className="space-y-3 border-t border-gray-200 pt-4">
+              <Label className="text-sm text-gray-900 uppercase tracking-wider font-mono">
                 Actions
               </Label>
 
@@ -322,6 +339,7 @@ export default function AgentRealtorDetailModal({
                     variant="outline"
                     onClick={handleResetPassword}
                     disabled={isResettingPassword}
+                    className="rounded-none font-mono uppercase tracking-wider text-sm"
                   >
                     {isResettingPassword ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -337,6 +355,7 @@ export default function AgentRealtorDetailModal({
                     variant="outline"
                     onClick={handleResendInvite}
                     disabled={isResendingInvite}
+                    className="rounded-none font-mono uppercase tracking-wider text-sm"
                   >
                     {isResendingInvite ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -350,7 +369,7 @@ export default function AgentRealtorDetailModal({
                 {(details.status === 'active' || details.status === 'invited') ? (
                   <Button
                     variant="outline"
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    className="rounded-none font-mono uppercase tracking-wider text-sm text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                     onClick={handleDeactivate}
                     disabled={isChangingStatus}
                   >
@@ -364,7 +383,7 @@ export default function AgentRealtorDetailModal({
                 ) : details.status === 'inactive' ? (
                   <Button
                     variant="outline"
-                    className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                    className="rounded-none font-mono uppercase tracking-wider text-sm text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200"
                     onClick={handleActivate}
                     disabled={isChangingStatus}
                   >
@@ -378,7 +397,7 @@ export default function AgentRealtorDetailModal({
                 ) : null}
               </div>
 
-              <p className="text-xs text-gray-500">
+              <p className="text-sm text-gray-900 font-mono">
                 {details.status === 'active'
                   ? 'Resetting password will generate a new temporary password and send an email to the realtor.'
                   : details.status === 'inactive'
@@ -388,21 +407,15 @@ export default function AgentRealtorDetailModal({
             </div>
 
             {/* Unlink Section */}
-            <Separator />
-            <div className="space-y-3">
-              <Label className="text-xs text-gray-500 uppercase tracking-wide">
-                Remove from Network
-              </Label>
-
+            <div className="space-y-3 border-t border-gray-200 pt-4">
               {showUnlinkConfirm ? (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
+                <div className="bg-red-50 border border-red-200 p-4 space-y-3">
                   <div className="flex items-start gap-3">
                     <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
                     <div>
-                      <p className="font-medium text-red-800">Are you sure you want to unlink this realtor?</p>
-                      <p className="text-sm text-red-600 mt-1">
-                        {details.firstName} {details.lastName} will be removed from your network and deactivated.
-                        They will no longer have access to The Collab Portal until an admin links them to another agent.
+                      <p className="font-mono font-semibold text-red-800 text-base">Are you sure you want to unlink this realtor?</p>
+                      <p className="text-sm text-red-600 mt-1 font-mono">
+                        {details.firstName} {details.lastName} will be removed from your network.
                       </p>
                     </div>
                   </div>
@@ -412,6 +425,7 @@ export default function AgentRealtorDetailModal({
                       size="sm"
                       onClick={() => setShowUnlinkConfirm(false)}
                       disabled={isUnlinking}
+                      className="rounded-none font-mono uppercase tracking-wider text-sm"
                     >
                       Cancel
                     </Button>
@@ -420,6 +434,7 @@ export default function AgentRealtorDetailModal({
                       size="sm"
                       onClick={handleUnlink}
                       disabled={isUnlinking}
+                      className="rounded-none font-mono uppercase tracking-wider text-sm"
                     >
                       {isUnlinking ? (
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -434,14 +449,14 @@ export default function AgentRealtorDetailModal({
                 <>
                   <Button
                     variant="outline"
-                    className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                    className="rounded-none font-mono uppercase tracking-wider text-sm text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-200"
                     onClick={() => setShowUnlinkConfirm(true)}
                   >
                     <Unlink className="h-4 w-4 mr-2" />
                     Unlink from My Network
                   </Button>
-                  <p className="text-xs text-gray-500">
-                    Unlinking removes this realtor from your network. They will be deactivated and can be re-linked by an admin or invited by another agent.
+                  <p className="text-sm text-gray-900 font-mono">
+                    Unlinking removes this realtor from your network.
                   </p>
                 </>
               )}

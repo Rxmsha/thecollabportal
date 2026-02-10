@@ -15,8 +15,10 @@ import {
 import { Plus, FileText, Film, FileIcon, Mail, Image, Search, Trash2, X, Check, Loader2 } from 'lucide-react'
 import xano from '@/services/xano'
 import { Template } from '@/types'
+import { useBranding } from '@/context/BrandingContext'
 
 export default function AdminTemplatesPage() {
+  const { brandColor } = useBranding()
   const router = useRouter()
   const [templates, setTemplates] = useState<Template[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -162,7 +164,7 @@ export default function AdminTemplatesPage() {
           </p>
         </div>
         <Button
-          className="bg-[#1a2332] hover:bg-[#2a3342]"
+          style={{ backgroundColor: brandColor }}
           onClick={() => router.push('/admin/templates/new')}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -286,7 +288,7 @@ export default function AdminTemplatesPage() {
           {[...Array(6)].map((_, i) => (
             <Card key={i} className="overflow-hidden border-0 rounded-none">
               <div className="aspect-[4/3] bg-gray-100 animate-pulse" />
-              <div className="bg-[#1a2332] p-4 space-y-3">
+              <div className="p-4 space-y-3" style={{ backgroundColor: brandColor }}>
                 <div className="h-5 bg-gray-700 rounded animate-pulse" />
                 <div className="h-4 bg-gray-700 rounded w-2/3 animate-pulse" />
                 <div className="flex justify-between items-center pt-2">
@@ -358,7 +360,7 @@ export default function AdminTemplatesPage() {
                 </div>
 
                 {/* Content - Dark footer */}
-                <div className="bg-[#1a2332] p-4">
+                <div className="p-4" style={{ backgroundColor: brandColor }}>
                   <h3 className="font-mono font-semibold text-white text-base mb-1 truncate">
                     {template.title}
                   </h3>
@@ -396,7 +398,8 @@ export default function AdminTemplatesPage() {
             <p className="text-gray-500 font-mono mb-4">Get started by creating your first template</p>
             <Button
               onClick={() => router.push('/admin/templates/new')}
-              className="bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider"
+              className="font-mono uppercase tracking-wider"
+              style={{ backgroundColor: brandColor }}
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Template

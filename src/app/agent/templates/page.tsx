@@ -10,7 +10,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -18,8 +17,10 @@ import { Search, FileText, ExternalLink, Video, Image, Mail, Loader2, Users, Che
 import xano from '@/services/xano'
 import { Template, Realtor } from '@/types'
 import { markTemplatesVisited } from '@/lib/onboarding'
+import { useBranding } from '@/context/BrandingContext'
 
 export default function AgentTemplatesPage() {
+  const { brandColor } = useBranding()
   // Mark templates as visited for onboarding progress
   useEffect(() => {
     markTemplatesVisited()
@@ -201,9 +202,10 @@ export default function AgentTemplatesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Templates</h1>
-        <p className="text-gray-500 mt-1">
+      {/* Page Header */}
+      <div className="border-b border-gray-200 pb-4">
+        <h1 className="dot-matrix text-2xl text-gray-900">TEMPLATES</h1>
+        <p className="text-base text-gray-700 mt-1 font-mono">
           Browse and use marketing templates for your business
         </p>
       </div>
@@ -215,15 +217,19 @@ export default function AgentTemplatesPage() {
           placeholder="Search templates..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
+          className="pl-10 rounded-none font-mono"
         />
       </div>
 
       {/* Category Tabs */}
       <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-        <TabsList>
+        <TabsList className="bg-gray-100 rounded-none p-1">
           {categories.map((category) => (
-            <TabsTrigger key={category.value} value={category.value}>
+            <TabsTrigger
+              key={category.value}
+              value={category.value}
+              className="rounded-none font-mono text-sm uppercase tracking-wider data-[state=active]:bg-white"
+            >
               {category.label}
             </TabsTrigger>
           ))}
@@ -233,12 +239,13 @@ export default function AgentTemplatesPage() {
           {isLoading ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {[...Array(6)].map((_, i) => (
-                <Card key={i}>
-                  <CardContent className="p-0">
+                <Card key={i} className="border-0 overflow-hidden">
+                  <div className="px-4 py-3 bg-gray-200 animate-pulse" />
+                  <CardContent className="p-0 bg-white">
                     <div className="aspect-video bg-gray-100 animate-pulse" />
                     <div className="p-4 space-y-3">
-                      <div className="h-4 bg-gray-100 rounded animate-pulse" />
-                      <div className="h-3 bg-gray-100 rounded w-2/3 animate-pulse" />
+                      <div className="h-4 bg-gray-100 animate-pulse" />
+                      <div className="h-3 bg-gray-100 w-2/3 animate-pulse" />
                     </div>
                   </CardContent>
                 </Card>
@@ -247,50 +254,64 @@ export default function AgentTemplatesPage() {
           ) : filteredTemplates.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {filteredTemplates.map((template) => (
-                <Card key={template.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="aspect-video bg-gray-100 relative flex items-center justify-center">
-                    {template.previewImageUrl ? (
-                      <img
-                        src={template.previewImageUrl}
-                        alt={template.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <FileText className="h-12 w-12 text-gray-300" />
-                    )}
-                    <div className="absolute top-2 left-2 flex gap-1">
-                      <Badge variant={getCategoryBadgeColor(template.category) as any}>
-                        {template.category}
-                      </Badge>
-                    </div>
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1">
+                <Card key={template.id} className="border-0 overflow-hidden hover:shadow-md transition-shadow">
+                  <div
+                    className="px-4 py-3 flex items-center justify-between"
+                    style={{ backgroundColor: brandColor }}
+                  >
+                    <span className="text-white font-mono font-semibold uppercase tracking-wider text-sm truncate">
                       {template.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-3">
-                      {template.shortDescription}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <Badge variant={getFormatBadgeColor(template.format) as any}>
-                        {getFormatIcon(template.format)}
-                        <span className="ml-1 capitalize">
-                          {template.format.replace('_', ' ')}
-                        </span>
-                      </Badge>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => handleOpenNotifyModal(template, e)}
-                          title="Notify Realtors"
-                        >
-                          <Mail className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" onClick={() => handleUseTemplate(template)}>
-                          <ExternalLink className="h-4 w-4 mr-1" />
-                          Use
-                        </Button>
+                    </span>
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 text-white border-0 font-mono uppercase text-xs"
+                    >
+                      {template.category}
+                    </Badge>
+                  </div>
+                  <CardContent className="p-0 bg-white">
+                    <div className="aspect-video bg-gray-100 relative flex items-center justify-center">
+                      {template.previewImageUrl ? (
+                        <img
+                          src={template.previewImageUrl}
+                          alt={template.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <FileText className="h-12 w-12 text-gray-300" />
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <p className="text-base text-gray-700 font-mono line-clamp-2 mb-3">
+                        {template.shortDescription}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <Badge variant={getFormatBadgeColor(template.format) as any} className="font-mono uppercase text-xs">
+                          {getFormatIcon(template.format)}
+                          <span className="ml-1">
+                            {template.format.replace('_', ' ')}
+                          </span>
+                        </Badge>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={(e) => handleOpenNotifyModal(template, e)}
+                            title="Notify Realtors"
+                            className="rounded-none"
+                          >
+                            <Mail className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => handleUseTemplate(template)}
+                            className="rounded-none font-mono uppercase tracking-wider text-xs"
+                            style={{ backgroundColor: brandColor }}
+                          >
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            Use
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -298,11 +319,20 @@ export default function AgentTemplatesPage() {
               ))}
             </div>
           ) : (
-            <Card>
-              <CardContent className="py-12 text-center">
+            <Card className="border-0 overflow-hidden">
+              <div
+                className="px-6 py-4 flex items-center gap-3"
+                style={{ backgroundColor: brandColor }}
+              >
+                <FileText className="h-5 w-5 text-white" />
+                <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                  Templates
+                </span>
+              </div>
+              <CardContent className="py-12 text-center bg-white">
                 <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">No templates found</p>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-base text-gray-700 font-mono">No templates found</p>
+                <p className="text-base text-gray-500 mt-1 font-mono">
                   Try adjusting your search or category filter
                 </p>
               </CardContent>
@@ -313,42 +343,48 @@ export default function AgentTemplatesPage() {
 
       {/* Notify Realtors Modal */}
       <Dialog open={showNotifyModal} onOpenChange={handleCloseNotifyModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Notify Realtors</DialogTitle>
-            <DialogDescription>
-              Send an email about this template to your realtors. The email will appear to come from you.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-0 gap-0 rounded-none border-0" closeClassName="text-white">
+          <div className="px-6 py-4" style={{ backgroundColor: brandColor }}>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-3 text-white font-mono uppercase tracking-wider">
+                <Mail className="h-5 w-5" />
+                Notify Realtors
+              </DialogTitle>
+            </DialogHeader>
+          </div>
 
           {selectedTemplate && (
-            <div className="space-y-4">
+            <div className="p-6 space-y-4">
+              <p className="text-base text-gray-700 font-mono">
+                Send an email about this template to your realtors.
+              </p>
+
               {/* Template Preview */}
-              <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-3">
+              <div className="bg-gray-50 border border-gray-200 p-3 flex items-center gap-3">
                 {selectedTemplate.previewImageUrl ? (
                   <img
                     src={selectedTemplate.previewImageUrl}
                     alt={selectedTemplate.title}
-                    className="w-16 h-12 object-cover rounded"
+                    className="w-16 h-12 object-cover"
                   />
                 ) : (
-                  <div className="w-16 h-12 bg-gray-200 rounded flex items-center justify-center">
+                  <div className="w-16 h-12 bg-gray-200 flex items-center justify-center">
                     <FileText className="h-6 w-6 text-gray-400" />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 truncate">{selectedTemplate.title}</p>
-                  <p className="text-xs text-gray-500">{selectedTemplate.category}</p>
+                  <p className="font-mono font-semibold text-gray-900 truncate">{selectedTemplate.title}</p>
+                  <p className="text-sm text-gray-500 font-mono uppercase">{selectedTemplate.category}</p>
                 </div>
               </div>
 
               {/* Notification Result */}
               {notificationResult && (
                 <div
-                  className={`p-3 rounded-lg flex items-center gap-2 ${
+                  className={`p-3 border flex items-center gap-2 font-mono text-base ${
                     notificationResult.success
-                      ? 'bg-green-50 text-green-700'
-                      : 'bg-red-50 text-red-700'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-red-50 text-red-700 border-red-200'
                   }`}
                 >
                   {notificationResult.success ? (
@@ -373,7 +409,7 @@ export default function AgentTemplatesPage() {
                   {/* Realtor Selection */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-sm font-mono font-semibold text-gray-900 uppercase tracking-wider">
                         Select Realtors
                       </label>
                       {realtors.length > 0 && (
@@ -381,7 +417,7 @@ export default function AgentTemplatesPage() {
                           variant="ghost"
                           size="sm"
                           onClick={selectAllRealtors}
-                          className="text-xs h-7"
+                          className="text-xs h-7 font-mono uppercase tracking-wider rounded-none"
                         >
                           {selectedRealtorIds.length === realtors.length
                             ? 'Deselect All'
@@ -395,12 +431,12 @@ export default function AgentTemplatesPage() {
                         <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
                       </div>
                     ) : realtors.length === 0 ? (
-                      <div className="text-center py-6 bg-gray-50 rounded-lg">
+                      <div className="text-center py-6 bg-gray-50 border border-gray-200">
                         <Users className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">No active realtors</p>
+                        <p className="text-base text-gray-500 font-mono">No active realtors</p>
                       </div>
                     ) : (
-                      <div className="border rounded-lg max-h-48 overflow-y-auto">
+                      <div className="border border-gray-200 max-h-48 overflow-y-auto">
                         {realtors.map((realtor) => (
                           <label
                             key={realtor.id}
@@ -409,12 +445,13 @@ export default function AgentTemplatesPage() {
                             <Checkbox
                               checked={selectedRealtorIds.includes(realtor.id)}
                               onCheckedChange={() => toggleRealtorSelection(realtor.id)}
+                              className="rounded-none"
                             />
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900">
+                              <p className="text-base font-mono font-semibold text-gray-900">
                                 {realtor.firstName} {realtor.lastName}
                               </p>
-                              <p className="text-xs text-gray-500 truncate">
+                              <p className="text-sm text-gray-500 font-mono truncate">
                                 {realtor.email}
                               </p>
                             </div>
@@ -427,7 +464,7 @@ export default function AgentTemplatesPage() {
                   {/* Action Buttons */}
                   <div className="flex gap-2 pt-2">
                     <Button
-                      className="flex-1"
+                      className="flex-1 rounded-none font-mono uppercase tracking-wider text-sm"
                       variant="outline"
                       onClick={() => handleSendNotification(true)}
                       disabled={isSendingNotification || realtors.length === 0}
@@ -440,9 +477,10 @@ export default function AgentTemplatesPage() {
                       Notify All ({realtors.length})
                     </Button>
                     <Button
-                      className="flex-1"
+                      className="flex-1 rounded-none font-mono uppercase tracking-wider text-sm"
                       onClick={() => handleSendNotification(false)}
                       disabled={isSendingNotification || selectedRealtorIds.length === 0}
+                      style={{ backgroundColor: brandColor }}
                     >
                       {isSendingNotification ? (
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -457,7 +495,11 @@ export default function AgentTemplatesPage() {
 
               {/* Close Button after success */}
               {notificationResult?.success && (
-                <Button className="w-full" onClick={handleCloseNotifyModal}>
+                <Button
+                  className="w-full rounded-none font-mono uppercase tracking-wider text-sm"
+                  onClick={handleCloseNotifyModal}
+                  style={{ backgroundColor: brandColor }}
+                >
                   Done
                 </Button>
               )}

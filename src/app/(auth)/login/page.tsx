@@ -62,7 +62,6 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="h-10 border-gray-200 focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] rounded-none"
@@ -77,7 +76,6 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="h-10 border-gray-200 focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] pr-10 rounded-none"

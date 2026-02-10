@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
+import { useBranding } from '@/context/BrandingContext'
 import {
   LayoutDashboard,
   Users,
@@ -80,6 +81,7 @@ interface SidebarProps {
 export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) {
   const pathname = usePathname()
   const { user, logout } = useAuth()
+  const { brandColor, brandColorHover, logo, profilePhoto } = useBranding()
   const [internalCollapsed, setInternalCollapsed] = useState(false)
 
   const isCollapsed = onCollapsedChange ? collapsed : internalCollapsed
@@ -159,16 +161,25 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
 
   return (
     <aside
-      className={`h-screen bg-[#1a2332] text-white flex flex-col fixed left-0 top-0 transition-all duration-300 z-40 ${
+      className={`h-screen text-white flex flex-col fixed left-0 top-0 transition-all duration-300 z-40 ${
         isCollapsed ? 'w-16' : 'w-64'
       }`}
+      style={{ backgroundColor: brandColor }}
     >
       {/* Logo */}
       <div className="p-4 border-b border-white/10">
         <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
-          <div className="w-10 h-10 bg-[#0077B6] flex items-center justify-center text-sm font-bold flex-shrink-0">
-            CP
-          </div>
+          {logo ? (
+            <img
+              src={logo}
+              alt="Logo"
+              className="w-10 h-10 object-contain flex-shrink-0"
+            />
+          ) : (
+            <div className="w-10 h-10 bg-[#0077B6] flex items-center justify-center text-sm font-bold flex-shrink-0">
+              CP
+            </div>
+          )}
           {!isCollapsed && (
             <div>
               <p className="dot-matrix text-sm">THE COLLAB</p>
@@ -181,7 +192,10 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
       {/* Collapse Toggle Button */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-20 w-6 h-6 bg-[#1a2332] border border-white/20 rounded-full flex items-center justify-center cursor-pointer z-10 hover:bg-[#2a3342] transition-colors"
+        className="absolute -right-3 top-20 w-6 h-6 border border-white/20 rounded-full flex items-center justify-center cursor-pointer z-10 transition-colors"
+        style={{ backgroundColor: brandColor }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColorHover}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = brandColor}
       >
         {isCollapsed ? (
           <ChevronRight className="w-4 h-4" />
@@ -194,9 +208,17 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
       {user && (
         <div className={`p-4 border-b border-white/10 ${isCollapsed ? 'px-2' : ''}`}>
           <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
-            <div className="w-10 h-10 rounded-full bg-[#0077B6] flex items-center justify-center text-sm font-bold flex-shrink-0">
-              {user.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-            </div>
+            {user.role === 'agent' && profilePhoto ? (
+              <img
+                src={profilePhoto}
+                alt={user.name || 'Profile'}
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-[#0077B6] flex items-center justify-center text-sm font-bold flex-shrink-0">
+                {user.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+              </div>
+            )}
             {!isCollapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{user.name}</p>

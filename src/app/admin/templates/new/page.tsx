@@ -17,8 +17,10 @@ import {
 import { ArrowLeft, Loader2, Upload, X } from 'lucide-react'
 import xano from '@/services/xano'
 import { TemplateCategory, TemplateFormat, TemplateAudience } from '@/types'
+import { useBranding } from '@/context/BrandingContext'
 
 export default function NewTemplatePage() {
+  const { brandColor } = useBranding()
   const router = useRouter()
   const [isCreating, setIsCreating] = useState(false)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
@@ -103,7 +105,7 @@ export default function NewTemplatePage() {
 
       {/* Form */}
       <Card className="border-0 overflow-hidden">
-        <div className="bg-[#1a2332] px-6 py-4">
+        <div className="px-6 py-4" style={{ backgroundColor: brandColor }}>
           <h2 className="text-white font-mono uppercase tracking-wider">Template Details</h2>
           <p className="text-gray-400 font-mono text-sm">Fill in the information for your new template</p>
         </div>
@@ -271,7 +273,8 @@ export default function NewTemplatePage() {
             <Button
               onClick={handleCreate}
               disabled={isCreating || !template.title.trim()}
-              className="bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider"
+              className="font-mono uppercase tracking-wider"
+              style={{ backgroundColor: brandColor }}
             >
               {isCreating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Create Template

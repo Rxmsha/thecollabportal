@@ -45,6 +45,7 @@ import {
 } from 'lucide-react'
 import xano from '@/services/xano'
 import { toast } from '@/hooks/use-toast'
+import { useBranding } from '@/context/BrandingContext'
 
 interface Resource {
   id: number
@@ -60,6 +61,7 @@ interface Resource {
 }
 
 export default function AdminResourcesPage() {
+  const { brandColor } = useBranding()
   const [resources, setResources] = useState<Resource[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -321,7 +323,7 @@ export default function AdminResourcesPage() {
             Manage helpful resources for agents and realtors
           </p>
         </div>
-        <Button className="bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider" onClick={openCreateModal}>
+        <Button className="font-mono uppercase tracking-wider" style={{ backgroundColor: brandColor }} onClick={openCreateModal}>
           <Plus className="h-4 w-4 mr-2" />
           Add Resource
         </Button>
@@ -337,7 +339,7 @@ export default function AdminResourcesPage() {
                   <div className="h-6 bg-gray-100 w-1/3 animate-pulse mb-2" />
                   <div className="h-4 bg-gray-100 w-2/3 animate-pulse" />
                 </div>
-                <div className="bg-[#1a2332] p-4">
+                <div className="p-4" style={{ backgroundColor: brandColor }}>
                   <div className="h-4 bg-gray-700 w-1/4 animate-pulse" />
                 </div>
               </CardContent>
@@ -394,7 +396,7 @@ export default function AdminResourcesPage() {
                   </div>
                 </div>
                 {/* Dark Footer with Actions */}
-                <div className="bg-[#1a2332] px-6 py-3 flex items-center justify-end gap-2">
+                <div className="px-6 py-3 flex items-center justify-end gap-2" style={{ backgroundColor: brandColor }}>
                   <Button
                     variant="outline"
                     size="sm"
@@ -439,7 +441,7 @@ export default function AdminResourcesPage() {
             <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-mono font-medium text-gray-900 mb-2">No resources yet</h3>
             <p className="text-gray-500 font-mono mb-4">Get started by creating your first resource</p>
-            <Button className="bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider" onClick={openCreateModal}>
+            <Button className="font-mono uppercase tracking-wider" style={{ backgroundColor: brandColor }} onClick={openCreateModal}>
               <Plus className="h-4 w-4 mr-2" />
               Add Resource
             </Button>
@@ -450,7 +452,7 @@ export default function AdminResourcesPage() {
       {/* Create Modal */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
         <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col">
-          <div className="bg-[#1a2332] px-6 py-4 flex-shrink-0">
+          <div className="px-6 py-4 flex-shrink-0" style={{ backgroundColor: brandColor }}>
             <DialogHeader>
               <DialogTitle className="text-white font-mono uppercase tracking-wider">Add Resource</DialogTitle>
               <DialogDescription className="text-gray-400 font-mono text-sm">
@@ -585,7 +587,7 @@ export default function AdminResourcesPage() {
               >
                 Cancel
               </Button>
-              <Button className="bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider" onClick={handleCreate} disabled={isSaving}>
+              <Button className="font-mono uppercase tracking-wider" style={{ backgroundColor: brandColor }} onClick={handleCreate} disabled={isSaving}>
                 {isSaving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -603,7 +605,7 @@ export default function AdminResourcesPage() {
       {/* Edit Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
         <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col">
-          <div className="bg-[#1a2332] px-6 py-4 flex-shrink-0">
+          <div className="px-6 py-4 flex-shrink-0" style={{ backgroundColor: brandColor }}>
             <DialogHeader>
               <DialogTitle className="text-white font-mono uppercase tracking-wider">Edit Resource</DialogTitle>
               <DialogDescription className="text-gray-400 font-mono text-sm">
@@ -739,7 +741,7 @@ export default function AdminResourcesPage() {
               >
                 Cancel
               </Button>
-              <Button className="bg-[#1a2332] hover:bg-[#2a3342] font-mono uppercase tracking-wider" onClick={handleEdit} disabled={isSaving}>
+              <Button className="font-mono uppercase tracking-wider" style={{ backgroundColor: brandColor }} onClick={handleEdit} disabled={isSaving}>
                 {isSaving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -765,11 +767,11 @@ export default function AdminResourcesPage() {
               </AlertDialogDescription>
             </AlertDialogHeader>
           </div>
-          <div className="p-6">
-            <p className="text-gray-700 font-mono mb-6">
+          <div className="px-6 pt-4 pb-6">
+            <p className="text-gray-700 font-mono">
               Are you sure you want to delete "<span className="font-semibold">{selectedResource?.title}</span>"?
             </p>
-            <AlertDialogFooter>
+            <AlertDialogFooter className="mt-4">
               <AlertDialogCancel className="font-mono uppercase tracking-wider">Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDelete}

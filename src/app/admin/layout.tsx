@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
+import { BrandingProvider } from '@/context/BrandingContext'
 import { DashboardLayout } from '@/components/DashboardLayout'
 
 export default function AdminLayout({
@@ -36,5 +37,9 @@ export default function AdminLayout({
     return null
   }
 
-  return <DashboardLayout>{children}</DashboardLayout>
+  return (
+    <BrandingProvider>
+      <DashboardLayout>{children}</DashboardLayout>
+    </BrandingProvider>
+  )
 }

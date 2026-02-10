@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,6 +9,7 @@ import { UserPlus, Mail, AlertCircle, Users } from 'lucide-react'
 import xano from '@/services/xano'
 import RealtorCredentialsModal from '@/components/RealtorCredentialsModal'
 import { markInviteVisited } from '@/lib/onboarding'
+import { useBranding } from '@/context/BrandingContext'
 
 interface RealtorCredentials {
   email: string
@@ -24,6 +25,7 @@ interface SeatStats {
 }
 
 export default function AgentInvitePage() {
+  const { brandColor } = useBranding()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -140,84 +142,96 @@ export default function AgentInvitePage() {
         credentials={credentials}
         isReactivation={false}
       />
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Invite Realtor</h1>
-        <p className="text-gray-500 mt-1">
-          Send an invitation to a realtor to join your portal
-        </p>
-      </div>
+      <div className="space-y-6">
+        {/* Page Header */}
+        <div className="border-b border-gray-200 pb-4">
+          <h1 className="dot-matrix text-2xl text-gray-900">INVITE REALTOR</h1>
+          <p className="text-base text-gray-700 mt-1 font-mono">
+            Send an invitation to a realtor to join your portal
+          </p>
+        </div>
 
-      <div className="max-w-2xl">
-        {/* Seat Usage Banner */}
-        {seatStats && (
-          <div className={`mb-4 p-4 rounded-lg border flex items-center gap-3 ${
-            seatStats.canInvite
-              ? 'bg-blue-50 border-blue-200'
-              : 'bg-amber-50 border-amber-200'
-          }`}>
-            <Users className={`h-5 w-5 ${seatStats.canInvite ? 'text-blue-600' : 'text-amber-600'}`} />
-            <div>
-              <p className={`font-medium ${seatStats.canInvite ? 'text-blue-800' : 'text-amber-800'}`}>
-                {seatStats.occupiedSeats} / {seatStats.seatLimit} seats used
-              </p>
-              <p className={`text-sm ${seatStats.canInvite ? 'text-blue-600' : 'text-amber-600'}`}>
-                {seatStats.canInvite
-                  ? `${seatStats.seatLimit - seatStats.occupiedSeats} seats remaining`
-                  : 'Seat limit reached. Contact support to upgrade your plan.'}
-              </p>
+        {/* Centered Content */}
+        <div className="max-w-xl mx-auto">
+          {/* Seat Usage Banner */}
+          {seatStats && (
+            <div className={`mb-6 p-4 border flex items-center gap-3 ${
+              seatStats.canInvite
+                ? 'bg-blue-50 border-blue-200'
+                : 'bg-amber-50 border-amber-200'
+            }`}>
+              <Users className={`h-5 w-5 ${seatStats.canInvite ? 'text-blue-600' : 'text-amber-600'}`} />
+              <div>
+                <p className={`font-mono font-semibold text-base ${seatStats.canInvite ? 'text-blue-800' : 'text-amber-800'}`}>
+                  {seatStats.occupiedSeats} / {seatStats.seatLimit} seats used
+                </p>
+                <p className={`text-base font-mono ${seatStats.canInvite ? 'text-blue-600' : 'text-amber-600'}`}>
+                  {seatStats.canInvite
+                    ? `${seatStats.seatLimit - seatStats.occupiedSeats} seats remaining`
+                    : 'Seat limit reached. Contact support to upgrade your plan.'}
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <Card>
-            <CardHeader>
-              <CardTitle>Realtor Details</CardTitle>
-              <CardDescription>
+          <Card className="border-0 overflow-hidden">
+            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+              <UserPlus className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                Realtor Details
+              </span>
+            </div>
+            <CardContent className="p-6 bg-white">
+              <p className="text-base text-gray-700 font-mono mb-6">
                 Enter the realtor&apos;s information to send them an invitation
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              </p>
+
+              <form onSubmit={handleSubmit} className="space-y-5">
                 {!seatStats?.canInvite && !isLoadingStats && (
-                  <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
-                    <AlertCircle className="h-4 w-4" />
+                  <div className="flex items-center gap-2 p-4 bg-amber-50 border border-amber-200 text-amber-700 text-base font-mono">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
                     You have reached your seat limit. Please upgrade your plan to invite more realtors.
                   </div>
                 )}
 
                 {error && (
-                  <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                    <AlertCircle className="h-4 w-4" />
+                  <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 text-red-700 text-base font-mono">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
                     {error}
                   </div>
                 )}
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="firstName" className="font-mono text-gray-900 text-base">
+                      First Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="firstName"
                       value={formData.firstName}
                       onChange={(e) => handleChange('firstName', e.target.value)}
-                      placeholder="John"
                       required
+                      className="rounded-none font-mono"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="lastName" className="font-mono text-gray-900 text-base">
+                      Last Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="lastName"
                       value={formData.lastName}
                       onChange={(e) => handleChange('lastName', e.target.value)}
-                      placeholder="Doe"
                       required
+                      className="rounded-none font-mono"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="email" className="font-mono text-gray-900 text-base">
+                    Email Address <span className="text-red-500">*</span>
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
@@ -225,38 +239,42 @@ export default function AgentInvitePage() {
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleChange('email', e.target.value)}
-                      placeholder="john.doe@realty.com"
-                      className="pl-10"
+                      className="pl-10 rounded-none font-mono"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="brokerage">Brokerage</Label>
+                  <Label htmlFor="brokerage" className="font-mono text-gray-900 text-base">
+                    Brokerage
+                  </Label>
                   <Input
                     id="brokerage"
                     value={formData.brokerage}
                     onChange={(e) => handleChange('brokerage', e.target.value)}
-                    placeholder="RE/MAX, Keller Williams, etc."
+                    className="rounded-none font-mono"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number (optional)</Label>
+                  <Label htmlFor="phone" className="font-mono text-gray-900 text-base">
+                    Phone Number
+                  </Label>
                   <Input
                     id="phone"
                     type="tel"
                     inputMode="numeric"
                     value={formData.phone}
                     onChange={(e) => handlePhoneChange(e.target.value)}
-                    placeholder="(555) 123-4567"
+                    className="rounded-none font-mono"
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full rounded-none font-mono uppercase tracking-wider text-sm h-11"
+                  style={{ backgroundColor: brandColor }}
                   disabled={isSubmitting || isLoadingStats || !seatStats?.canInvite}
                 >
                   <UserPlus className="h-4 w-4 mr-2" />
@@ -265,8 +283,8 @@ export default function AgentInvitePage() {
               </form>
             </CardContent>
           </Card>
+        </div>
       </div>
-    </div>
     </React.Fragment>
   )
 }

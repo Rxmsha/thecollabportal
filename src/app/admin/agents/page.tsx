@@ -23,6 +23,7 @@ import { Label } from '@/components/ui/label'
 import xano from '@/services/xano'
 import { formatDate } from '@/lib/utils'
 import { Agent } from '@/types'
+import { useBranding } from '@/context/BrandingContext'
 
 interface AgentDetails {
   id: number
@@ -47,6 +48,7 @@ interface ResetCredentials {
 }
 
 export default function AdminAgentsPage() {
+  const { brandColor } = useBranding()
   const [agents, setAgents] = useState<Agent[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -394,7 +396,7 @@ export default function AdminAgentsPage() {
             )}
             Recalculate Seats
           </Button>
-          <Button className="bg-[#1a2332] hover:bg-[#2a3342]" onClick={() => setShowCreateModal(true)}>
+          <Button style={{ backgroundColor: brandColor }} onClick={() => setShowCreateModal(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Create Agent
           </Button>
@@ -437,7 +439,7 @@ export default function AdminAgentsPage() {
           ) : filteredAgents.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-[#1a2332] border-b border-gray-700">
+                <thead className="border-b border-gray-700" style={{ backgroundColor: brandColor }}>
                   <tr>
                     <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Agent</th>
                     <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Company</th>
@@ -504,7 +506,7 @@ export default function AdminAgentsPage() {
           ) : agentDetails ? (
             <>
               {/* Header */}
-              <div className="bg-[#1a2332] p-6 flex items-center gap-4">
+              <div className="p-6 flex items-center gap-4" style={{ backgroundColor: brandColor }}>
                 <div
                   className="h-16 w-16 flex items-center justify-center text-white text-lg font-mono font-bold tracking-wider border-2 border-white/20"
                   style={{ backgroundColor: agentDetails.brandColor || '#1a2332' }}
@@ -568,7 +570,7 @@ export default function AdminAgentsPage() {
                         {agentDetails.realtors.map((realtor: any) => (
                           <div key={realtor.id} className="flex items-center justify-between px-4 py-2.5">
                             <div className="flex items-center gap-3">
-                              <span className="h-7 w-7 bg-[#1a2332] text-white flex items-center justify-center text-xs font-mono">
+                              <span className="h-7 w-7 text-white flex items-center justify-center text-xs font-mono" style={{ backgroundColor: brandColor }}>
                                 {realtor.firstName?.[0]}{realtor.lastName?.[0]}
                               </span>
                               <span className="text-gray-700 font-mono text-base">{realtor.firstName} {realtor.lastName}</span>
@@ -683,7 +685,7 @@ export default function AdminAgentsPage() {
               </div>
 
               <p className="text-xs text-amber-600">The agent will be prompted to change their password on first login.</p>
-              <Button onClick={closeCredentialsModal} className="w-full bg-[#1a2332] hover:bg-[#2a3342]">Done</Button>
+              <Button onClick={closeCredentialsModal} className="w-full" style={{ backgroundColor: brandColor }}>Done</Button>
             </div>
           )}
         </DialogContent>
@@ -692,7 +694,7 @@ export default function AdminAgentsPage() {
       {/* Create Agent Modal */}
       <Dialog open={showCreateModal} onOpenChange={closeCreateModal}>
         <DialogContent className="max-w-md p-0" closeClassName="text-white">
-          <div className="bg-[#1a2332] p-5">
+          <div className="p-5" style={{ backgroundColor: brandColor }}>
             <h2 className="text-white font-mono text-lg font-medium tracking-wide">CREATE NEW AGENT</h2>
             <p className="text-gray-400 text-sm font-mono mt-1">Add a new mortgage agent to the platform</p>
           </div>
@@ -714,7 +716,7 @@ export default function AdminAgentsPage() {
                     <p className="font-mono text-base bg-amber-100 px-2 py-1 inline-block text-gray-900">{createSuccess.tempPassword}</p>
                   </div>
                 </div>
-                <Button onClick={closeCreateModal} className="w-full bg-[#1a2332] hover:bg-[#2a3342] font-mono h-11">Done</Button>
+                <Button onClick={closeCreateModal} className="w-full font-mono h-11" style={{ backgroundColor: brandColor }}>Done</Button>
               </div>
             ) : (
               <form onSubmit={handleCreateAgent} className="space-y-5">
@@ -756,7 +758,7 @@ export default function AdminAgentsPage() {
 
                 <div className="flex gap-3 pt-4">
                   <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1 font-mono h-11">Cancel</Button>
-                  <Button type="submit" disabled={isCreating} className="flex-1 bg-[#1a2332] hover:bg-[#2a3342] font-mono h-11">{isCreating ? 'Creating...' : 'Create Agent'}</Button>
+                  <Button type="submit" disabled={isCreating} className="flex-1 font-mono h-11" style={{ backgroundColor: brandColor }}>{isCreating ? 'Creating...' : 'Create Agent'}</Button>
                 </div>
               </form>
             )}

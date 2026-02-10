@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
-import { StatsCard } from '@/components/StatsCard'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useBranding } from '@/context/BrandingContext'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import FirstLoginModal from '@/components/FirstLoginModal'
@@ -17,6 +17,10 @@ import {
   Calculator,
   Check,
   ExternalLink,
+  LayoutDashboard,
+  Zap,
+  BookOpen,
+  ArrowRight,
 } from 'lucide-react'
 import xano from '@/services/xano'
 import { getOnboardingProgress, type OnboardingProgress } from '@/lib/onboarding'
@@ -32,6 +36,7 @@ interface Resource {
 
 export default function AgentDashboardPage() {
   const { user } = useAuth()
+  const { brandColor } = useBranding()
   const [showFirstLoginModal, setShowFirstLoginModal] = useState(false)
   const [resources, setResources] = useState<Resource[]>([])
   const [onboarding, setOnboarding] = useState<OnboardingProgress>({
@@ -103,28 +108,28 @@ export default function AgentDashboardPage() {
       description: 'Add a new realtor to your network',
       icon: UserPlus,
       href: '/agent/invite',
-      color: 'bg-blue-100 text-blue-600',
+      color: '#0077B6',
     },
     {
       title: 'Update Branding',
       description: 'Customize your portal appearance',
       icon: Palette,
       href: '/agent/branding',
-      color: 'bg-purple-100 text-purple-600',
+      color: '#7C3AED',
     },
     {
       title: 'Browse Templates',
       description: 'Access marketing templates',
       icon: FileText,
       href: '/agent/templates',
-      color: 'bg-green-100 text-green-600',
+      color: '#059669',
     },
     {
       title: 'AI Tools',
       description: 'Generate content with AI',
       icon: Wrench,
       href: '/agent/tools',
-      color: 'bg-orange-100 text-orange-600',
+      color: '#EA580C',
     },
   ]
 
@@ -136,84 +141,93 @@ export default function AgentDashboardPage() {
         onComplete={() => setShowFirstLoginModal(false)}
       />
 
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          Welcome back, {user?.name?.split(' ')[0]}!
+      {/* Page Header */}
+      <div className="border-b border-gray-200 pb-4">
+        <h1 className="dot-matrix text-2xl text-gray-900">
+          WELCOME BACK, {user?.name?.split(' ')[0]?.toUpperCase()}
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-base text-gray-700 mt-1 font-mono">
           Here&apos;s an overview of your portal activity
         </p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatsCard
-          title="Total Realtors"
-          value={stats.totalRealtors}
-          subtitle={`${stats.activeRealtors} active`}
-          icon={Users}
-          iconColor="text-blue-600"
-          iconBgColor="bg-blue-100"
-        />
-        <StatsCard
-          title="Active Realtors"
-          value={stats.activeRealtors}
-          icon={Users}
-          iconColor="text-green-600"
-          iconBgColor="bg-green-100"
-        />
-        <StatsCard
-          title="Pending Invites"
-          value={stats.pendingRealtors}
-          subtitle="awaiting activation"
-          icon={UserPlus}
-          iconColor="text-amber-600"
-          iconBgColor="bg-amber-100"
-        />
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="space-y-2 flex-1">
-                <p className="text-sm font-medium text-gray-500">Seat Usage</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {stats.seatsUsed}/{stats.seatLimit}
-                </p>
-                <Progress value={seatUsagePercent} className="h-2" />
-                <p className="text-xs text-gray-500">
-                  {stats.seatLimit - stats.seatsUsed} seats remaining
-                </p>
-              </div>
-              <div className="p-3 rounded-lg bg-orange-100">
-                <Users className="h-6 w-6 text-orange-600" />
-              </div>
-            </div>
+        <Card className="border-0 overflow-hidden">
+          <div className="px-4 py-3 flex items-center gap-2" style={{ backgroundColor: brandColor }}>
+            <Users className="h-4 w-4 text-white" />
+            <span className="text-white font-mono text-sm uppercase tracking-wider">Total Realtors</span>
+          </div>
+          <CardContent className="p-4 bg-white">
+            <p className="text-3xl font-bold text-gray-900 font-mono">{stats.totalRealtors}</p>
+            <p className="text-base text-gray-700 font-mono mt-1">{stats.activeRealtors} active</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 overflow-hidden">
+          <div className="px-4 py-3 flex items-center gap-2 bg-emerald-600">
+            <Users className="h-4 w-4 text-white" />
+            <span className="text-white font-mono text-sm uppercase tracking-wider">Active Realtors</span>
+          </div>
+          <CardContent className="p-4 bg-white">
+            <p className="text-3xl font-bold text-emerald-600 font-mono">{stats.activeRealtors}</p>
+            <p className="text-base text-gray-700 font-mono mt-1">currently active</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 overflow-hidden">
+          <div className="px-4 py-3 flex items-center gap-2 bg-amber-600">
+            <UserPlus className="h-4 w-4 text-white" />
+            <span className="text-white font-mono text-sm uppercase tracking-wider">Pending Invites</span>
+          </div>
+          <CardContent className="p-4 bg-white">
+            <p className="text-3xl font-bold text-amber-600 font-mono">{stats.pendingRealtors}</p>
+            <p className="text-base text-gray-700 font-mono mt-1">awaiting activation</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 overflow-hidden">
+          <div className="px-4 py-3 flex items-center gap-2 bg-purple-600">
+            <LayoutDashboard className="h-4 w-4 text-white" />
+            <span className="text-white font-mono text-sm uppercase tracking-wider">Seat Usage</span>
+          </div>
+          <CardContent className="p-4 bg-white">
+            <p className="text-3xl font-bold text-purple-600 font-mono">
+              {stats.seatsUsed}/{stats.seatLimit}
+            </p>
+            <Progress value={seatUsagePercent} className="h-2 mt-2" />
+            <p className="text-base text-gray-700 font-mono mt-1">
+              {stats.seatLimit - stats.seatsUsed} seats remaining
+            </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <Card className="border-0 overflow-hidden">
+        <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+          <Zap className="h-5 w-5 text-white" />
+          <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">Quick Actions</span>
+        </div>
+        <CardContent className="p-6 bg-white">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {quickActions.map((action) => {
               const Icon = action.icon
               return (
                 <Link key={action.title} href={action.href}>
-                  <div className="group p-4 border rounded-lg hover:border-blue-300 hover:bg-blue-50/50 transition-colors cursor-pointer">
-                    <div
-                      className={`h-10 w-10 rounded-lg ${action.color} flex items-center justify-center mb-3`}
-                    >
-                      <Icon className="h-5 w-5" />
+                  <div className="group p-4 border border-gray-200 hover:border-gray-400 transition-all cursor-pointer h-full">
+                    <div className="mb-3">
+                      <Icon className="h-6 w-6" style={{ color: action.color }} />
                     </div>
-                    <h3 className="font-medium text-gray-900 group-hover:text-blue-600">
+                    <h3 className="font-mono font-semibold text-gray-900 uppercase tracking-wider text-base">
                       {action.title}
                     </h3>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-base text-gray-700 font-mono mt-1">
                       {action.description}
                     </p>
+                    <div className="flex items-center gap-1 mt-3 text-sm font-mono uppercase tracking-wider" style={{ color: action.color }}>
+                      Go <ArrowRight className="h-3 w-3" />
+                    </div>
                   </div>
                 </Link>
               )
@@ -224,35 +238,42 @@ export default function AgentDashboardPage() {
 
       {/* Resources for Your Clients */}
       {resources.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Resources for Your Clients</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card className="border-0 overflow-hidden">
+          <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+            <BookOpen className="h-5 w-5 text-white" />
+            <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">Resources for Your Clients</span>
+          </div>
+          <CardContent className="p-6 bg-white">
             <div className="space-y-4">
-              {resources.map((resource, index) => (
+              {resources.map((resource) => (
                 <div
                   key={resource.id}
-                  className={`p-4 rounded-lg ${
-                    index % 2 === 0 ? 'bg-blue-50' : 'bg-green-50'
-                  }`}
+                  className="flex border border-gray-900 bg-white overflow-hidden"
                 >
-                  <h4 className="font-medium text-gray-900 mb-2">
-                    {resource.title}
-                  </h4>
-                  <p className="text-sm text-gray-600 mb-3">
-                    {resource.description}
-                  </p>
-                  <Button size="sm" variant="outline" asChild>
-                    <a
-                      href={resource.resourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  <div className="flex-1 p-4">
+                    <h4 className="font-mono font-semibold text-gray-900 uppercase tracking-wider text-base">
+                      {resource.title}
+                    </h4>
+                    <p className="text-base text-gray-700 font-mono mt-1 mb-3">
+                      {resource.description}
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-none font-mono uppercase tracking-wider text-sm"
+                      asChild
                     >
-                      {resource.buttonText}
-                      <ExternalLink className="h-3 w-3 ml-2" />
-                    </a>
-                  </Button>
+                      <a
+                        href={resource.resourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {resource.buttonText}
+                        <ExternalLink className="h-3 w-3 ml-2" />
+                      </a>
+                    </Button>
+                  </div>
+                  <div className="w-3" style={{ backgroundColor: brandColor }} />
                 </div>
               ))}
             </div>
@@ -262,71 +283,92 @@ export default function AgentDashboardPage() {
 
       {/* Getting Started - Only show if not completed */}
       {!onboarding.completed && (
-        <div className="max-w-xl">
-          <Card>
-            <CardHeader>
-              <CardTitle>Getting Started</CardTitle>
-            </CardHeader>
-            <CardContent>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="border-0 overflow-hidden">
+            <div className="px-6 py-4 flex items-center gap-3 bg-emerald-600">
+              <Check className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">Getting Started</span>
+            </div>
+            <CardContent className="p-6 bg-white">
               <div className="space-y-4">
                 <Link href="/agent/branding">
-                  <div className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                    onboarding.visitedBranding ? 'bg-green-50' : 'bg-gray-50 hover:bg-gray-100'
+                  <div className={`flex items-start gap-4 p-4 border transition-all cursor-pointer ${
+                    onboarding.visitedBranding
+                      ? 'border-emerald-300 bg-emerald-50'
+                      : 'border-gray-200 hover:border-gray-400'
                   }`}>
-                    <div className={`h-6 w-6 rounded-full flex items-center justify-center text-sm font-medium ${
+                    <div className={`h-8 w-8 flex items-center justify-center text-base font-mono font-bold flex-shrink-0 ${
                       onboarding.visitedBranding
-                        ? 'bg-green-600 text-white'
-                        : 'bg-gray-300 text-white'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-200 text-gray-600'
                     }`}>
                       {onboarding.visitedBranding ? <Check className="h-4 w-4" /> : '1'}
                     </div>
                     <div>
-                      <h4 className={`font-medium ${onboarding.visitedBranding ? 'text-green-700' : 'text-gray-900'}`}>
-                        Customize your branding
+                      <h4 className={`font-mono font-semibold uppercase tracking-wider text-base ${
+                        onboarding.visitedBranding ? 'text-emerald-700' : 'text-gray-900'
+                      }`}>
+                        Customize Your Branding
                       </h4>
-                      <p className={`text-sm ${onboarding.visitedBranding ? 'text-green-600' : 'text-gray-500'}`}>
+                      <p className={`text-base font-mono mt-1 ${
+                        onboarding.visitedBranding ? 'text-emerald-600' : 'text-gray-700'
+                      }`}>
                         Add your logo and brand colors to personalize your portal
                       </p>
                     </div>
                   </div>
                 </Link>
+
                 <Link href="/agent/invite">
-                  <div className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                    onboarding.visitedInvite ? 'bg-green-50' : 'bg-gray-50 hover:bg-gray-100'
+                  <div className={`flex items-start gap-4 p-4 border transition-all cursor-pointer ${
+                    onboarding.visitedInvite
+                      ? 'border-emerald-300 bg-emerald-50'
+                      : 'border-gray-200 hover:border-gray-400'
                   }`}>
-                    <div className={`h-6 w-6 rounded-full flex items-center justify-center text-sm font-medium ${
+                    <div className={`h-8 w-8 flex items-center justify-center text-base font-mono font-bold flex-shrink-0 ${
                       onboarding.visitedInvite
-                        ? 'bg-green-600 text-white'
-                        : 'bg-gray-300 text-white'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-200 text-gray-600'
                     }`}>
                       {onboarding.visitedInvite ? <Check className="h-4 w-4" /> : '2'}
                     </div>
                     <div>
-                      <h4 className={`font-medium ${onboarding.visitedInvite ? 'text-green-700' : 'text-gray-900'}`}>
-                        Invite your realtors
+                      <h4 className={`font-mono font-semibold uppercase tracking-wider text-base ${
+                        onboarding.visitedInvite ? 'text-emerald-700' : 'text-gray-900'
+                      }`}>
+                        Invite Your Realtors
                       </h4>
-                      <p className={`text-sm ${onboarding.visitedInvite ? 'text-green-600' : 'text-gray-500'}`}>
+                      <p className={`text-base font-mono mt-1 ${
+                        onboarding.visitedInvite ? 'text-emerald-600' : 'text-gray-700'
+                      }`}>
                         Send invitations to realtors you want to collaborate with
                       </p>
                     </div>
                   </div>
                 </Link>
+
                 <Link href="/agent/templates">
-                  <div className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                    onboarding.visitedTemplates ? 'bg-green-50' : 'bg-gray-50 hover:bg-gray-100'
+                  <div className={`flex items-start gap-4 p-4 border transition-all cursor-pointer ${
+                    onboarding.visitedTemplates
+                      ? 'border-emerald-300 bg-emerald-50'
+                      : 'border-gray-200 hover:border-gray-400'
                   }`}>
-                    <div className={`h-6 w-6 rounded-full flex items-center justify-center text-sm font-medium ${
+                    <div className={`h-8 w-8 flex items-center justify-center text-base font-mono font-bold flex-shrink-0 ${
                       onboarding.visitedTemplates
-                        ? 'bg-green-600 text-white'
-                        : 'bg-gray-300 text-white'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-200 text-gray-600'
                     }`}>
                       {onboarding.visitedTemplates ? <Check className="h-4 w-4" /> : '3'}
                     </div>
                     <div>
-                      <h4 className={`font-medium ${onboarding.visitedTemplates ? 'text-green-700' : 'text-gray-900'}`}>
-                        Explore templates & tools
+                      <h4 className={`font-mono font-semibold uppercase tracking-wider text-base ${
+                        onboarding.visitedTemplates ? 'text-emerald-700' : 'text-gray-900'
+                      }`}>
+                        Explore Templates & Tools
                       </h4>
-                      <p className={`text-sm ${onboarding.visitedTemplates ? 'text-green-600' : 'text-gray-500'}`}>
+                      <p className={`text-base font-mono mt-1 ${
+                        onboarding.visitedTemplates ? 'text-emerald-600' : 'text-gray-700'
+                      }`}>
                         Browse our library of marketing templates and AI tools
                       </p>
                     </div>

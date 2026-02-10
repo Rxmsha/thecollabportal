@@ -22,8 +22,10 @@ import {
 } from 'lucide-react'
 import xano from '@/services/xano'
 import { Template, TemplateCategory, TemplateFormat } from '@/types'
+import { useBranding } from '@/context/BrandingContext'
 
 export default function TemplateDetailPage() {
+  const { brandColor } = useBranding()
   const router = useRouter()
   const params = useParams()
   const templateId = Number(params.id)
@@ -431,28 +433,31 @@ export default function TemplateDetailPage() {
   if (showDeleteConfirm) {
     return (
       <div className="space-y-6">
-        <Button variant="ghost" onClick={() => setShowDeleteConfirm(false)}>
+        <Button variant="ghost" onClick={() => setShowDeleteConfirm(false)} className="font-mono uppercase tracking-wider">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <Card className="max-w-lg mx-auto">
-          <CardContent className="pt-6 space-y-4">
-            <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <Trash2 className="h-8 w-8 text-red-600 flex-shrink-0" />
+        <Card className="max-w-lg mx-auto border-0 overflow-hidden">
+          <div className="bg-red-600 px-6 py-4">
+            <div className="flex items-center gap-3">
+              <Trash2 className="h-6 w-6 text-white flex-shrink-0" />
               <div>
-                <h4 className="font-medium text-red-800">Delete "{template.title}"?</h4>
-                <p className="text-sm text-red-700 mt-1">
-                  This action cannot be undone. The template will be permanently removed.
-                </p>
+                <h4 className="font-mono text-white font-medium uppercase tracking-wider">Delete Template?</h4>
+                <p className="text-sm text-red-100 font-mono mt-1">This action cannot be undone.</p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} className="flex-1">
+          </div>
+          <CardContent className="p-6 space-y-4">
+            <p className="text-gray-700 font-mono">
+              Are you sure you want to delete "<span className="font-semibold">{template.title}</span>"? The template will be permanently removed.
+            </p>
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} className="flex-1 font-mono uppercase tracking-wider">
                 Cancel
               </Button>
-              <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="flex-1">
+              <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="flex-1 font-mono uppercase tracking-wider">
                 {isDeleting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Trash2 className="h-4 w-4 mr-2" />}
-                Delete Template
+                Delete
               </Button>
             </div>
           </CardContent>
@@ -465,26 +470,29 @@ export default function TemplateDetailPage() {
   if (showPublishedWarning) {
     return (
       <div className="space-y-6">
-        <Button variant="ghost" onClick={() => setShowPublishedWarning(false)}>
+        <Button variant="ghost" onClick={() => setShowPublishedWarning(false)} className="font-mono uppercase tracking-wider">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <Card className="max-w-lg mx-auto">
-          <CardContent className="pt-6 space-y-4">
-            <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <AlertTriangle className="h-8 w-8 text-yellow-600 flex-shrink-0" />
+        <Card className="max-w-lg mx-auto border-0 overflow-hidden">
+          <div className="bg-amber-500 px-6 py-4">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="h-6 w-6 text-white flex-shrink-0" />
               <div>
-                <h4 className="font-medium text-yellow-800">This template is published</h4>
-                <p className="text-sm text-yellow-700 mt-1">
-                  Editing will unpublish this template. It will be hidden from agents and realtors until you publish it again.
-                </p>
+                <h4 className="font-mono text-white font-medium uppercase tracking-wider">Template is Published</h4>
+                <p className="text-sm text-amber-100 font-mono mt-1">Editing will change the template status.</p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setShowPublishedWarning(false)} className="flex-1">
+          </div>
+          <CardContent className="p-6 space-y-4">
+            <p className="text-gray-700 font-mono">
+              Editing will unpublish this template. It will be hidden from agents and realtors until you publish it again.
+            </p>
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" onClick={() => setShowPublishedWarning(false)} className="flex-1 font-mono uppercase tracking-wider">
                 Cancel
               </Button>
-              <Button onClick={startEditMode} className="flex-1 bg-yellow-600 hover:bg-yellow-700">
+              <Button onClick={startEditMode} className="flex-1 font-mono uppercase tracking-wider" style={{ backgroundColor: brandColor }}>
                 Continue to Edit
               </Button>
             </div>
@@ -674,7 +682,7 @@ export default function TemplateDetailPage() {
 
           {/* Details */}
           <Card className="border-0 shadow-sm">
-            <CardHeader className="bg-[#1a2332] text-white">
+            <CardHeader className="text-white" style={{ backgroundColor: brandColor }}>
               <CardTitle className="font-mono text-base font-bold uppercase tracking-wider">Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
@@ -705,7 +713,7 @@ export default function TemplateDetailPage() {
         <div className="space-y-6">
           {/* Status Control */}
           <Card className="border-0 shadow-sm">
-            <CardHeader className="bg-[#1a2332] text-white py-4">
+            <CardHeader className="text-white py-4" style={{ backgroundColor: brandColor }}>
               <CardTitle className="font-mono text-base font-bold uppercase tracking-wider">Status</CardTitle>
               <CardDescription className="text-gray-400 font-mono text-sm">Control template visibility</CardDescription>
             </CardHeader>
@@ -730,7 +738,7 @@ export default function TemplateDetailPage() {
           {/* Notifications - Only for published */}
           {template.status === 'published' && (
             <Card className="border-0 shadow-sm">
-              <CardHeader className="bg-[#1a2332] text-white py-4">
+              <CardHeader className="text-white py-4" style={{ backgroundColor: brandColor }}>
                 <CardTitle className="font-mono text-base font-bold uppercase tracking-wider">Notify Agents</CardTitle>
                 <CardDescription className="text-gray-400 font-mono text-sm">Send email notifications manually</CardDescription>
               </CardHeader>
@@ -792,7 +800,7 @@ export default function TemplateDetailPage() {
           {/* Notify Realtors - Only for published */}
           {template.status === 'published' && (
             <Card className="border-0 shadow-sm">
-              <CardHeader className="bg-[#1a2332] text-white py-4">
+              <CardHeader className="text-white py-4" style={{ backgroundColor: brandColor }}>
                 <CardTitle className="font-mono text-base font-bold uppercase tracking-wider">Notify Realtors</CardTitle>
                 <CardDescription className="text-gray-400 font-mono text-sm">Send to realtors (appears from their agent)</CardDescription>
               </CardHeader>

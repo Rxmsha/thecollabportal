@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
@@ -21,146 +20,160 @@ import {
   FileEdit,
   Trash2,
   Bell,
-  Send
+  Send,
+  Users,
+  Home,
+  LayoutTemplate,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import xano from '@/services/xano'
 import { formatDateTime } from '@/lib/utils'
 import { UsageLog } from '@/types'
 import Link from 'next/link'
+import { useBranding } from '@/context/BrandingContext'
 
 // Event type configuration
 const EVENT_CONFIG: Record<string, {
   label: string
   icon: React.ElementType
   color: string
-  badgeVariant: string
+  bgColor: string
   category: 'agent' | 'realtor' | 'template'
 }> = {
   // Agent events
   agent_created: {
     label: 'Agent Created',
     icon: UserPlus,
-    color: 'bg-blue-100 text-blue-600',
-    badgeVariant: 'default',
+    color: 'text-[#0077B6]',
+    bgColor: 'bg-[#0077B6]',
     category: 'agent'
   },
   agent_activated: {
     label: 'Agent Activated',
     icon: UserCheck,
-    color: 'bg-green-100 text-green-600',
-    badgeVariant: 'success',
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-600',
     category: 'agent'
   },
   agent_deactivated: {
     label: 'Agent Deactivated',
     icon: UserX,
-    color: 'bg-red-100 text-red-600',
-    badgeVariant: 'destructive',
+    color: 'text-red-600',
+    bgColor: 'bg-red-600',
     category: 'agent'
   },
   agent_reactivated: {
     label: 'Agent Reactivated',
     icon: UserCog,
-    color: 'bg-emerald-100 text-emerald-600',
-    badgeVariant: 'success',
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-600',
     category: 'agent'
   },
   // Realtor events
   realtor_invited: {
     label: 'Realtor Invited',
     icon: UserPlus,
-    color: 'bg-orange-100 text-orange-600',
-    badgeVariant: 'orange',
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-600',
     category: 'realtor'
   },
   realtor_activated: {
     label: 'Realtor Activated',
     icon: UserCheck,
-    color: 'bg-green-100 text-green-600',
-    badgeVariant: 'success',
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-600',
     category: 'realtor'
   },
   realtor_deactivated_by_agent: {
     label: 'Realtor Deactivated (Agent)',
     icon: UserX,
-    color: 'bg-amber-100 text-amber-600',
-    badgeVariant: 'warning',
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-600',
     category: 'realtor'
   },
   realtor_deactivated_by_admin: {
     label: 'Realtor Deactivated (Admin)',
     icon: UserX,
-    color: 'bg-red-100 text-red-600',
-    badgeVariant: 'destructive',
+    color: 'text-red-600',
+    bgColor: 'bg-red-600',
     category: 'realtor'
   },
   realtor_reactivated_by_agent: {
     label: 'Realtor Reactivated (Agent)',
     icon: UserCog,
-    color: 'bg-teal-100 text-teal-600',
-    badgeVariant: 'success',
+    color: 'text-teal-600',
+    bgColor: 'bg-teal-600',
     category: 'realtor'
   },
   realtor_reactivated_by_admin: {
     label: 'Realtor Reactivated (Admin)',
     icon: UserCog,
-    color: 'bg-emerald-100 text-emerald-600',
-    badgeVariant: 'success',
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-600',
     category: 'realtor'
   },
   // Template events
   template_created: {
     label: 'Template Created',
     icon: FilePlus,
-    color: 'bg-indigo-100 text-indigo-600',
-    badgeVariant: 'default',
+    color: 'text-indigo-600',
+    bgColor: 'bg-indigo-600',
     category: 'template'
   },
   template_published: {
     label: 'Template Published',
     icon: FileText,
-    color: 'bg-purple-100 text-purple-600',
-    badgeVariant: 'purple',
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-600',
     category: 'template'
   },
   template_updated: {
     label: 'Template Updated',
     icon: FileEdit,
-    color: 'bg-cyan-100 text-cyan-600',
-    badgeVariant: 'secondary',
+    color: 'text-cyan-600',
+    bgColor: 'bg-cyan-600',
     category: 'template'
   },
   template_deleted: {
     label: 'Template Deleted',
     icon: Trash2,
-    color: 'bg-red-100 text-red-600',
-    badgeVariant: 'destructive',
+    color: 'text-red-600',
+    bgColor: 'bg-red-600',
     category: 'template'
   },
   template_notification_sent_to_agents: {
-    label: 'Notification Sent to Agents',
+    label: 'Notification to Agents',
     icon: Bell,
-    color: 'bg-violet-100 text-violet-600',
-    badgeVariant: 'purple',
+    color: 'text-violet-600',
+    bgColor: 'bg-violet-600',
     category: 'template'
   },
   template_notification_sent_to_realtors: {
-    label: 'Notification Sent to Realtors',
+    label: 'Notification to Realtors',
     icon: Send,
-    color: 'bg-fuchsia-100 text-fuchsia-600',
-    badgeVariant: 'purple',
+    color: 'text-fuchsia-600',
+    bgColor: 'bg-fuchsia-600',
     category: 'template'
   },
 }
 
+const ITEMS_PER_PAGE = 50
+
 export default function AdminLogsPage() {
+  const { brandColor } = useBranding()
   const [logs, setLogs] = useState<UsageLog[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [eventFilter, setEventFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     loadLogs()
+    setCurrentPage(1) // Reset to first page when filter changes
   }, [eventFilter])
 
   const loadLogs = async () => {
@@ -168,7 +181,7 @@ export default function AdminLogsPage() {
     try {
       const { data, error } = await xano.getUsageLogs({
         eventType: eventFilter === 'all' ? undefined : eventFilter,
-        limit: 100,
+        limit: 500, // Fetch more logs for client-side pagination
       })
       if (data) {
         // Handle both paginated response (data.items) and plain array
@@ -214,8 +227,8 @@ export default function AdminLogsPage() {
     return EVENT_CONFIG[eventType] || {
       label: eventType.replace(/_/g, ' '),
       icon: Activity,
-      color: 'bg-gray-100 text-gray-600',
-      badgeVariant: 'secondary',
+      color: 'text-gray-600',
+      bgColor: 'bg-gray-600',
       category: 'agent'
     }
   }
@@ -225,6 +238,17 @@ export default function AdminLogsPage() {
     const config = getEventConfig(log.eventType)
     return config.category === categoryFilter
   })
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredLogs.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const endIndex = startIndex + ITEMS_PER_PAGE
+  const paginatedLogs = filteredLogs.slice(startIndex, endIndex)
+
+  // Reset to page 1 when category filter changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [categoryFilter])
 
   const getFullName = (firstName?: string, lastName?: string, fallback?: string): string => {
     if (firstName && lastName) return `${firstName} ${lastName}`
@@ -297,52 +321,56 @@ export default function AdminLogsPage() {
     }
   }
 
+  const agentCount = logs.filter(l => getEventConfig(l.eventType).category === 'agent').length
+  const realtorCount = logs.filter(l => getEventConfig(l.eventType).category === 'realtor').length
+  const templateCount = logs.filter(l => getEventConfig(l.eventType).category === 'template').length
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4 border-b border-gray-200 pb-4">
         <div>
           <h1 className="dot-matrix text-xl text-gray-900">USAGE LOGS</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1 font-mono">
             Track all activity across the platform
           </p>
         </div>
         <div className="flex gap-3">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-40 font-mono text-xs uppercase tracking-wider rounded-none border-gray-300">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="agent">Agent Events</SelectItem>
-              <SelectItem value="realtor">Realtor Events</SelectItem>
-              <SelectItem value="template">Template Events</SelectItem>
+            <SelectContent className="rounded-none">
+              <SelectItem value="all" className="font-mono text-xs uppercase">All Categories</SelectItem>
+              <SelectItem value="agent" className="font-mono text-xs uppercase">Agent Events</SelectItem>
+              <SelectItem value="realtor" className="font-mono text-xs uppercase">Realtor Events</SelectItem>
+              <SelectItem value="template" className="font-mono text-xs uppercase">Template Events</SelectItem>
             </SelectContent>
           </Select>
           <Select value={eventFilter} onValueChange={setEventFilter}>
-            <SelectTrigger className="w-64">
+            <SelectTrigger className="w-64 font-mono text-xs uppercase tracking-wider rounded-none border-gray-300">
               <SelectValue placeholder="Filter by event" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Events</SelectItem>
-              <SelectItem value="---agent" disabled className="font-semibold text-gray-500">— Agent Events —</SelectItem>
-              <SelectItem value="agent_created">Agent Created</SelectItem>
-              <SelectItem value="agent_activated">Agent Activated</SelectItem>
-              <SelectItem value="agent_deactivated">Agent Deactivated</SelectItem>
-              <SelectItem value="agent_reactivated">Agent Reactivated</SelectItem>
-              <SelectItem value="---realtor" disabled className="font-semibold text-gray-500">— Realtor Events —</SelectItem>
-              <SelectItem value="realtor_invited">Realtor Invited</SelectItem>
-              <SelectItem value="realtor_activated">Realtor Activated</SelectItem>
-              <SelectItem value="realtor_deactivated_by_agent">Realtor Deactivated (Agent)</SelectItem>
-              <SelectItem value="realtor_deactivated_by_admin">Realtor Deactivated (Admin)</SelectItem>
-              <SelectItem value="realtor_reactivated_by_agent">Realtor Reactivated (Agent)</SelectItem>
-              <SelectItem value="realtor_reactivated_by_admin">Realtor Reactivated (Admin)</SelectItem>
-              <SelectItem value="---template" disabled className="font-semibold text-gray-500">— Template Events —</SelectItem>
-              <SelectItem value="template_created">Template Created</SelectItem>
-              <SelectItem value="template_published">Template Published</SelectItem>
-              <SelectItem value="template_updated">Template Updated</SelectItem>
-              <SelectItem value="template_deleted">Template Deleted</SelectItem>
-              <SelectItem value="template_notification_sent_to_agents">Notification to Agents</SelectItem>
-              <SelectItem value="template_notification_sent_to_realtors">Notification to Realtors</SelectItem>
+            <SelectContent className="rounded-none">
+              <SelectItem value="all" className="font-mono text-xs uppercase">All Events</SelectItem>
+              <SelectItem value="---agent" disabled className="font-mono text-xs font-semibold text-gray-500">— Agent Events —</SelectItem>
+              <SelectItem value="agent_created" className="font-mono text-xs">Agent Created</SelectItem>
+              <SelectItem value="agent_activated" className="font-mono text-xs">Agent Activated</SelectItem>
+              <SelectItem value="agent_deactivated" className="font-mono text-xs">Agent Deactivated</SelectItem>
+              <SelectItem value="agent_reactivated" className="font-mono text-xs">Agent Reactivated</SelectItem>
+              <SelectItem value="---realtor" disabled className="font-mono text-xs font-semibold text-gray-500">— Realtor Events —</SelectItem>
+              <SelectItem value="realtor_invited" className="font-mono text-xs">Realtor Invited</SelectItem>
+              <SelectItem value="realtor_activated" className="font-mono text-xs">Realtor Activated</SelectItem>
+              <SelectItem value="realtor_deactivated_by_agent" className="font-mono text-xs">Realtor Deactivated (Agent)</SelectItem>
+              <SelectItem value="realtor_deactivated_by_admin" className="font-mono text-xs">Realtor Deactivated (Admin)</SelectItem>
+              <SelectItem value="realtor_reactivated_by_agent" className="font-mono text-xs">Realtor Reactivated (Agent)</SelectItem>
+              <SelectItem value="realtor_reactivated_by_admin" className="font-mono text-xs">Realtor Reactivated (Admin)</SelectItem>
+              <SelectItem value="---template" disabled className="font-mono text-xs font-semibold text-gray-500">— Template Events —</SelectItem>
+              <SelectItem value="template_created" className="font-mono text-xs">Template Created</SelectItem>
+              <SelectItem value="template_published" className="font-mono text-xs">Template Published</SelectItem>
+              <SelectItem value="template_updated" className="font-mono text-xs">Template Updated</SelectItem>
+              <SelectItem value="template_deleted" className="font-mono text-xs">Template Deleted</SelectItem>
+              <SelectItem value="template_notification_sent_to_agents" className="font-mono text-xs">Notification to Agents</SelectItem>
+              <SelectItem value="template_notification_sent_to_realtors" className="font-mono text-xs">Notification to Realtors</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -350,55 +378,69 @@ export default function AdminLogsPage() {
 
       {/* Stats summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-gray-900">{logs.length}</div>
-            <div className="text-sm text-gray-500">Total Events</div>
+        <Card className="border-0 overflow-hidden">
+          <div className="px-4 py-2 flex items-center gap-2" style={{ backgroundColor: brandColor }}>
+            <Activity className="h-4 w-4 text-white" />
+            <span className="text-white font-mono text-xs uppercase tracking-wider">Total Events</span>
+          </div>
+          <CardContent className="p-4 bg-white">
+            <div className="text-3xl font-bold font-mono" style={{ color: brandColor }}>{logs.length}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-[#0077B6]">
-              {logs.filter(l => getEventConfig(l.eventType).category === 'agent').length}
-            </div>
-            <div className="text-sm text-gray-500">Agent Events</div>
+        <Card className="border-0 overflow-hidden">
+          <div className="bg-[#0077B6] px-4 py-2 flex items-center gap-2">
+            <Users className="h-4 w-4 text-white" />
+            <span className="text-white font-mono text-xs uppercase tracking-wider">Agent Events</span>
+          </div>
+          <CardContent className="p-4 bg-white">
+            <div className="text-3xl font-bold text-[#0077B6] font-mono">{agentCount}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-orange-600">
-              {logs.filter(l => getEventConfig(l.eventType).category === 'realtor').length}
-            </div>
-            <div className="text-sm text-gray-500">Realtor Events</div>
+        <Card className="border-0 overflow-hidden">
+          <div className="bg-orange-600 px-4 py-2 flex items-center gap-2">
+            <Home className="h-4 w-4 text-white" />
+            <span className="text-white font-mono text-xs uppercase tracking-wider">Realtor Events</span>
+          </div>
+          <CardContent className="p-4 bg-white">
+            <div className="text-3xl font-bold text-orange-600 font-mono">{realtorCount}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-purple-600">
-              {logs.filter(l => getEventConfig(l.eventType).category === 'template').length}
-            </div>
-            <div className="text-sm text-gray-500">Template Events</div>
+        <Card className="border-0 overflow-hidden">
+          <div className="bg-purple-600 px-4 py-2 flex items-center gap-2">
+            <LayoutTemplate className="h-4 w-4 text-white" />
+            <span className="text-white font-mono text-xs uppercase tracking-wider">Template Events</span>
+          </div>
+          <CardContent className="p-4 bg-white">
+            <div className="text-3xl font-bold text-purple-600 font-mono">{templateCount}</div>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
+      <Card className="border-0 overflow-hidden">
+        <div className="px-6 py-3 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+          <Activity className="h-5 w-5 text-white" />
+          <span className="text-white font-mono font-medium uppercase tracking-wider">Activity Log</span>
+          <span className="text-white/60 font-mono text-sm ml-auto">
+            {filteredLogs.length} {filteredLogs.length === 1 ? 'entry' : 'entries'}
+            {totalPages > 1 && ` • Page ${currentPage} of ${totalPages}`}
+          </span>
+        </div>
+        <CardContent className="p-0 bg-white">
           {isLoading ? (
             <div className="p-6 space-y-4">
               {[...Array(10)].map((_, i) => (
                 <div key={i} className="flex items-center gap-4">
-                  <div className="h-10 w-10 bg-gray-100 rounded-full animate-pulse" />
+                  <div className="h-10 w-10 bg-gray-100 animate-pulse" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-100 rounded w-1/3 animate-pulse" />
-                    <div className="h-3 bg-gray-100 rounded w-2/3 animate-pulse" />
+                    <div className="h-4 bg-gray-100 w-1/3 animate-pulse" />
+                    <div className="h-3 bg-gray-100 w-2/3 animate-pulse" />
                   </div>
                 </div>
               ))}
             </div>
-          ) : filteredLogs.length > 0 ? (
+          ) : paginatedLogs.length > 0 ? (
             <div className="divide-y divide-gray-100">
-              {filteredLogs.map((log) => {
+              {paginatedLogs.map((log) => {
                 const config = getEventConfig(log.eventType)
                 const IconComponent = config.icon
                 const description = getEventDescription(log)
@@ -406,36 +448,36 @@ export default function AdminLogsPage() {
                 return (
                   <div
                     key={log.id}
-                    className="flex items-start gap-4 p-4 hover:bg-gray-50"
+                    className="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors"
                   >
                     <div
-                      className={`h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 ${config.color}`}
+                      className={`h-10 w-10 ${config.bgColor} flex items-center justify-center flex-shrink-0`}
                     >
-                      <IconComponent className="h-5 w-5" />
+                      <IconComponent className="h-5 w-5 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <Badge variant={config.badgeVariant as any}>
+                        <span className={`inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider border ${config.color} border-current bg-white`}>
                           {config.label}
-                        </Badge>
-                        <span className="text-xs text-gray-400">
+                        </span>
+                        <span className="text-xs text-gray-400 font-mono">
                           {formatDateTime(log.createdAt)}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-700 mb-2">{description}</p>
+                      <p className="text-sm text-gray-700 font-mono mb-2">{description}</p>
                       <div className="flex gap-3 text-xs flex-wrap items-center">
                         {/* Show agent info only for agent events */}
                         {config.category === 'agent' && log.agentId && (
                           <>
                             <Link
                               href={`/admin/agents?id=${log.agentId}`}
-                              className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded hover:bg-blue-100"
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-[#0077B6]/10 text-[#0077B6] font-mono uppercase tracking-wider text-xs hover:bg-[#0077B6]/20 transition-colors"
                             >
                               <span className="font-medium">Agent</span>
                               <span>#{log.agentId}</span>
                             </Link>
                             {(log.agent?.email || log.details?.agent_email) && (
-                              <span className="text-gray-500">{log.agent?.email || log.details?.agent_email}</span>
+                              <span className="text-gray-500 font-mono">{log.agent?.email || log.details?.agent_email}</span>
                             )}
                           </>
                         )}
@@ -444,13 +486,13 @@ export default function AdminLogsPage() {
                           <>
                             <Link
                               href={`/admin/realtors?id=${log.realtorId}`}
-                              className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 rounded hover:bg-orange-100"
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-orange-600/10 text-orange-600 font-mono uppercase tracking-wider text-xs hover:bg-orange-600/20 transition-colors"
                             >
                               <span className="font-medium">Realtor</span>
                               <span>#{log.realtorId}</span>
                             </Link>
                             {(log.realtor?.email || log.details?.realtor_email) && (
-                              <span className="text-gray-500">{log.realtor?.email || log.details?.realtor_email}</span>
+                              <span className="text-gray-500 font-mono">{log.realtor?.email || log.details?.realtor_email}</span>
                             )}
                           </>
                         )}
@@ -458,7 +500,7 @@ export default function AdminLogsPage() {
                         {config.category === 'template' && log.templateId && (
                           <Link
                             href={`/admin/templates/${log.templateId}`}
-                            className="inline-flex items-center gap-1 px-2 py-1 bg-purple-50 text-purple-700 rounded hover:bg-purple-100"
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-purple-600/10 text-purple-600 font-mono uppercase tracking-wider text-xs hover:bg-purple-600/20 transition-colors"
                           >
                             <span className="font-medium">Template</span>
                             <span>#{log.templateId}</span>
@@ -473,13 +515,92 @@ export default function AdminLogsPage() {
           ) : (
             <div className="text-center py-12">
               <Activity className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">No activity logs found</p>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="text-gray-500 font-mono uppercase tracking-wider">No activity logs found</p>
+              <p className="text-gray-400 text-sm mt-1 font-mono">
                 {eventFilter !== 'all' && 'Try changing the filter to see more logs'}
               </p>
             </div>
           )}
         </CardContent>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
+            <div className="text-sm text-gray-500 font-mono">
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredLogs.length)} of {filteredLogs.length}
+            </div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="rounded-none font-mono"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="rounded-none font-mono"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              {/* Page numbers */}
+              <div className="flex items-center gap-1 mx-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(page => {
+                    // Show first, last, current, and adjacent pages
+                    if (page === 1 || page === totalPages) return true
+                    if (Math.abs(page - currentPage) <= 1) return true
+                    return false
+                  })
+                  .map((page, idx, arr) => {
+                    // Add ellipsis between non-consecutive pages
+                    const showEllipsisBefore = idx > 0 && page - arr[idx - 1] > 1
+                    return (
+                      <React.Fragment key={page}>
+                        {showEllipsisBefore && (
+                          <span className="px-2 text-gray-400 font-mono">...</span>
+                        )}
+                        <Button
+                          variant={currentPage === page ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className="rounded-none font-mono min-w-[36px]"
+                          style={currentPage === page ? { backgroundColor: brandColor } : undefined}
+                        >
+                          {page}
+                        </Button>
+                      </React.Fragment>
+                    )
+                  })}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="rounded-none font-mono"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="rounded-none font-mono"
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   )
