@@ -167,7 +167,12 @@ export default function AdminDashboardPage() {
                         {(log.eventType || 'unknown').replace(/_/g, ' ')}
                       </Badge>
                       <span className="text-sm text-gray-600">
-                        {log.details?.template_title || log.details?.agent_email || log.details?.realtor_email || ''}
+                        {log.details?.template_title ||
+                         log.details?.agent_email ||
+                         log.details?.realtor_email ||
+                         log.details?.email ||
+                         log.details?.name ||
+                         ''}
                       </span>
                     </div>
                     <span className="text-xs text-gray-400 font-mono">
