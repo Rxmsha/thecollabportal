@@ -47,7 +47,7 @@ interface AgentInfo {
   email: string
   phone: string
   companyName: string
-  status: string
+  status?: string
 }
 
 interface RealtorDetails {
