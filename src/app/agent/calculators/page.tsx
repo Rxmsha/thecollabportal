@@ -119,7 +119,7 @@ export default function AgentCalculatorsPage() {
               className={`cursor-pointer transition-all border-0 overflow-hidden ${
                 isActive ? 'ring-2 shadow-lg' : 'hover:shadow-md'
               }`}
-              style={isActive ? { ringColor: brandColor } : undefined}
+              style={isActive ? { '--tw-ring-color': brandColor } as React.CSSProperties : undefined}
               onClick={() => setActiveCalculator(calc.id)}
             >
               <div
