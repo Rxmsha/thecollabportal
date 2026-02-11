@@ -360,16 +360,16 @@ export default function AdminTemplatesPage() {
                 </div>
 
                 {/* Content - Dark footer */}
-                <div className="p-4" style={{ backgroundColor: brandColor }}>
+                <div className="p-4 flex flex-col h-[110px]" style={{ backgroundColor: brandColor }}>
                   <h3 className="font-mono font-semibold text-white text-base mb-1 truncate">
                     {template.title}
                   </h3>
-                  <p className="text-sm text-gray-400 font-mono line-clamp-1 mb-3">
-                    {template.shortDescription}
+                  <p className="text-sm text-gray-400 font-mono line-clamp-1 flex-grow">
+                    {template.shortDescription || '\u00A0'}
                   </p>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mt-auto">
                     <span className="text-xs font-mono font-medium text-gray-400 uppercase tracking-wider">
                       {template.format.toUpperCase().replace('_', ' ')}
                     </span>

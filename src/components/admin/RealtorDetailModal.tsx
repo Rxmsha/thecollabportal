@@ -305,12 +305,13 @@ export default function RealtorDetailModal({
     setIsDeleting(true)
     try {
       const { data, error } = await xano.adminDeleteRealtor(realtorId)
-      if (error) {
-        setError(error)
-        setShowDeleteConfirm(false)
-      } else if (data) {
+      // Prioritize success - if data is returned, the deletion worked
+      if (data) {
         onDelete?.(realtorId)
         onClose()
+      } else if (error) {
+        setError(error)
+        setShowDeleteConfirm(false)
       }
     } catch (err) {
       setError('Failed to delete realtor')

@@ -4,19 +4,20 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { useBranding } from '@/context/BrandingContext'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Separator } from '@/components/ui/separator'
 import {
   FileText,
   Wrench,
   Calculator,
-  Calendar,
   Mail,
   Phone,
   Building,
   ExternalLink,
+  Calendar,
+  User,
+  Briefcase,
+  Loader2,
 } from 'lucide-react'
 import xano from '@/services/xano'
 import FirstLoginModal from '@/components/FirstLoginModal'
@@ -98,28 +99,28 @@ export default function RealtorDashboardPage() {
       description: 'Access marketing templates',
       icon: FileText,
       href: '/realtor/templates',
-      color: 'bg-blue-100 text-blue-600',
+      iconColor: 'text-blue-600',
     },
     {
       title: 'AI Tools',
       description: 'Generate content with AI',
       icon: Wrench,
       href: '/realtor/tools',
-      color: 'bg-purple-100 text-purple-600',
+      iconColor: 'text-purple-600',
     },
     {
       title: 'Calculators',
       description: 'Mortgage calculators',
       icon: Calculator,
       href: '/realtor/calculators',
-      color: 'bg-green-100 text-green-600',
+      iconColor: 'text-emerald-600',
     },
     {
       title: 'Contact Agent',
       description: 'Get in touch',
       icon: Mail,
       href: '/realtor/contact',
-      color: 'bg-orange-100 text-orange-600',
+      iconColor: 'text-orange-600',
     },
   ]
 
@@ -131,11 +132,12 @@ export default function RealtorDashboardPage() {
         onComplete={() => setShowFirstLoginModal(false)}
       />
 
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          Welcome, {user?.name?.split(' ')[0]}!
+      {/* Header */}
+      <div className="border-b border-gray-200 pb-4">
+        <h1 className="dot-matrix text-2xl text-gray-900">
+          WELCOME, {user?.name?.split(' ')[0]?.toUpperCase()}!
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-base text-gray-500 mt-1 font-mono">
           Access resources and tools provided by your mortgage partner
         </p>
       </div>
@@ -144,26 +146,25 @@ export default function RealtorDashboardPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Quick Links */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Access</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <Card className="border-0 overflow-hidden">
+            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+              <Briefcase className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">Quick Access</span>
+            </div>
+            <CardContent className="p-6 bg-white">
               <div className="grid gap-4 sm:grid-cols-2">
                 {quickLinks.map((link) => {
                   const Icon = link.icon
                   return (
                     <Link key={link.title} href={link.href}>
-                      <div className="group p-4 border rounded-lg hover:border-blue-300 hover:bg-blue-50/50 transition-colors cursor-pointer">
-                        <div
-                          className={`h-10 w-10 rounded-lg ${link.color} flex items-center justify-center mb-3`}
-                        >
-                          <Icon className="h-5 w-5" />
+                      <div className="group p-4 border border-gray-200 hover:border-gray-400 transition-colors cursor-pointer bg-white">
+                        <div className={`${link.iconColor} mb-3`}>
+                          <Icon className="h-6 w-6" />
                         </div>
-                        <h3 className="font-medium text-gray-900 group-hover:text-blue-600">
+                        <h3 className="font-mono font-semibold text-gray-900 uppercase tracking-wider text-sm group-hover:text-gray-700">
                           {link.title}
                         </h3>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-gray-500 font-mono mt-1">
                           {link.description}
                         </p>
                       </div>
@@ -176,11 +177,12 @@ export default function RealtorDashboardPage() {
 
           {/* Resources for Your Clients */}
           {resources.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Resources for Your Clients</CardTitle>
-              </CardHeader>
-              <CardContent>
+            <Card className="border-0 overflow-hidden">
+              <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+                <FileText className="h-5 w-5 text-white" />
+                <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">Resources for Your Clients</span>
+              </div>
+              <CardContent className="p-6 bg-white">
                 <div className="space-y-4">
                   {resources.map((resource) => (
                     <div
@@ -221,77 +223,73 @@ export default function RealtorDashboardPage() {
 
         {/* Agent Info Sidebar */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Your Mortgage Partner</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <Card className="border-0 overflow-hidden">
+            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+              <User className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">Your Mortgage Partner</span>
+            </div>
+            <CardContent className="p-6 bg-white">
               {isLoading ? (
-                <div className="space-y-4">
-                  <div className="h-16 bg-gray-100 rounded animate-pulse" />
-                  <div className="h-4 bg-gray-100 rounded w-2/3 animate-pulse" />
-                  <div className="h-4 bg-gray-100 rounded w-1/2 animate-pulse" />
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
                 </div>
               ) : agent ? (
                 <div className="space-y-4">
+                  {/* Agent Info */}
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-14 w-14">
-                      {agent.logoUrl ? (
-                        <img
-                          src={agent.logoUrl}
-                          alt={agent.companyName}
-                          className="object-cover"
-                        />
-                      ) : (
-                        <AvatarFallback
-                          style={{ backgroundColor: agent.brandColor }}
-                          className="text-white text-lg"
-                        >
-                          {agent.firstName[0]}
-                          {agent.lastName[0]}
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
+                    {agent.logoUrl ? (
+                      <img
+                        src={agent.logoUrl}
+                        alt={agent.companyName}
+                        className="h-12 w-12 object-cover"
+                        style={{ backgroundColor: agent.brandColor }}
+                      />
+                    ) : (
+                      <div
+                        className="h-12 w-12 flex items-center justify-center text-white font-mono font-bold"
+                        style={{ backgroundColor: agent.brandColor }}
+                      >
+                        {agent.firstName[0]}{agent.lastName[0]}
+                      </div>
+                    )}
                     <div>
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-mono font-semibold text-gray-900 uppercase tracking-wider text-sm">
                         {agent.firstName} {agent.lastName}
                       </h3>
-                      <p className="text-sm text-gray-500">{agent.companyName}</p>
+                      <p className="text-sm text-gray-500 font-mono">{agent.companyName}</p>
                     </div>
                   </div>
 
-                  {agent.bio && (
-                    <>
-                      <Separator />
-                      <p className="text-sm text-gray-600">{agent.bio}</p>
-                    </>
-                  )}
-
-                  <Separator />
-
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                  {/* Contact Info */}
+                  <div className="space-y-2 pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 font-mono">
                       <Mail className="h-4 w-4 text-gray-400" />
                       {agent.email}
                     </div>
                     {agent.phone && (
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 font-mono">
                         <Phone className="h-4 w-4 text-gray-400" />
                         {agent.phone}
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 font-mono">
                       <Building className="h-4 w-4 text-gray-400" />
                       {agent.companyName}
                     </div>
                   </div>
 
-                  <Separator />
+                  {/* Bio */}
+                  {agent.bio && (
+                    <div className="pt-4 border-t border-gray-100">
+                      <p className="text-sm text-gray-600 font-mono">{agent.bio}</p>
+                    </div>
+                  )}
 
-                  <div className="space-y-2">
+                  {/* Action Buttons */}
+                  <div className="space-y-2 pt-4 border-t border-gray-100">
                     {agent.calendlyLink && (
                       <Button
-                        className="w-full"
+                        className="w-full rounded-none font-mono uppercase tracking-wider text-sm"
                         style={{ backgroundColor: agent.brandColor }}
                         asChild
                       >
@@ -306,7 +304,11 @@ export default function RealtorDashboardPage() {
                       </Button>
                     )}
                     {agent.cmaLink && (
-                      <Button variant="outline" className="w-full" asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full rounded-none font-mono uppercase tracking-wider text-sm"
+                        asChild
+                      >
                         <a
                           href={agent.cmaLink}
                           target="_blank"
@@ -317,8 +319,11 @@ export default function RealtorDashboardPage() {
                         </a>
                       </Button>
                     )}
-                    <Link href="/realtor/contact">
-                      <Button variant="outline" className="w-full">
+                    <Link href="/realtor/contact" className="block">
+                      <Button
+                        variant="outline"
+                        className="w-full rounded-none font-mono uppercase tracking-wider text-sm"
+                      >
                         <Mail className="h-4 w-4 mr-2" />
                         Send Message
                       </Button>
@@ -326,7 +331,7 @@ export default function RealtorDashboardPage() {
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-4">
+                <p className="text-gray-500 text-center py-4 font-mono">
                   Unable to load agent information
                 </p>
               )}

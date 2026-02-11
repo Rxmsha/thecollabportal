@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -13,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Search, FileText, ExternalLink, Video, Image, Mail, Loader2, Users, Check, X } from 'lucide-react'
+import { Search, FileText, ExternalLink, Mail, Loader2, Users, Check, X } from 'lucide-react'
 import xano from '@/services/xano'
 import { Template, Realtor } from '@/types'
 import { markTemplatesVisited } from '@/lib/onboarding'
@@ -139,51 +138,6 @@ export default function AgentTemplatesPage() {
     return matchesSearch && matchesCategory
   })
 
-  const getFormatIcon = (format: string) => {
-    switch (format) {
-      case 'video':
-        return <Video className="h-4 w-4" />
-      case 'canva':
-        return <Image className="h-4 w-4" />
-      default:
-        return <FileText className="h-4 w-4" />
-    }
-  }
-
-  const getCategoryBadgeColor = (category: string) => {
-    switch (category) {
-      case 'social-media':
-        return 'purple'
-      case 'email':
-        return 'default'
-      case 'flyer':
-        return 'success'
-      case 'presentation':
-        return 'orange'
-      case 'checklist':
-        return 'secondary'
-      case 'guide':
-        return 'default'
-      default:
-        return 'secondary'
-    }
-  }
-
-  const getFormatBadgeColor = (format: string) => {
-    switch (format) {
-      case 'canva':
-        return 'purple'
-      case 'pdf':
-        return 'destructive'
-      case 'google_doc':
-        return 'default'
-      case 'video':
-        return 'orange'
-      default:
-        return 'secondary'
-    }
-  }
-
   const handleUseTemplate = (template: Template) => {
     if (template.downloadLink) {
       window.open(template.downloadLink, '_blank')
@@ -254,67 +208,60 @@ export default function AgentTemplatesPage() {
           ) : filteredTemplates.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {filteredTemplates.map((template) => (
-                <Card key={template.id} className="border-0 overflow-hidden hover:shadow-md transition-shadow">
-                  <div
-                    className="px-4 py-3 flex items-center justify-between"
-                    style={{ backgroundColor: brandColor }}
-                  >
-                    <span className="text-white font-mono font-semibold uppercase tracking-wider text-sm truncate">
-                      {template.title}
-                    </span>
-                    <Badge
-                      variant="secondary"
-                      className="bg-white/20 text-white border-0 font-mono uppercase text-xs"
-                    >
-                      {template.category}
-                    </Badge>
-                  </div>
-                  <CardContent className="p-0 bg-white">
-                    <div className="aspect-video bg-gray-100 relative flex items-center justify-center">
-                      {template.previewImageUrl ? (
-                        <img
-                          src={template.previewImageUrl}
-                          alt={template.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <FileText className="h-12 w-12 text-gray-300" />
-                      )}
+                <Card key={template.id} className="border-0 overflow-hidden hover:shadow-md transition-shadow rounded-none">
+                  {/* Image Preview */}
+                  <div className="aspect-[4/3] bg-gray-100 relative flex items-center justify-center">
+                    {template.previewImageUrl ? (
+                      <img
+                        src={template.previewImageUrl}
+                        alt={template.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <FileText className="h-16 w-16 text-gray-300" />
+                    )}
+                    {/* Category Badge - Top Right */}
+                    <div className="absolute top-3 right-3">
+                      <span className="inline-flex items-center px-2.5 py-1 text-xs font-mono font-medium uppercase tracking-wider bg-white/90 text-gray-700 border border-gray-200">
+                        {template.category}
+                      </span>
                     </div>
-                    <div className="p-4">
-                      <p className="text-base text-gray-700 font-mono line-clamp-2 mb-3">
-                        {template.shortDescription}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <Badge variant={getFormatBadgeColor(template.format) as any} className="font-mono uppercase text-xs">
-                          {getFormatIcon(template.format)}
-                          <span className="ml-1">
-                            {template.format.replace('_', ' ')}
-                          </span>
-                        </Badge>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(e) => handleOpenNotifyModal(template, e)}
-                            title="Notify Realtors"
-                            className="rounded-none"
-                          >
-                            <Mail className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => handleUseTemplate(template)}
-                            className="rounded-none font-mono uppercase tracking-wider text-xs"
-                            style={{ backgroundColor: brandColor }}
-                          >
-                            <ExternalLink className="h-4 w-4 mr-1" />
-                            Use
-                          </Button>
-                        </div>
+                  </div>
+                  {/* Content - Dark footer */}
+                  <div className="p-4 flex flex-col h-[120px]" style={{ backgroundColor: brandColor }}>
+                    <h3 className="font-mono font-semibold text-white text-base mb-1 truncate">
+                      {template.title}
+                    </h3>
+                    <p className="text-sm text-gray-300 font-mono line-clamp-1 flex-grow">
+                      {template.shortDescription || '\u00A0'}
+                    </p>
+                    {/* Footer */}
+                    <div className="flex items-center justify-between mt-auto">
+                      <span className="text-xs font-mono font-medium text-gray-300 uppercase tracking-wider">
+                        {template.format.replace('_', ' ')}
+                      </span>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => handleOpenNotifyModal(template, e)}
+                          title="Notify Realtors"
+                          className="rounded-none bg-transparent border-gray-400 text-white hover:bg-white/10 hover:text-white"
+                        >
+                          <Mail className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleUseTemplate(template)}
+                          className="rounded-none bg-transparent border-gray-400 text-white hover:bg-white/10 hover:text-white font-mono uppercase tracking-wider text-xs"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          Use
+                        </Button>
                       </div>
                     </div>
-                  </CardContent>
+                  </div>
                 </Card>
               ))}
             </div>

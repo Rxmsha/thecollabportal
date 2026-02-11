@@ -211,19 +211,9 @@ export default function TemplateDetailPage() {
       if (!error) {
         setTemplate({ ...template, status: newStatus })
 
-        // If publishing, send notifications to both agents and realtors
+        // If publishing, send notifications to realtors
+        // Note: Agent notifications are handled by the backend's updateTemplateStatus
         if (newStatus === 'published') {
-          // Send to agents (fire and forget - don't block UI)
-          xano.sendTemplateNotification(template.id).then(({ data, error }) => {
-            if (error) {
-              xano.logError('template_publish', 'agent_notification_failed', `Failed to notify agents for template ${template.id}: ${error}`)
-            } else {
-              console.log('Agent notifications sent:', data?.agentEmailsSent || 0)
-            }
-          }).catch(err => {
-            xano.logError('template_publish', 'agent_notification_failed', `Exception notifying agents for template ${template.id}: ${err.message}`)
-          })
-
           // Send to realtors (fire and forget - don't block UI)
           xano.sendTemplateNotificationToRealtors(template.id).then(({ data, error }) => {
             if (error) {

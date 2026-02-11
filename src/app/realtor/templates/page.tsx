@@ -3,14 +3,15 @@
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Search, FileText, ExternalLink, Video, Image } from 'lucide-react'
+import { Search, FileText, ExternalLink } from 'lucide-react'
 import xano from '@/services/xano'
 import { Template } from '@/types'
+import { useBranding } from '@/context/BrandingContext'
 
 export default function RealtorTemplatesPage() {
+  const { brandColor } = useBranding()
   const [templates, setTemplates] = useState<Template[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -42,51 +43,6 @@ export default function RealtorTemplatesPage() {
     return matchesSearch && matchesCategory
   })
 
-  const getFormatIcon = (format: string) => {
-    switch (format) {
-      case 'video':
-        return <Video className="h-4 w-4" />
-      case 'canva':
-        return <Image className="h-4 w-4" />
-      default:
-        return <FileText className="h-4 w-4" />
-    }
-  }
-
-  const getCategoryBadgeColor = (category: string) => {
-    switch (category) {
-      case 'social-media':
-        return 'purple'
-      case 'email':
-        return 'default'
-      case 'flyer':
-        return 'success'
-      case 'presentation':
-        return 'orange'
-      case 'checklist':
-        return 'secondary'
-      case 'guide':
-        return 'default'
-      default:
-        return 'secondary'
-    }
-  }
-
-  const getFormatBadgeColor = (format: string) => {
-    switch (format) {
-      case 'canva':
-        return 'purple'
-      case 'pdf':
-        return 'destructive'
-      case 'google_doc':
-        return 'default'
-      case 'video':
-        return 'orange'
-      default:
-        return 'secondary'
-    }
-  }
-
   const handleUseTemplate = (template: Template) => {
     if (template.downloadLink) {
       window.open(template.downloadLink, '_blank')
@@ -105,9 +61,10 @@ export default function RealtorTemplatesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Templates</h1>
-        <p className="text-gray-500 mt-1">
+      {/* Page Header */}
+      <div className="border-b border-gray-200 pb-4">
+        <h1 className="dot-matrix text-2xl text-gray-900">TEMPLATES</h1>
+        <p className="text-base text-gray-500 mt-1 font-mono">
           Browse marketing templates provided by your mortgage partner
         </p>
       </div>
@@ -119,15 +76,19 @@ export default function RealtorTemplatesPage() {
           placeholder="Search templates..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
+          className="pl-10 rounded-none font-mono"
         />
       </div>
 
       {/* Category Tabs */}
       <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-        <TabsList>
+        <TabsList className="bg-gray-100 rounded-none p-1">
           {categories.map((category) => (
-            <TabsTrigger key={category.value} value={category.value}>
+            <TabsTrigger
+              key={category.value}
+              value={category.value}
+              className="rounded-none font-mono text-sm uppercase tracking-wider data-[state=active]:bg-white"
+            >
               {category.label}
             </TabsTrigger>
           ))}
@@ -137,12 +98,13 @@ export default function RealtorTemplatesPage() {
           {isLoading ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {[...Array(6)].map((_, i) => (
-                <Card key={i}>
-                  <CardContent className="p-0">
+                <Card key={i} className="border-0 overflow-hidden">
+                  <div className="px-4 py-3 bg-gray-200 animate-pulse" />
+                  <CardContent className="p-0 bg-white">
                     <div className="aspect-video bg-gray-100 animate-pulse" />
                     <div className="p-4 space-y-3">
-                      <div className="h-4 bg-gray-100 rounded animate-pulse" />
-                      <div className="h-3 bg-gray-100 rounded w-2/3 animate-pulse" />
+                      <div className="h-4 bg-gray-100 animate-pulse" />
+                      <div className="h-3 bg-gray-100 w-2/3 animate-pulse" />
                     </div>
                   </CardContent>
                 </Card>
@@ -151,8 +113,9 @@ export default function RealtorTemplatesPage() {
           ) : filteredTemplates.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {filteredTemplates.map((template) => (
-                <Card key={template.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="aspect-video bg-gray-100 relative flex items-center justify-center">
+                <Card key={template.id} className="border-0 overflow-hidden hover:shadow-md transition-shadow rounded-none">
+                  {/* Image Preview */}
+                  <div className="aspect-[4/3] bg-gray-100 relative flex items-center justify-center">
                     {template.previewImageUrl ? (
                       <img
                         src={template.previewImageUrl}
@@ -160,43 +123,57 @@ export default function RealtorTemplatesPage() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <FileText className="h-12 w-12 text-gray-300" />
+                      <FileText className="h-16 w-16 text-gray-300" />
                     )}
-                    <div className="absolute top-2 left-2 flex gap-1">
-                      <Badge variant={getCategoryBadgeColor(template.category) as any}>
+                    {/* Category Badge - Top Right */}
+                    <div className="absolute top-3 right-3">
+                      <span className="inline-flex items-center px-2.5 py-1 text-xs font-mono font-medium uppercase tracking-wider bg-white/90 text-gray-700 border border-gray-200">
                         {template.category}
-                      </Badge>
+                      </span>
                     </div>
                   </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1">
+                  {/* Content - Dark footer */}
+                  <div className="p-4 flex flex-col h-[120px]" style={{ backgroundColor: brandColor }}>
+                    <h3 className="font-mono font-semibold text-white text-base mb-1 truncate">
                       {template.title}
                     </h3>
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-3">
-                      {template.shortDescription}
+                    <p className="text-sm text-gray-300 font-mono line-clamp-1 flex-grow">
+                      {template.shortDescription || '\u00A0'}
                     </p>
-                    <div className="flex items-center justify-between">
-                      <Badge variant={getFormatBadgeColor(template.format) as any}>
-                        {getFormatIcon(template.format)}
-                        <span className="ml-1 capitalize">
-                          {template.format.replace('_', ' ')}
-                        </span>
-                      </Badge>
-                      <Button size="sm" onClick={() => handleUseTemplate(template)}>
+                    {/* Footer */}
+                    <div className="flex items-center justify-between mt-auto">
+                      <span className="text-xs font-mono font-medium text-gray-300 uppercase tracking-wider">
+                        {template.format.replace('_', ' ')}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleUseTemplate(template)}
+                        className="rounded-none bg-transparent border-gray-400 text-white hover:bg-white/10 hover:text-white font-mono uppercase tracking-wider text-xs"
+                      >
                         <ExternalLink className="h-4 w-4 mr-1" />
                         Use
                       </Button>
                     </div>
-                  </CardContent>
+                  </div>
                 </Card>
               ))}
             </div>
           ) : (
-            <Card>
-              <CardContent className="py-12 text-center">
+            <Card className="border-0 overflow-hidden">
+              <div
+                className="px-6 py-4 flex items-center gap-3"
+                style={{ backgroundColor: brandColor }}
+              >
+                <FileText className="h-5 w-5 text-white" />
+                <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                  Templates
+                </span>
+              </div>
+              <CardContent className="py-12 text-center bg-white">
                 <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">No templates found</p>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-base text-gray-700 font-mono">No templates found</p>
+                <p className="text-base text-gray-500 mt-1 font-mono">
                   Try adjusting your search or category filter
                 </p>
               </CardContent>
