@@ -88,6 +88,8 @@ export function addAdminMethods<T extends XanoClient>(client: T) {
         email: string
         phone: string
         brokerage: string
+        areaServiced: string
+        notes: string
         status: string
         agentId: number
         userId: number
@@ -101,6 +103,7 @@ export function addAdminMethods<T extends XanoClient>(client: T) {
           email: string
           phone: string
           companyName: string
+          status?: string
         }
       }>(`/admin_get_realtor_details?realtor_id=${realtorId}`)
     },

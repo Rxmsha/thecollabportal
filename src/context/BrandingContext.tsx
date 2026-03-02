@@ -95,9 +95,10 @@ export function useBranding() {
   const context = useContext(BrandingContext)
   const pathname = usePathname()
 
-  // Detect if we're in agent portal - use separate localStorage key for agent brand color
+  // Detect portal type - use separate localStorage keys for each
   const isAgentPortal = pathname?.startsWith('/agent') || false
-  const brandColorKey = isAgentPortal ? 'agentBrandColor' : 'adminBrandColor'
+  const isRealtorPortal = pathname?.startsWith('/realtor') || false
+  const brandColorKey = isAgentPortal ? 'agentBrandColor' : isRealtorPortal ? 'realtorBrandColor' : 'adminBrandColor'
 
   // Local state for when used outside BrandingProvider (agent/realtor portals)
   const [localBrandColor, setLocalBrandColor] = useState(DEFAULT_BRAND_COLOR)

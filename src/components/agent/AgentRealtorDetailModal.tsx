@@ -36,6 +36,7 @@ interface RealtorDetails {
   email: string
   phone: string
   brokerage: string
+  areaServiced: string
   status: string
   agentId: number
   userId: number
@@ -308,6 +309,12 @@ export default function AgentRealtorDetailModal({
                   <div className="flex items-center gap-2 text-base font-mono">
                     <Building className="h-4 w-4 text-gray-400" />
                     <span className="text-gray-900">{details.brokerage}</span>
+                  </div>
+                )}
+                {details.areaServiced && (
+                  <div className="flex items-start gap-2 text-base font-mono">
+                    <User className="h-4 w-4 text-gray-400 mt-0.5" />
+                    <span className="text-gray-900">Area Serviced: {details.areaServiced}</span>
                   </div>
                 )}
                 <div className="flex items-center gap-2 text-base font-mono">

@@ -13,8 +13,6 @@ const tools = [
     subtitle: 'The Listing Specialist',
     description: 'Turn property details into polished MLS descriptions, social posts, and video scripts.',
     icon: Home,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-600',
     url: 'https://collabportal.vercel.app/showcase',
   },
 ]
@@ -56,7 +54,7 @@ export default function RealtorToolsPage() {
         </div>
         <div className="flex-1 overflow-hidden border-0">
           <Card className="h-full border-0 overflow-hidden">
-            <div className={`${currentTool.bgColor} px-6 py-3 flex items-center gap-3`}>
+            <div className="px-6 py-3 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
               <Icon className="h-5 w-5 text-white" />
               <span className="text-white font-mono font-semibold uppercase tracking-wider">{currentTool.name}</span>
               <span className="text-white/70 font-mono text-sm">- {currentTool.subtitle}</span>
@@ -98,7 +96,7 @@ export default function RealtorToolsPage() {
                 className="border-0 overflow-hidden cursor-pointer transition-all hover:shadow-lg group"
                 onClick={() => setActiveTool(tool.id)}
               >
-                <div className={`${tool.bgColor} px-6 py-3 flex items-center justify-between`}>
+                <div className="px-6 py-3 flex items-center justify-between" style={{ backgroundColor: brandColor }}>
                   <div className="flex items-center gap-3">
                     <Icon className="h-5 w-5 text-white" />
                     <span className="text-white font-mono font-semibold uppercase tracking-wider">{tool.name}</span>

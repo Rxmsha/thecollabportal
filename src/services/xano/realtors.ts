@@ -68,6 +68,7 @@ export function addRealtorMethods<T extends XanoClient>(client: T) {
         email: string
         phone: string
         brokerage: string
+        areaServiced: string
         status: string
         agentId: number
         userId: number
@@ -143,6 +144,8 @@ export function addRealtorMethods<T extends XanoClient>(client: T) {
       lastName?: string
       phone?: string
       brokerage?: string
+      areaServiced?: string
+      notes?: string
     }) {
       return client.request<any>('/update_realtor_profile', {
         method: 'POST',
@@ -151,6 +154,8 @@ export function addRealtorMethods<T extends XanoClient>(client: T) {
           last_name: data.lastName,
           phone: data.phone,
           brokerage: data.brokerage,
+          area_serviced: data.areaServiced,
+          notes: data.notes,
         }),
       })
     },

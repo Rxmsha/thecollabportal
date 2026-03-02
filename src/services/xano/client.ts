@@ -72,8 +72,8 @@ export class XanoClient {
       const data = await response.json()
 
       if (!response.ok) {
-        console.error('Xano API error:', { status: response.status, data })
-        return { data: null as T, error: data.message || data.error || JSON.stringify(data) || 'Request failed' }
+        const errorMsg = data.message || data.error || (Object.keys(data).length > 0 ? JSON.stringify(data) : null) || `Request failed (${response.status})`
+        return { data: null as T, error: errorMsg }
       }
 
       return { data }
@@ -99,8 +99,8 @@ export class XanoClient {
       const data = await response.json()
 
       if (!response.ok) {
-        console.error('Xano API error:', { status: response.status, data })
-        return { data: null as T, error: data.message || data.error || JSON.stringify(data) || 'Request failed' }
+        const errorMsg = data.message || data.error || (Object.keys(data).length > 0 ? JSON.stringify(data) : null) || `Request failed (${response.status})`
+        return { data: null as T, error: errorMsg }
       }
 
       return { data }

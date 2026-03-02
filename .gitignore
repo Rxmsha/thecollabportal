@@ -57,6 +57,7 @@ functions/
 tables/
 docs/
 .claude/
+.codex/
 .cursor/
 .github/
 CLAUDE.md

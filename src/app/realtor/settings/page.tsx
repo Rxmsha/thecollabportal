@@ -25,6 +25,7 @@ export default function RealtorSettingsPage() {
     email: '',
     phone: '',
     brokerage: '',
+    areaServiced: '',
   })
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -57,6 +58,7 @@ export default function RealtorSettingsPage() {
           email: data.email || '',
           phone: data.phone || '',
           brokerage: data.brokerage || '',
+          areaServiced: data.areaServiced || '',
         })
       }
     } catch (err) {
@@ -77,6 +79,7 @@ export default function RealtorSettingsPage() {
         lastName: profile.lastName,
         phone: profile.phone,
         brokerage: profile.brokerage,
+        areaServiced: profile.areaServiced,
       })
 
       if (error) {
@@ -253,6 +256,21 @@ export default function RealtorSettingsPage() {
                 onChange={(e) =>
                   setProfile((prev) => ({ ...prev, brokerage: e.target.value }))
                 }
+                className="rounded-none font-mono"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="areaServiced" className="font-mono text-sm uppercase tracking-wider text-gray-900">
+                Area Serviced
+              </Label>
+              <Input
+                id="areaServiced"
+                value={profile.areaServiced}
+                onChange={(e) =>
+                  setProfile((prev) => ({ ...prev, areaServiced: e.target.value }))
+                }
+                placeholder="e.g., Greater Toronto Area, Downtown Vancouver"
                 className="rounded-none font-mono"
               />
             </div>

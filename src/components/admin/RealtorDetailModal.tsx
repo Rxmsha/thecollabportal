@@ -34,6 +34,7 @@ import {
   Send,
   Link2,
   Unlink,
+  StickyNote,
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import xano from '@/services/xano'
@@ -57,6 +58,8 @@ interface RealtorDetails {
   email: string
   phone: string
   brokerage: string
+  areaServiced: string
+  notes: string
   status: string
   agentId: number | null
   userId: number
@@ -393,7 +396,24 @@ export default function RealtorDetailModal({
                 <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Last Active</Label>
                 <p className="font-mono text-sm text-gray-900 mt-1">{details.activatedAt ? formatDate(details.activatedAt) : 'Never'}</p>
               </div>
+              <div className="col-span-2">
+                <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Area Serviced</Label>
+                <p className="font-mono text-sm text-gray-900 mt-1">{details.areaServiced || '-'}</p>
+              </div>
             </div>
+
+            {/* Realtor Notes Section (Admin Only View) */}
+            {details.notes && (
+              <div className="border border-gray-200 p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <StickyNote className="h-4 w-4 text-gray-400" />
+                  <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Realtor&apos;s Private Notes</Label>
+                </div>
+                <div className="bg-gray-50 p-3 max-h-32 overflow-y-auto">
+                  <p className="font-mono text-sm text-gray-700 whitespace-pre-wrap">{details.notes}</p>
+                </div>
+              </div>
+            )}
 
             {/* Linked Agent Section */}
             <div className="border border-gray-200 p-4">

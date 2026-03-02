@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useBranding } from '@/context/BrandingContext'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 import {
   FileText,
   Wrench,
@@ -18,6 +19,10 @@ import {
   User,
   Briefcase,
   Loader2,
+  StickyNote,
+  List,
+  Save,
+  Lock,
 } from 'lucide-react'
 import xano from '@/services/xano'
 import FirstLoginModal from '@/components/FirstLoginModal'
@@ -52,6 +57,10 @@ export default function RealtorDashboardPage() {
   const [resources, setResources] = useState<Resource[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showFirstLoginModal, setShowFirstLoginModal] = useState(false)
+  const [notes, setNotes] = useState('')
+  const [isSavingNotes, setIsSavingNotes] = useState(false)
+  const [notesSaved, setNotesSaved] = useState(false)
+  const notesRef = React.useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     if (user) {
@@ -68,10 +77,11 @@ export default function RealtorDashboardPage() {
 
   const loadDashboardData = async () => {
     try {
-      // Load resources and agent info in parallel
-      const [resourcesResponse, agentResponse] = await Promise.all([
+      // Load resources, agent info, and realtor profile in parallel
+      const [resourcesResponse, agentResponse, profileResponse] = await Promise.all([
         xano.getResources(),
         xano.getMyAgent(),
+        xano.getMyRealtorProfile(),
       ])
 
       if (resourcesResponse.data) {
@@ -86,11 +96,47 @@ export default function RealtorDashboardPage() {
       } else if (agentResponse.error) {
         console.error('Failed to load agent:', agentResponse.error)
       }
+
+      if (profileResponse.data) {
+        setNotes(profileResponse.data.notes || '')
+      }
     } catch (error) {
       console.error('Failed to load dashboard data:', error)
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const saveNotes = async () => {
+    setIsSavingNotes(true)
+    try {
+      await xano.updateRealtorProfile({ notes })
+      setNotesSaved(true)
+      setTimeout(() => setNotesSaved(false), 2000)
+    } catch (error) {
+      console.error('Failed to save notes:', error)
+    } finally {
+      setIsSavingNotes(false)
+    }
+  }
+
+  const insertBullet = () => {
+    const textarea = notesRef.current
+    if (!textarea) return
+
+    const start = textarea.selectionStart
+    const lineStart = notes.lastIndexOf('\n', start - 1) + 1
+    const beforeLine = notes.substring(0, lineStart)
+    const afterStart = notes.substring(lineStart)
+    const newText = beforeLine + '• ' + afterStart
+    const cursorOffset = start + 2
+
+    setNotes(newText)
+
+    setTimeout(() => {
+      textarea.focus()
+      textarea.setSelectionRange(cursorOffset, cursorOffset)
+    }, 0)
   }
 
   const quickLinks = [
@@ -335,6 +381,71 @@ export default function RealtorDashboardPage() {
                   Unable to load agent information
                 </p>
               )}
+            </CardContent>
+          </Card>
+
+          {/* My Notes Card */}
+          <Card className="border-0 overflow-hidden">
+            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+              <StickyNote className="h-5 w-5 text-white" />
+              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">My Notes</span>
+            </div>
+            <CardContent className="p-4 bg-white space-y-3">
+              {/* Privacy Notice */}
+              <div className="flex items-center gap-2 p-2 bg-gray-50 border border-gray-200">
+                <Lock className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <p className="text-xs text-gray-500 font-mono">
+                  Private notes - not visible to your mortgage agent
+                </p>
+              </div>
+
+              {/* Formatting Toolbar */}
+              <div className="flex items-center gap-1 border-b border-gray-200 pb-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 rounded-none"
+                  onClick={insertBullet}
+                  title="Add bullet point"
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Notes Textarea */}
+              <Textarea
+                ref={notesRef}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Write your personal notes here..."
+                className="min-h-[150px] font-mono text-sm rounded-none resize-none"
+              />
+
+              {/* Save Button */}
+              <Button
+                onClick={saveNotes}
+                disabled={isSavingNotes}
+                className="w-full rounded-none font-mono uppercase tracking-wider text-sm"
+                style={{ backgroundColor: brandColor }}
+              >
+                {isSavingNotes ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : notesSaved ? (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Saved!
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Notes
+                  </>
+                )}
+              </Button>
             </CardContent>
           </Card>
         </div>

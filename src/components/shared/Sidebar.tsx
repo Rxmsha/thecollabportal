@@ -176,7 +176,7 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
               className="w-10 h-10 object-contain flex-shrink-0"
             />
           ) : (
-            <div className="w-10 h-10 bg-[#0077B6] flex items-center justify-center text-sm font-bold flex-shrink-0">
+            <div className="w-10 h-10 bg-white/20 flex items-center justify-center text-sm font-bold flex-shrink-0">
               CP
             </div>
           )}
@@ -215,7 +215,7 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-[#0077B6] flex items-center justify-center text-sm font-bold flex-shrink-0">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold flex-shrink-0">
                 {user.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
               </div>
             )}

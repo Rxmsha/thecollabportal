@@ -497,6 +497,7 @@ export default function AdminAgentsPage() {
       {/* Agent Detail Modal */}
       <Dialog open={showDetailModal} onOpenChange={closeDetailModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0" closeClassName="text-white">
+          <DialogTitle className="sr-only">Agent Details</DialogTitle>
           {isLoadingDetails ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
@@ -525,7 +526,7 @@ export default function AdminAgentsPage() {
                 <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-1">
                     <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Email</p>
-                    <p className="text-gray-700 font-mono text-base truncate">{agentDetails.email}</p>
+                    <a href={`mailto:${agentDetails.email}`} className="text-gray-700 font-mono text-base truncate block hover:text-blue-600 hover:underline">{agentDetails.email}</a>
                   </div>
                   <div className="space-y-1">
                     <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Phone</p>
