@@ -63,38 +63,38 @@ export default function AgentContactSupportPage() {
       <div className="space-y-6">
         {/* Page Header */}
         <div className="border-b border-gray-200 pb-4">
-          <h1 className="dot-matrix text-2xl text-gray-900">CONTACT SUPPORT</h1>
-          <p className="text-base text-gray-700 mt-1 font-mono">
+          <h1 className="dot-matrix text-2xl text-gray-900">Contact Support</h1>
+          <p className="text-base text-gray-700 mt-1">
             Get help from the TheCollabPortal team
           </p>
         </div>
 
         {/* Centered Content */}
         <div className="max-w-xl mx-auto">
-          <Card className="border-0 overflow-hidden">
-            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+          <Card className="border-0 overflow-hidden rounded-lg">
+            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
               <CheckCircle className="h-5 w-5 text-white" />
-              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+              <span className="text-white font-semibold text-base">
                 Message Sent
               </span>
             </div>
-            <CardContent className="p-6 bg-white text-center">
+            <CardContent className="p-6 bg-white text-center rounded-b-lg">
               <div
-                className="h-16 w-16 flex items-center justify-center mx-auto mb-4"
+                className="h-16 w-16 flex items-center justify-center mx-auto mb-4 rounded-lg"
                 style={{ backgroundColor: brandColor }}
               >
                 <CheckCircle className="h-8 w-8 text-white" />
               </div>
-              <h2 className="text-xl font-mono font-semibold text-gray-900 mb-2">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">
                 Message Sent Successfully
               </h2>
-              <p className="text-base text-gray-700 font-mono mb-6">
+              <p className="text-base text-gray-700 mb-6">
                 Your message has been sent to the support team.
                 We&apos;ll get back to you as soon as possible.
               </p>
               <Button
                 onClick={() => setIsSent(false)}
-                className="rounded-none font-mono uppercase tracking-wider text-sm"
+                className="rounded-lg text-sm"
                 style={{ backgroundColor: brandColor }}
               >
                 Send Another Message
@@ -110,36 +110,36 @@ export default function AgentContactSupportPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-2xl text-gray-900">CONTACT SUPPORT</h1>
-        <p className="text-base text-gray-700 mt-1 font-mono">
+        <h1 className="dot-matrix text-2xl text-gray-900">Contact Support</h1>
+        <p className="text-base text-gray-700 mt-1">
           Get help from the TheCollabPortal team
         </p>
       </div>
 
       {/* Centered Content */}
       <div className="max-w-xl mx-auto">
-        <Card className="border-0 overflow-hidden">
-          <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+        <Card className="border-0 overflow-hidden rounded-lg">
+          <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <MessageSquare className="h-5 w-5 text-white" />
-            <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+            <span className="text-white font-semibold text-base">
               Send a Message
             </span>
           </div>
-          <CardContent className="p-6 bg-white">
-            <p className="text-base text-gray-700 font-mono mb-6">
+          <CardContent className="p-6 bg-white rounded-b-lg">
+            <p className="text-base text-gray-700 mb-6">
               Have a question, feedback, or need assistance? Send a message to our support team.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {sendError && (
-                <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 text-red-700 text-base font-mono">
+                <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-base">
                   <AlertCircle className="h-4 w-4 flex-shrink-0" />
                   {sendError}
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="subject" className="font-mono text-gray-900 text-base">
+                <Label htmlFor="subject" className="text-gray-900 text-base">
                   Subject <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -150,12 +150,12 @@ export default function AgentContactSupportPage() {
                   }
                   placeholder="What's this about?"
                   required
-                  className="rounded-none font-mono"
+                  className="rounded-lg"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="message" className="font-mono text-gray-900 text-base">
+                <Label htmlFor="message" className="text-gray-900 text-base">
                   Message <span className="text-red-500">*</span>
                 </Label>
                 <Textarea
@@ -167,13 +167,13 @@ export default function AgentContactSupportPage() {
                   placeholder="Describe your question or issue in detail..."
                   rows={6}
                   required
-                  className="rounded-none font-mono"
+                  className="rounded-lg"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full rounded-none font-mono uppercase tracking-wider text-sm h-11"
+                className="w-full rounded-lg text-sm h-11"
                 style={{ backgroundColor: brandColor }}
                 disabled={isSending}
               >

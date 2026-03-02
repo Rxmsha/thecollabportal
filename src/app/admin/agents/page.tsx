@@ -137,16 +137,16 @@ export default function AdminAgentsPage() {
   })
 
   const getStatusBadge = (status: string) => {
-    const baseClasses = "px-3 py-1 text-sm font-mono font-medium uppercase tracking-wider"
+    const baseClasses = "px-3 py-1 text-sm font-medium rounded-full"
     switch (status) {
       case 'active':
-        return <span className={`${baseClasses} bg-emerald-100 text-emerald-700 border border-emerald-200`}>Active</span>
+        return <span className={`${baseClasses} bg-emerald-100 text-emerald-700`}>Active</span>
       case 'invited':
-        return <span className={`${baseClasses} bg-amber-100 text-amber-700 border border-amber-200`}>Invited</span>
+        return <span className={`${baseClasses} bg-amber-100 text-amber-700`}>Invited</span>
       case 'inactive':
-        return <span className={`${baseClasses} bg-gray-100 text-gray-600 border border-gray-200`}>Inactive</span>
+        return <span className={`${baseClasses} bg-gray-100 text-gray-600`}>Inactive</span>
       default:
-        return <span className={`${baseClasses} bg-gray-100 text-gray-600 border border-gray-200`}>{status}</span>
+        return <span className={`${baseClasses} bg-gray-100 text-gray-600`}>{status}</span>
     }
   }
 
@@ -384,7 +384,7 @@ export default function AdminAgentsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <div>
-          <h1 className="dot-matrix text-xl text-gray-900">AGENTS</h1>
+          <h1 className="dot-matrix text-2xl text-gray-900">Agents</h1>
           <p className="text-sm text-gray-500 mt-1">Manage all mortgage agents on the platform</p>
         </div>
         <div className="flex items-center gap-2">
@@ -439,14 +439,14 @@ export default function AdminAgentsPage() {
           ) : filteredAgents.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="border-b border-gray-700" style={{ backgroundColor: brandColor }}>
+                <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>
-                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Agent</th>
-                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Company</th>
-                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Status</th>
-                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Realtors</th>
-                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Joined</th>
-                    <th className="text-right p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Actions</th>
+                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Agent</th>
+                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Company</th>
+                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Status</th>
+                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Realtors</th>
+                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Joined</th>
+                    <th className="text-right p-4 text-sm font-semibold text-gray-600">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -455,14 +455,14 @@ export default function AdminAgentsPage() {
                         <td className="p-4">
                           <div className="flex items-center gap-4">
                             <div
-                              className="h-11 w-11 flex items-center justify-center text-white text-sm font-mono font-bold tracking-wider"
+                              className="h-11 w-11 rounded-full flex items-center justify-center text-white text-sm font-semibold"
                               style={{ backgroundColor: agent.brandColor || '#1a2332' }}
                             >
                               {agent.firstName[0]}{agent.lastName[0]}
                             </div>
                             <div>
-                              <p className="font-mono text-base font-medium text-gray-900 tracking-wide">{agent.firstName} {agent.lastName}</p>
-                              <p className="text-sm text-gray-500 font-mono">{agent.email}</p>
+                              <p className="text-base font-medium text-gray-900">{agent.firstName} {agent.lastName}</p>
+                              <p className="text-sm text-gray-500">{agent.email}</p>
                             </div>
                           </div>
                         </td>
@@ -471,13 +471,13 @@ export default function AdminAgentsPage() {
                         <td className="p-4">
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 text-gray-400" />
-                            <span className="text-base font-mono text-gray-700">{agent.seatsUsed}/{agent.seatLimit}</span>
+                            <span className="text-base text-gray-700">{agent.seatsUsed}/{agent.seatLimit}</span>
                           </div>
                         </td>
-                        <td className="p-4 text-base text-gray-500 font-mono">{formatDate(agent.createdAt)}</td>
+                        <td className="p-4 text-base text-gray-500">{formatDate(agent.createdAt)}</td>
                         <td className="p-4 text-right">
-                          <Button variant="outline" className="text-sm font-medium border-gray-300 hover:bg-gray-100 hover:border-gray-400 h-9 px-4" onClick={() => handleOpenDetails(agent.id)}>
-                            MORE
+                          <Button variant="outline" className="text-sm font-medium rounded-lg border-gray-300 hover:bg-gray-100 hover:border-gray-400 h-9 px-4" onClick={() => handleOpenDetails(agent.id)}>
+                            View
                           </Button>
                         </td>
                       </tr>
@@ -507,16 +507,16 @@ export default function AdminAgentsPage() {
           ) : agentDetails ? (
             <>
               {/* Header */}
-              <div className="p-6 flex items-center gap-4" style={{ backgroundColor: brandColor }}>
+              <div className="p-6 flex items-center gap-4 rounded-t-lg" style={{ backgroundColor: brandColor }}>
                 <div
-                  className="h-16 w-16 flex items-center justify-center text-white text-lg font-mono font-bold tracking-wider border-2 border-white/20"
+                  className="h-16 w-16 rounded-full flex items-center justify-center text-white text-lg font-semibold border-2 border-white/20"
                   style={{ backgroundColor: agentDetails.brandColor || '#1a2332' }}
                 >
                   {agentDetails.firstName[0]}{agentDetails.lastName[0]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-white font-mono text-xl font-medium tracking-wide truncate">{agentDetails.firstName} {agentDetails.lastName}</h3>
-                  <p className="text-gray-400 text-base truncate">{agentDetails.companyName}</p>
+                  <h3 className="text-white text-xl font-semibold truncate">{agentDetails.firstName} {agentDetails.lastName}</h3>
+                  <p className="text-gray-300 text-base truncate">{agentDetails.companyName}</p>
                 </div>
                 {getStatusBadge(agentDetails.status)}
               </div>
@@ -525,33 +525,33 @@ export default function AdminAgentsPage() {
                 {/* Contact & Stats Grid */}
                 <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-1">
-                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Email</p>
-                    <a href={`mailto:${agentDetails.email}`} className="text-gray-700 font-mono text-base truncate block hover:text-blue-600 hover:underline">{agentDetails.email}</a>
+                    <p className="text-sm font-medium text-gray-500">Email</p>
+                    <a href={`mailto:${agentDetails.email}`} className="text-gray-700 text-base truncate block hover:text-blue-600 hover:underline">{agentDetails.email}</a>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Phone</p>
-                    <p className="text-gray-700 font-mono text-base">{agentDetails.phone || 'N/A'}</p>
+                    <p className="text-sm font-medium text-gray-500">Phone</p>
+                    <p className="text-gray-700 text-base">{agentDetails.phone || 'N/A'}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Joined</p>
-                    <p className="text-gray-700 font-mono text-base">{formatDate(agentDetails.createdAt)}</p>
+                    <p className="text-sm font-medium text-gray-500">Joined</p>
+                    <p className="text-gray-700 text-base">{formatDate(agentDetails.createdAt)}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Seats</p>
+                    <p className="text-sm font-medium text-gray-500">Seats</p>
                     <div className="flex items-center gap-3">
-                      <span className="text-gray-700 font-mono text-base">{agentDetails.seatsUsed}/{agentDetails.seatLimit}</span>
+                      <span className="text-gray-700 text-base">{agentDetails.seatsUsed}/{agentDetails.seatLimit}</span>
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => handleUpdateSeatLimit(agentDetails.seatLimit - 1)}
                           disabled={isUpdatingSeatLimit || agentDetails.seatLimit <= 1 || agentDetails.seatLimit <= agentDetails.seatsUsed}
-                          className="h-7 w-7 flex items-center justify-center border border-gray-300 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="h-7 w-7 rounded flex items-center justify-center border border-gray-300 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           <Minus className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleUpdateSeatLimit(agentDetails.seatLimit + 1)}
                           disabled={isUpdatingSeatLimit}
-                          className="h-7 w-7 flex items-center justify-center border border-gray-300 hover:bg-gray-100 disabled:opacity-40"
+                          className="h-7 w-7 rounded flex items-center justify-center border border-gray-300 hover:bg-gray-100 disabled:opacity-40"
                         >
                           <Plus className="h-4 w-4" />
                         </button>
@@ -561,9 +561,9 @@ export default function AdminAgentsPage() {
                 </div>
 
                 {/* Linked Realtors - Compact */}
-                <div className="border border-gray-200">
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <div className="bg-gray-50 px-4 py-2.5 border-b border-gray-200">
-                    <p className="text-sm font-mono text-gray-500 uppercase tracking-wider">Linked Realtors ({agentDetails.realtors?.length || 0})</p>
+                    <p className="text-sm font-medium text-gray-500">Linked Realtors ({agentDetails.realtors?.length || 0})</p>
                   </div>
                   <div className="max-h-32 overflow-y-auto">
                     {agentDetails.realtors && agentDetails.realtors.length > 0 ? (
@@ -571,19 +571,19 @@ export default function AdminAgentsPage() {
                         {agentDetails.realtors.map((realtor: any) => (
                           <div key={realtor.id} className="flex items-center justify-between px-4 py-2.5">
                             <div className="flex items-center gap-3">
-                              <span className="h-7 w-7 text-white flex items-center justify-center text-xs font-mono" style={{ backgroundColor: brandColor }}>
+                              <span className="h-7 w-7 rounded-full text-white flex items-center justify-center text-xs font-medium" style={{ backgroundColor: brandColor }}>
                                 {realtor.firstName?.[0]}{realtor.lastName?.[0]}
                               </span>
-                              <span className="text-gray-700 font-mono text-base">{realtor.firstName} {realtor.lastName}</span>
+                              <span className="text-gray-700 text-base">{realtor.firstName} {realtor.lastName}</span>
                             </div>
-                            <span className={`text-sm font-mono uppercase ${realtor.status === 'active' ? 'text-emerald-600' : 'text-gray-400'}`}>
+                            <span className={`text-sm font-medium ${realtor.status === 'active' ? 'text-emerald-600' : 'text-gray-400'}`}>
                               {realtor.status}
                             </span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-base text-gray-400 text-center py-4 font-mono">No realtors</p>
+                      <p className="text-base text-gray-400 text-center py-4">No realtors</p>
                     )}
                   </div>
                 </div>
@@ -612,10 +612,10 @@ export default function AdminAgentsPage() {
 
                 {/* Delete Section */}
                 {showDeleteConfirm ? (
-                  <div className="bg-red-50 border border-red-200 p-4 space-y-3">
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-                      <p className="text-base text-red-700 font-mono">
+                      <p className="text-base text-red-700">
                         Permanently delete <strong>{agentDetails.firstName}</strong>?
                         {agentDetails.realtors && agentDetails.realtors.length > 0 && (
                           <> {agentDetails.realtors.length} realtor(s) will be unlinked.</>
@@ -623,10 +623,10 @@ export default function AdminAgentsPage() {
                       </p>
                     </div>
                     <div className="flex gap-3">
-                      <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} className="flex-1 h-10 font-mono">
+                      <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} className="flex-1 h-10 rounded-lg">
                         Cancel
                       </Button>
-                      <Button variant="destructive" onClick={handleDeleteAgent} disabled={isDeleting} className="flex-1 h-10 font-mono">
+                      <Button variant="destructive" onClick={handleDeleteAgent} disabled={isDeleting} className="flex-1 h-10 rounded-lg">
                         {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Delete'}
                       </Button>
                     </div>
@@ -634,7 +634,7 @@ export default function AdminAgentsPage() {
                 ) : (
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="w-full text-base text-red-500 hover:text-red-600 font-mono py-4 border-t border-gray-100"
+                    className="w-full text-base text-red-500 hover:text-red-600 py-4 border-t border-gray-100"
                   >
                     Delete Agent
                   </button>
@@ -662,17 +662,17 @@ export default function AdminAgentsPage() {
 
               <div className="bg-gray-50 rounded-lg p-4 space-y-4">
                 <div>
-                  <Label className="text-gray-500 text-xs">Agent Name</Label>
+                  <Label className="text-gray-500 text-xs font-medium">Agent Name</Label>
                   <p className="font-medium">{resetCredentials.firstName} {resetCredentials.lastName}</p>
                 </div>
                 <div>
-                  <Label className="text-gray-500 text-xs">Email</Label>
-                  <p className="font-mono text-sm">{resetCredentials.email}</p>
+                  <Label className="text-gray-500 text-xs font-medium">Email</Label>
+                  <p className="text-sm">{resetCredentials.email}</p>
                 </div>
                 <div>
-                  <Label className="text-gray-500 text-xs">Temporary Password</Label>
+                  <Label className="text-gray-500 text-xs font-medium">Temporary Password</Label>
                   <div className="flex items-center gap-2 mt-1">
-                    <div className="flex-1 bg-yellow-100 px-3 py-2 rounded font-mono text-sm">
+                    <div className="flex-1 bg-yellow-100 px-3 py-2 rounded-lg font-mono text-sm">
                       {showPassword ? resetCredentials.tempPassword : '••••••••••••'}
                     </div>
                     <Button size="sm" variant="ghost" onClick={() => setShowPassword(!showPassword)}>
@@ -686,7 +686,7 @@ export default function AdminAgentsPage() {
               </div>
 
               <p className="text-xs text-amber-600">The agent will be prompted to change their password on first login.</p>
-              <Button onClick={closeCredentialsModal} className="w-full" style={{ backgroundColor: brandColor }}>Done</Button>
+              <Button onClick={closeCredentialsModal} className="w-full rounded-lg" style={{ backgroundColor: brandColor }}>Done</Button>
             </div>
           )}
         </DialogContent>
@@ -694,72 +694,72 @@ export default function AdminAgentsPage() {
 
       {/* Create Agent Modal */}
       <Dialog open={showCreateModal} onOpenChange={closeCreateModal}>
-        <DialogContent className="max-w-md p-0" closeClassName="text-white">
+        <DialogContent className="max-w-md p-0 rounded-lg overflow-hidden" closeClassName="text-white">
           <div className="p-5" style={{ backgroundColor: brandColor }}>
-            <h2 className="text-white font-mono text-lg font-medium tracking-wide">CREATE NEW AGENT</h2>
-            <p className="text-gray-400 text-sm font-mono mt-1">Add a new mortgage agent to the platform</p>
+            <h2 className="text-white text-lg font-semibold">Create New Agent</h2>
+            <p className="text-gray-300 text-sm mt-1">Add a new mortgage agent to the platform</p>
           </div>
 
           <div className="p-6">
             {createSuccess ? (
               <div className="space-y-4">
-                <div className="bg-emerald-50 border border-emerald-200 p-4">
-                  <p className="text-emerald-800 font-mono font-medium">Agent created successfully!</p>
-                  <p className="text-emerald-700 text-sm font-mono mt-1">Send these credentials to the agent:</p>
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                  <p className="text-emerald-800 font-medium">Agent created successfully!</p>
+                  <p className="text-emerald-700 text-sm mt-1">Send these credentials to the agent:</p>
                 </div>
-                <div className="bg-gray-50 p-4 space-y-3">
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                   <div>
-                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Email</p>
-                    <p className="font-mono text-base text-gray-700">{createSuccess.email}</p>
+                    <p className="text-sm font-medium text-gray-500">Email</p>
+                    <p className="text-base text-gray-700">{createSuccess.email}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-mono text-gray-400 uppercase tracking-wider">Temporary Password</p>
-                    <p className="font-mono text-base bg-amber-100 px-2 py-1 inline-block text-gray-900">{createSuccess.tempPassword}</p>
+                    <p className="text-sm font-medium text-gray-500">Temporary Password</p>
+                    <p className="font-mono text-base bg-amber-100 rounded px-2 py-1 inline-block text-gray-900">{createSuccess.tempPassword}</p>
                   </div>
                 </div>
-                <Button onClick={closeCreateModal} className="w-full font-mono h-11" style={{ backgroundColor: brandColor }}>Done</Button>
+                <Button onClick={closeCreateModal} className="w-full h-11 rounded-lg" style={{ backgroundColor: brandColor }}>Done</Button>
               </div>
             ) : (
               <form onSubmit={handleCreateAgent} className="space-y-5">
                 {createError && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm font-mono">{createError}</div>
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm rounded-lg">{createError}</div>
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName" className="text-sm font-mono text-gray-500 uppercase tracking-wider">First Name <span className="text-red-500">*</span></Label>
-                    <Input id="firstName" className="font-mono" value={newAgent.firstName} onChange={(e) => setNewAgent({ ...newAgent, firstName: e.target.value })} required />
+                    <Label htmlFor="firstName" className="text-sm font-medium text-gray-500">First Name <span className="text-red-500">*</span></Label>
+                    <Input id="firstName" value={newAgent.firstName} onChange={(e) => setNewAgent({ ...newAgent, firstName: e.target.value })} required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName" className="text-sm font-mono text-gray-500 uppercase tracking-wider">Last Name <span className="text-red-500">*</span></Label>
-                    <Input id="lastName" className="font-mono" value={newAgent.lastName} onChange={(e) => setNewAgent({ ...newAgent, lastName: e.target.value })} required />
+                    <Label htmlFor="lastName" className="text-sm font-medium text-gray-500">Last Name <span className="text-red-500">*</span></Label>
+                    <Input id="lastName" value={newAgent.lastName} onChange={(e) => setNewAgent({ ...newAgent, lastName: e.target.value })} required />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-mono text-gray-500 uppercase tracking-wider">Email <span className="text-red-500">*</span></Label>
-                  <Input id="email" type="email" className="font-mono" value={newAgent.email} onChange={(e) => setNewAgent({ ...newAgent, email: e.target.value })} required />
+                  <Label htmlFor="email" className="text-sm font-medium text-gray-500">Email <span className="text-red-500">*</span></Label>
+                  <Input id="email" type="email" value={newAgent.email} onChange={(e) => setNewAgent({ ...newAgent, email: e.target.value })} required />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="companyName" className="text-sm font-mono text-gray-500 uppercase tracking-wider">Company Name <span className="text-red-500">*</span></Label>
-                  <Input id="companyName" className="font-mono" value={newAgent.companyName} onChange={(e) => setNewAgent({ ...newAgent, companyName: e.target.value })} required />
+                  <Label htmlFor="companyName" className="text-sm font-medium text-gray-500">Company Name <span className="text-red-500">*</span></Label>
+                  <Input id="companyName" value={newAgent.companyName} onChange={(e) => setNewAgent({ ...newAgent, companyName: e.target.value })} required />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-sm font-mono text-gray-500 uppercase tracking-wider">Phone</Label>
-                    <Input id="phone" type="tel" className="font-mono" value={newAgent.phone} onChange={(e) => handlePhoneChange(e.target.value)} />
+                    <Label htmlFor="phone" className="text-sm font-medium text-gray-500">Phone</Label>
+                    <Input id="phone" type="tel" value={newAgent.phone} onChange={(e) => handlePhoneChange(e.target.value)} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="seatLimit" className="text-sm font-mono text-gray-500 uppercase tracking-wider">Seat Limit <span className="text-red-500">*</span></Label>
-                    <Input id="seatLimit" type="number" className="font-mono" min="1" value={newAgent.seatLimit} onChange={(e) => setNewAgent({ ...newAgent, seatLimit: parseInt(e.target.value) || 50 })} />
+                    <Label htmlFor="seatLimit" className="text-sm font-medium text-gray-500">Seat Limit <span className="text-red-500">*</span></Label>
+                    <Input id="seatLimit" type="number" min="1" value={newAgent.seatLimit} onChange={(e) => setNewAgent({ ...newAgent, seatLimit: parseInt(e.target.value) || 50 })} />
                   </div>
                 </div>
 
                 <div className="flex gap-3 pt-4">
-                  <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1 font-mono h-11">Cancel</Button>
-                  <Button type="submit" disabled={isCreating} className="flex-1 font-mono h-11" style={{ backgroundColor: brandColor }}>{isCreating ? 'Creating...' : 'Create Agent'}</Button>
+                  <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1 h-11 rounded-lg">Cancel</Button>
+                  <Button type="submit" disabled={isCreating} className="flex-1 h-11 rounded-lg" style={{ backgroundColor: brandColor }}>{isCreating ? 'Creating...' : 'Create Agent'}</Button>
                 </div>
               </form>
             )}

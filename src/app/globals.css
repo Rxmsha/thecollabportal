@@ -85,8 +85,14 @@
   transition-duration: 150ms;
 }
 
-/* QuickPath-inspired industrial styling */
+/* Modern heading style - warmer alternative to industrial */
 .dot-matrix {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Keep industrial style available for specific use cases */
+.industrial-text {
   font-family: 'Courier New', 'Courier', monospace;
   letter-spacing: 0.1em;
   text-transform: uppercase;

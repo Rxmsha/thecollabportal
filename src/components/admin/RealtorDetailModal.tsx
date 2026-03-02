@@ -325,7 +325,7 @@ export default function RealtorDetailModal({
   }
 
   const getStatusBadge = (status: string) => {
-    const baseClasses = "px-3 py-1 text-sm font-mono font-medium uppercase tracking-wider"
+    const baseClasses = "px-3 py-1 text-sm font-medium rounded-full"
     switch (status) {
       case 'active':
         return <span className={`${baseClasses} bg-emerald-100 text-emerald-700 border border-emerald-200`}>Active</span>
@@ -334,7 +334,7 @@ export default function RealtorDetailModal({
       case 'inactive':
         return <span className={`${baseClasses} bg-gray-100 text-gray-600 border border-gray-200`}>Inactive</span>
       default:
-        return <span className={`${baseClasses} bg-gray-100 text-gray-600 border border-gray-200`}>{status}</span>
+        return <span className={`${baseClasses} bg-gray-100 text-gray-600 border border-gray-200 capitalize`}>{status}</span>
     }
   }
 
@@ -342,10 +342,10 @@ export default function RealtorDetailModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0" closeClassName="text-white hover:text-gray-300">
-        <DialogHeader className="bg-[#1a2332] text-white p-6">
-          <DialogTitle className="font-mono text-lg font-bold uppercase tracking-wider">Realtor Details</DialogTitle>
-          <DialogDescription className="text-gray-300 font-mono text-sm">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0 rounded-lg" closeClassName="text-white hover:text-gray-300">
+        <DialogHeader className="bg-[#1a2332] text-white p-6 rounded-t-lg">
+          <DialogTitle className="text-lg font-semibold">Realtor Details</DialogTitle>
+          <DialogDescription className="text-gray-300 text-sm">
             View realtor information and manage their account
           </DialogDescription>
         </DialogHeader>
@@ -355,7 +355,7 @@ export default function RealtorDetailModal({
             <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
           </div>
         ) : error ? (
-          <div className="bg-red-50 text-red-600 p-4 font-mono">
+          <div className="bg-red-50 text-red-600 p-4 rounded-b-lg">
             {error}
           </div>
         ) : details ? (
@@ -363,15 +363,15 @@ export default function RealtorDetailModal({
             {/* Header - Avatar, Name, Brokerage, Status */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-14 w-14 bg-[#1a2332] flex items-center justify-center text-white font-mono font-bold text-lg tracking-wider">
+                <div className="h-14 w-14 bg-[#1a2332] rounded-lg flex items-center justify-center text-white font-semibold text-lg">
                   {details.firstName[0]}{details.lastName[0]}
                 </div>
                 <div>
-                  <p className="font-mono font-semibold text-gray-900 text-base">
+                  <p className="font-semibold text-gray-900 text-base">
                     {details.firstName} {details.lastName}
                   </p>
                   {details.brokerage && (
-                    <p className="font-mono text-sm text-gray-500">{details.brokerage}</p>
+                    <p className="text-sm text-gray-500">{details.brokerage}</p>
                   )}
                 </div>
               </div>
@@ -381,78 +381,78 @@ export default function RealtorDetailModal({
             {/* Info Grid - 2 columns */}
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div>
-                <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Email</Label>
-                <p className="font-mono text-sm text-gray-900 mt-1">{details.email}</p>
+                <Label className="text-xs text-gray-500 font-medium">Email</Label>
+                <p className="text-sm text-gray-900 mt-1">{details.email}</p>
               </div>
               <div>
-                <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Phone</Label>
-                <p className="font-mono text-sm text-gray-900 mt-1">{details.phone || '-'}</p>
+                <Label className="text-xs text-gray-500 font-medium">Phone</Label>
+                <p className="text-sm text-gray-900 mt-1">{details.phone || '-'}</p>
               </div>
               <div>
-                <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Invited</Label>
-                <p className="font-mono text-sm text-gray-900 mt-1">{formatDate(details.inviteSentAt)}</p>
+                <Label className="text-xs text-gray-500 font-medium">Invited</Label>
+                <p className="text-sm text-gray-900 mt-1">{formatDate(details.inviteSentAt)}</p>
               </div>
               <div>
-                <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Last Active</Label>
-                <p className="font-mono text-sm text-gray-900 mt-1">{details.activatedAt ? formatDate(details.activatedAt) : 'Never'}</p>
+                <Label className="text-xs text-gray-500 font-medium">Last Active</Label>
+                <p className="text-sm text-gray-900 mt-1">{details.activatedAt ? formatDate(details.activatedAt) : 'Never'}</p>
               </div>
               <div className="col-span-2">
-                <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Area Serviced</Label>
-                <p className="font-mono text-sm text-gray-900 mt-1">{details.areaServiced || '-'}</p>
+                <Label className="text-xs text-gray-500 font-medium">Area Serviced</Label>
+                <p className="text-sm text-gray-900 mt-1">{details.areaServiced || '-'}</p>
               </div>
             </div>
 
             {/* Realtor Notes Section (Admin Only View) */}
             {details.notes && (
-              <div className="border border-gray-200 p-4">
+              <div className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <StickyNote className="h-4 w-4 text-gray-400" />
-                  <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">Realtor&apos;s Private Notes</Label>
+                  <Label className="text-xs text-gray-500 font-medium">Realtor's Private Notes</Label>
                 </div>
-                <div className="bg-gray-50 p-3 max-h-32 overflow-y-auto">
-                  <p className="font-mono text-sm text-gray-700 whitespace-pre-wrap">{details.notes}</p>
+                <div className="bg-gray-50 rounded-lg p-3 max-h-32 overflow-y-auto">
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{details.notes}</p>
                 </div>
               </div>
             )}
 
             {/* Linked Agent Section */}
-            <div className="border border-gray-200 p-4">
-              <Label className="text-xs text-gray-400 uppercase tracking-widest font-mono">
+            <div className="border border-gray-200 rounded-lg p-4">
+              <Label className="text-xs text-gray-500 font-medium">
                 Linked Agent {hasAgent && details.agent ? '(1)' : '(0)'}
               </Label>
               {hasAgent && details.agent ? (
                 <div className="mt-3 space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 bg-[#1a2332] flex items-center justify-center text-white font-mono font-bold text-xs">
+                      <div className="h-8 w-8 bg-[#1a2332] rounded-lg flex items-center justify-center text-white font-semibold text-xs">
                         {details.agent.firstName[0]}{details.agent.lastName[0]}
                       </div>
-                      <span className="font-mono text-sm text-gray-900">
+                      <span className="text-sm text-gray-900">
                         {details.agent.firstName} {details.agent.lastName}
                       </span>
                     </div>
                     {details.agent.status === 'inactive' ? (
-                      <span className="px-2 py-0.5 text-xs font-mono font-medium uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">Inactive</span>
+                      <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 border border-gray-200">Inactive</span>
                     ) : (
-                      <span className="px-2 py-0.5 text-xs font-mono font-medium uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200">Active</span>
+                      <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">Active</span>
                     )}
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Building className="h-3.5 w-3.5 text-gray-400" />
-                    <span className="text-gray-600 font-mono">{details.agent.companyName || '-'}</span>
+                    <span className="text-gray-600">{details.agent.companyName || '-'}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Mail className="h-3.5 w-3.5 text-gray-400" />
-                    <span className="text-gray-600 font-mono">{details.agent.email}</span>
+                    <span className="text-gray-600">{details.agent.email}</span>
                   </div>
                   {details.agent.phone && (
                     <div className="flex items-center gap-2 text-sm">
                       <Phone className="h-3.5 w-3.5 text-gray-400" />
-                      <span className="text-gray-600 font-mono">{details.agent.phone}</span>
+                      <span className="text-gray-600">{details.agent.phone}</span>
                     </div>
                   )}
                   <button
-                    className="flex items-center gap-2 text-orange-600 hover:text-orange-700 font-mono text-sm uppercase tracking-wider mt-2 disabled:opacity-50"
+                    className="flex items-center gap-2 text-orange-600 hover:text-orange-700 text-sm font-medium mt-2 disabled:opacity-50"
                     onClick={handleUnlink}
                     disabled={isUnlinking}
                   >
@@ -462,34 +462,34 @@ export default function RealtorDetailModal({
                 </div>
               ) : (
                 <div className="mt-3 space-y-3">
-                  <p className="font-mono text-sm text-gray-500">No agent linked</p>
+                  <p className="text-sm text-gray-500">No agent linked</p>
                   {showLinkSelect ? (
                     <div className="space-y-2">
                       <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
-                        <SelectTrigger className="font-mono text-sm">
+                        <SelectTrigger className="text-sm rounded-lg">
                           <SelectValue placeholder={isLoadingAgents ? 'Loading...' : 'Select an agent'} />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-lg">
                           {agents.map((agent) => (
-                            <SelectItem key={agent.id} value={agent.id.toString()} className="font-mono text-sm">
+                            <SelectItem key={agent.id} value={agent.id.toString()} className="text-sm">
                               {agent.firstName} {agent.lastName} - {agent.companyName}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                       <div className="flex gap-2">
-                        <Button size="sm" onClick={handleLink} disabled={!selectedAgentId || isLinking} className="bg-[#1a2332] hover:bg-[#2a3342] font-mono text-xs uppercase tracking-wider">
+                        <Button size="sm" onClick={handleLink} disabled={!selectedAgentId || isLinking} className="bg-[#1a2332] hover:bg-[#2a3342] text-xs rounded-lg">
                           {isLinking ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Link2 className="h-3 w-3 mr-1" />}
                           Link
                         </Button>
-                        <Button size="sm" variant="outline" className="font-mono text-xs uppercase tracking-wider" onClick={() => { setShowLinkSelect(false); setSelectedAgentId(''); }}>
+                        <Button size="sm" variant="outline" className="text-xs rounded-lg" onClick={() => { setShowLinkSelect(false); setSelectedAgentId(''); }}>
                           Cancel
                         </Button>
                       </div>
                     </div>
                   ) : (
                     <button
-                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-mono text-sm uppercase tracking-wider"
+                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm font-medium"
                       onClick={handleShowLinkSelect}
                     >
                       <Link2 className="h-4 w-4" />
@@ -504,7 +504,7 @@ export default function RealtorDetailModal({
             <div className="flex gap-3">
               <Button
                 variant="outline"
-                className={`${details.status === 'invited' && hasAgent ? 'flex-1' : 'w-full'} font-mono uppercase tracking-wider justify-center`}
+                className={`${details.status === 'invited' && hasAgent ? 'flex-1' : 'w-full'} rounded-lg justify-center`}
                 onClick={handleResetPassword}
                 disabled={isResettingPassword || details.status === 'inactive' || !hasAgent}
               >
@@ -519,7 +519,7 @@ export default function RealtorDetailModal({
               {details.status === 'invited' && hasAgent && (
                 <Button
                   variant="outline"
-                  className="flex-1 font-mono uppercase tracking-wider justify-center"
+                  className="flex-1 rounded-lg justify-center"
                   onClick={handleResendInvite}
                   disabled={isResendingInvite}
                 >
@@ -532,7 +532,7 @@ export default function RealtorDetailModal({
             {(details.status === 'active' || details.status === 'invited') && hasAgent && (
               <Button
                 variant="outline"
-                className="w-full font-mono uppercase tracking-wider justify-center text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                className="w-full rounded-lg justify-center text-orange-600 hover:text-orange-700 hover:bg-orange-50"
                 onClick={handleDeactivate}
                 disabled={isChangingStatus}
               >
@@ -544,7 +544,7 @@ export default function RealtorDetailModal({
             {details.status === 'inactive' && hasAgent && (
               <Button
                 variant="outline"
-                className={`w-full font-mono uppercase tracking-wider justify-center ${details.agent?.status === 'inactive' ? 'opacity-50 cursor-not-allowed' : 'text-green-600 hover:text-green-700 hover:bg-green-50'}`}
+                className={`w-full rounded-lg justify-center ${details.agent?.status === 'inactive' ? 'opacity-50 cursor-not-allowed' : 'text-green-600 hover:text-green-700 hover:bg-green-50'}`}
                 onClick={handleActivate}
                 disabled={isChangingStatus || details.agent?.status === 'inactive'}
               >
@@ -555,21 +555,21 @@ export default function RealtorDetailModal({
 
             {/* Delete Link */}
             {showDeleteConfirm ? (
-              <div className="bg-red-50 border border-red-200 p-4 space-y-3">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
                   <div>
-                    <p className="font-mono font-medium text-red-800 text-sm">Delete this realtor?</p>
-                    <p className="text-xs text-red-600 mt-1 font-mono">
-                      This will permanently delete {details.firstName} {details.lastName}&apos;s account. This cannot be undone.
+                    <p className="font-medium text-red-800 text-sm">Delete this realtor?</p>
+                    <p className="text-xs text-red-600 mt-1">
+                      This will permanently delete {details.firstName} {details.lastName}'s account. This cannot be undone.
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} className="font-mono text-xs uppercase tracking-wider">
+                  <Button variant="outline" size="sm" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} className="text-xs rounded-lg">
                     Cancel
                   </Button>
-                  <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isDeleting} className="font-mono text-xs uppercase tracking-wider">
+                  <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isDeleting} className="text-xs rounded-lg">
                     {isDeleting ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Trash2 className="h-3 w-3 mr-1" />}
                     Delete
                   </Button>
@@ -577,7 +577,7 @@ export default function RealtorDetailModal({
               </div>
             ) : (
               <button
-                className="w-full text-center text-red-600 hover:text-red-700 font-mono text-sm uppercase tracking-wider py-2"
+                className="w-full text-center text-red-600 hover:text-red-700 text-sm font-medium py-2"
                 onClick={() => setShowDeleteConfirm(true)}
               >
                 Delete Realtor

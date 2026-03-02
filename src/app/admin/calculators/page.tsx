@@ -102,8 +102,8 @@ export default function AdminCalculatorsPage() {
   return (
     <div className="space-y-6">
       <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-xl text-gray-900">CALCULATORS</h1>
-        <p className="text-sm text-gray-500 mt-1 font-mono">
+        <h1 className="dot-matrix text-2xl text-gray-900">Calculators</h1>
+        <p className="text-sm text-gray-500 mt-1">
           Preview all calculators available to agents and realtors
         </p>
       </div>
@@ -115,22 +115,22 @@ export default function AdminCalculatorsPage() {
           return (
             <Card
               key={calc.id}
-              className={`cursor-pointer transition-all border-0 overflow-hidden ${
+              className={`cursor-pointer transition-all border-0 overflow-hidden rounded-lg ${
                 isActive ? 'ring-2 ring-[#0077B6] shadow-lg' : 'hover:shadow-md'
               }`}
               onClick={() => setActiveCalculator(calc.id)}
             >
               <div
-                className={`px-4 py-3 flex items-center justify-center ${
+                className={`px-4 py-3 flex items-center justify-center rounded-t-lg ${
                   isActive ? '' : 'bg-gray-100'
                 }`}
                 style={isActive ? { backgroundColor: brandColor } : undefined}
               >
                 <Icon className={`h-6 w-6 ${isActive ? 'text-white' : 'text-gray-600'}`} />
               </div>
-              <CardContent className="p-3 bg-white">
+              <CardContent className="p-3 bg-white rounded-b-lg">
                 <h3
-                  className={`font-mono text-xs uppercase tracking-wider text-center ${
+                  className={`text-xs text-center ${
                     isActive ? 'font-semibold' : 'text-gray-700'
                   }`}
                   style={isActive ? { color: brandColor } : undefined}
@@ -143,18 +143,18 @@ export default function AdminCalculatorsPage() {
         })}
       </div>
 
-      <Card className="border-0 overflow-hidden">
-        <div className="px-6 py-3 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+      <Card className="border-0 overflow-hidden rounded-lg">
+        <div className="px-6 py-3 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
           {activeCalc && (
             <>
               <activeCalc.icon className="h-5 w-5 text-white" />
-              <span className="text-white font-mono font-medium uppercase tracking-wider">
+              <span className="text-white font-semibold">
                 {activeCalc.name}
               </span>
             </>
           )}
         </div>
-        <CardContent className="p-6 bg-white">
+        <CardContent className="p-6 bg-white rounded-b-lg">
           <BendigiCalculator toolId={activeCalculator} />
         </CardContent>
       </Card>

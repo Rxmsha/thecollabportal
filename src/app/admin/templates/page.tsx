@@ -158,7 +158,7 @@ export default function AdminTemplatesPage() {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <div>
-          <h1 className="dot-matrix text-xl text-gray-900">TEMPLATES</h1>
+          <h1 className="dot-matrix text-2xl text-gray-900">Templates</h1>
           <p className="text-sm text-gray-500 mt-1">
             Create and publish content for your users
           </p>
@@ -166,6 +166,7 @@ export default function AdminTemplatesPage() {
         <Button
           style={{ backgroundColor: brandColor }}
           onClick={() => router.push('/admin/templates/new')}
+          className="rounded-lg"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Template
@@ -174,25 +175,25 @@ export default function AdminTemplatesPage() {
 
       {/* Selection Bar - Shows when templates are selected */}
       {selectedIds.length > 0 && (
-        <div className="flex items-center justify-between bg-[#0077B6]/10 border border-[#0077B6]/20 px-4 py-3">
+        <div className="flex items-center justify-between bg-[#0077B6]/10 border border-[#0077B6]/20 rounded-lg px-4 py-3">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-mono font-medium text-[#0077B6]">
+            <span className="text-sm font-medium text-[#0077B6]">
               {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''} selected
             </span>
-            <Button variant="ghost" size="sm" onClick={selectAll} className="text-[#0077B6] hover:text-[#006399] font-mono uppercase tracking-wider text-xs">
+            <Button variant="ghost" size="sm" onClick={selectAll} className="text-[#0077B6] hover:text-[#006399] text-xs">
               {selectedIds.length === templates.length ? 'Deselect All' : 'Select All'}
             </Button>
           </div>
           <div className="flex items-center gap-2">
             {showDeleteConfirm ? (
               <>
-                <span className="text-sm font-mono text-red-600 mr-2">Delete {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''}?</span>
+                <span className="text-sm text-red-600 mr-2">Delete {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''}?</span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowDeleteConfirm(false)}
                   disabled={isDeleting}
-                  className="font-mono uppercase tracking-wider text-xs"
+                  className="rounded-lg text-xs"
                 >
                   Cancel
                 </Button>
@@ -201,7 +202,7 @@ export default function AdminTemplatesPage() {
                   size="sm"
                   onClick={handleBulkDelete}
                   disabled={isDeleting}
-                  className="font-mono uppercase tracking-wider text-xs"
+                  className="rounded-lg text-xs"
                 >
                   {isDeleting ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -213,7 +214,7 @@ export default function AdminTemplatesPage() {
               </>
             ) : (
               <>
-                <Button variant="ghost" size="sm" onClick={clearSelection} className="font-mono uppercase tracking-wider text-xs">
+                <Button variant="ghost" size="sm" onClick={clearSelection} className="text-xs rounded-lg">
                   <X className="h-4 w-4 mr-1" />
                   Clear
                 </Button>
@@ -221,7 +222,7 @@ export default function AdminTemplatesPage() {
                   variant="destructive"
                   size="sm"
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="font-mono uppercase tracking-wider text-xs"
+                  className="rounded-lg text-xs"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete Selected
@@ -240,24 +241,24 @@ export default function AdminTemplatesPage() {
             placeholder="Search templates..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 w-[200px] bg-white"
+            className="pl-10 w-[200px] bg-white rounded-lg"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[140px] bg-white">
+          <SelectTrigger className="w-[140px] bg-white rounded-lg">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="rounded-lg">
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="draft">Draft</SelectItem>
             <SelectItem value="published">Published</SelectItem>
           </SelectContent>
         </Select>
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-[160px] bg-white">
+          <SelectTrigger className="w-[160px] bg-white rounded-lg">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="rounded-lg">
             <SelectItem value="all">All Categories</SelectItem>
             <SelectItem value="social-media">Social Media</SelectItem>
             <SelectItem value="email">Email</SelectItem>
@@ -268,10 +269,10 @@ export default function AdminTemplatesPage() {
           </SelectContent>
         </Select>
         <Select value={formatFilter} onValueChange={setFormatFilter}>
-          <SelectTrigger className="w-[140px] bg-white">
+          <SelectTrigger className="w-[140px] bg-white rounded-lg">
             <SelectValue placeholder="All Formats" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="rounded-lg">
             <SelectItem value="all">All Formats</SelectItem>
             <SelectItem value="canva">Canva</SelectItem>
             <SelectItem value="pdf">PDF</SelectItem>
@@ -286,7 +287,7 @@ export default function AdminTemplatesPage() {
       {isLoading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
-            <Card key={i} className="overflow-hidden border-0 rounded-none">
+            <Card key={i} className="overflow-hidden border-0 rounded-lg">
               <div className="aspect-[4/3] bg-gray-100 animate-pulse" />
               <div className="p-4 space-y-3" style={{ backgroundColor: brandColor }}>
                 <div className="h-5 bg-gray-700 rounded animate-pulse" />
@@ -306,13 +307,13 @@ export default function AdminTemplatesPage() {
             return (
               <Card
                 key={template.id}
-                className={`overflow-hidden border-0 rounded-none hover:shadow-lg transition-all cursor-pointer ${
+                className={`overflow-hidden border-0 rounded-lg hover:shadow-lg transition-all cursor-pointer ${
                   isSelected ? 'ring-2 ring-[#0077B6]' : ''
                 }`}
                 onClick={() => router.push(`/admin/templates/${template.id}`)}
               >
                 {/* Image Preview */}
-                <div className="aspect-[4/3] bg-gray-100 relative">
+                <div className="aspect-[4/3] bg-gray-100 relative rounded-t-lg overflow-hidden">
                   {template.previewImageUrl ? (
                     <img
                       src={template.previewImageUrl}
@@ -331,7 +332,7 @@ export default function AdminTemplatesPage() {
                     onClick={(e) => toggleSelection(template.id, e)}
                   >
                     <div
-                      className={`w-6 h-6 border-2 flex items-center justify-center transition-colors ${
+                      className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
                         isSelected
                           ? 'bg-[#0077B6] border-[#0077B6] text-white'
                           : 'bg-white/90 border-gray-300 hover:border-[#0077B6]'
@@ -343,7 +344,7 @@ export default function AdminTemplatesPage() {
 
                   {/* Category Badge - Top Right */}
                   <div className="absolute top-3 right-3">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium uppercase tracking-wider border ${getCategoryStyle(template.category)}`}>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full capitalize ${getCategoryStyle(template.category)}`}>
                       {getCategoryIcon(template.category)}
                       {formatCategoryLabel(template.category)}
                     </span>
@@ -352,7 +353,7 @@ export default function AdminTemplatesPage() {
                   {/* Draft Badge - Below checkbox */}
                   {template.status === 'draft' && (
                     <div className="absolute top-12 left-3">
-                      <span className="inline-flex items-center px-2.5 py-1 text-xs font-mono font-medium uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
+                      <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800">
                         Draft
                       </span>
                     </div>
@@ -360,23 +361,23 @@ export default function AdminTemplatesPage() {
                 </div>
 
                 {/* Content - Dark footer */}
-                <div className="p-4 flex flex-col h-[110px]" style={{ backgroundColor: brandColor }}>
-                  <h3 className="font-mono font-semibold text-white text-base mb-1 truncate">
+                <div className="p-4 flex flex-col h-[110px] rounded-b-lg" style={{ backgroundColor: brandColor }}>
+                  <h3 className="font-semibold text-white text-base mb-1 truncate">
                     {template.title}
                   </h3>
-                  <p className="text-sm text-gray-400 font-mono line-clamp-1 flex-grow">
+                  <p className="text-sm text-gray-300 line-clamp-1 flex-grow">
                     {template.shortDescription || '\u00A0'}
                   </p>
 
                   {/* Footer */}
                   <div className="flex items-center justify-between mt-auto">
-                    <span className="text-xs font-mono font-medium text-gray-400 uppercase tracking-wider">
+                    <span className="text-xs font-medium text-gray-400">
                       {template.format.toUpperCase().replace('_', ' ')}
                     </span>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="bg-transparent border-gray-500 text-white hover:bg-white/10 hover:text-white font-mono text-xs uppercase tracking-wider"
+                      className="bg-transparent border-gray-500 text-white hover:bg-white/10 hover:text-white text-xs rounded-lg"
                       onClick={(e) => {
                         e.stopPropagation()
                         router.push(`/admin/templates/${template.id}`)
@@ -391,14 +392,14 @@ export default function AdminTemplatesPage() {
           })}
         </div>
       ) : (
-        <Card className="border-0">
+        <Card className="border-0 rounded-lg">
           <CardContent className="py-16 text-center">
             <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-mono font-medium text-gray-900 mb-2">No templates found</h3>
-            <p className="text-gray-500 font-mono mb-4">Get started by creating your first template</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
+            <p className="text-gray-500 mb-4">Get started by creating your first template</p>
             <Button
               onClick={() => router.push('/admin/templates/new')}
-              className="font-mono uppercase tracking-wider"
+              className="rounded-lg"
               style={{ backgroundColor: brandColor }}
             >
               <Plus className="h-4 w-4 mr-2" />

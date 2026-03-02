@@ -93,69 +93,69 @@ export default function NewTemplatePage() {
           variant="ghost"
           size="icon"
           onClick={() => router.push('/admin/templates')}
-          className="hover:bg-gray-100"
+          className="hover:bg-gray-100 rounded-lg"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="dot-matrix text-xl text-gray-900">CREATE NEW TEMPLATE</h1>
-          <p className="text-sm text-gray-500 mt-1 font-mono">Add a new template to the library</p>
+          <h1 className="dot-matrix text-2xl text-gray-900">Create New Template</h1>
+          <p className="text-sm text-gray-500 mt-1">Add a new template to the library</p>
         </div>
       </div>
 
       {/* Form */}
-      <Card className="border-0 overflow-hidden">
-        <div className="px-6 py-4" style={{ backgroundColor: brandColor }}>
-          <h2 className="text-white font-mono uppercase tracking-wider">Template Details</h2>
-          <p className="text-gray-400 font-mono text-sm">Fill in the information for your new template</p>
+      <Card className="border-0 overflow-hidden rounded-lg">
+        <div className="px-6 py-4 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+          <h2 className="text-white font-semibold">Template Details</h2>
+          <p className="text-gray-300 text-sm">Fill in the information for your new template</p>
         </div>
-        <CardContent className="p-6 space-y-6">
+        <CardContent className="p-6 space-y-6 rounded-b-lg">
           {/* Title */}
           <div className="space-y-2">
-            <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Title *</Label>
+            <Label className="text-sm font-medium text-gray-600">Title *</Label>
             <Input
               value={template.title}
               onChange={(e) => setTemplate((prev) => ({ ...prev, title: e.target.value }))}
-              className="font-mono"
+              className="rounded-lg"
             />
           </div>
 
           {/* Category and Format */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Category</Label>
+              <Label className="text-sm font-medium text-gray-600">Category</Label>
               <Select
                 value={template.category}
                 onValueChange={(value) => setTemplate((prev) => ({ ...prev, category: value as TemplateCategory }))}
               >
-                <SelectTrigger className="font-mono">
+                <SelectTrigger className="rounded-lg">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="social-media" className="font-mono">Social Media</SelectItem>
-                  <SelectItem value="email" className="font-mono">Email</SelectItem>
-                  <SelectItem value="flyer" className="font-mono">Flyer</SelectItem>
-                  <SelectItem value="presentation" className="font-mono">Presentation</SelectItem>
-                  <SelectItem value="checklist" className="font-mono">Checklist</SelectItem>
-                  <SelectItem value="guide" className="font-mono">Guide</SelectItem>
+                <SelectContent className="rounded-lg">
+                  <SelectItem value="social-media">Social Media</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="flyer">Flyer</SelectItem>
+                  <SelectItem value="presentation">Presentation</SelectItem>
+                  <SelectItem value="checklist">Checklist</SelectItem>
+                  <SelectItem value="guide">Guide</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Format</Label>
+              <Label className="text-sm font-medium text-gray-600">Format</Label>
               <Select
                 value={template.format}
                 onValueChange={(value) => setTemplate((prev) => ({ ...prev, format: value as TemplateFormat }))}
               >
-                <SelectTrigger className="font-mono">
+                <SelectTrigger className="rounded-lg">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="canva" className="font-mono">Canva</SelectItem>
-                  <SelectItem value="pdf" className="font-mono">PDF</SelectItem>
-                  <SelectItem value="doc" className="font-mono">Document</SelectItem>
-                  <SelectItem value="video" className="font-mono">Video</SelectItem>
-                  <SelectItem value="link" className="font-mono">Link</SelectItem>
+                <SelectContent className="rounded-lg">
+                  <SelectItem value="canva">Canva</SelectItem>
+                  <SelectItem value="pdf">PDF</SelectItem>
+                  <SelectItem value="doc">Document</SelectItem>
+                  <SelectItem value="video">Video</SelectItem>
+                  <SelectItem value="link">Link</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -163,30 +163,30 @@ export default function NewTemplatePage() {
 
           {/* Description */}
           <div className="space-y-2">
-            <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Description</Label>
+            <Label className="text-sm font-medium text-gray-600">Description</Label>
             <Textarea
               value={template.shortDescription}
               onChange={(e) => setTemplate((prev) => ({ ...prev, shortDescription: e.target.value }))}
               rows={3}
-              className="font-mono"
+              className="rounded-lg"
             />
           </div>
 
           {/* Preview Image */}
           <div className="space-y-2">
-            <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Preview Image (optional)</Label>
+            <Label className="text-sm font-medium text-gray-600">Preview Image (optional)</Label>
             {template.previewImageUrl ? (
               <div className="relative w-full max-w-md">
                 <img
                   src={template.previewImageUrl}
                   alt="Preview"
-                  className="w-full h-48 object-cover border border-gray-200"
+                  className="w-full h-48 object-cover rounded-lg border border-gray-200"
                 />
                 <Button
                   type="button"
                   variant="destructive"
                   size="icon"
-                  className="absolute top-2 right-2 h-8 w-8"
+                  className="absolute top-2 right-2 h-8 w-8 rounded-lg"
                   onClick={() => setTemplate((prev) => ({ ...prev, previewImageUrl: '' }))}
                 >
                   <X className="h-4 w-4" />
@@ -201,63 +201,63 @@ export default function NewTemplatePage() {
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   disabled={isUploadingImage}
                 />
-                <div className="flex items-center justify-center h-48 border-2 border-dashed border-gray-300 hover:border-[#0077B6] transition-colors bg-gray-50">
+                <div className="flex items-center justify-center h-48 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#0077B6] transition-colors bg-gray-50">
                   {isUploadingImage ? (
-                    <div className="flex items-center gap-2 text-gray-500 font-mono">
+                    <div className="flex items-center gap-2 text-gray-500">
                       <Loader2 className="h-5 w-5 animate-spin text-[#0077B6]" />
                       <span>Uploading...</span>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-2 text-gray-500">
                       <Upload className="h-10 w-10" />
-                      <span className="font-mono text-sm">Click to upload image</span>
-                      <span className="text-xs text-gray-400 font-mono">Max 5MB</span>
+                      <span className="text-sm">Click to upload image</span>
+                      <span className="text-xs text-gray-400">Max 5MB</span>
                     </div>
                   )}
                 </div>
               </div>
             )}
-            {uploadError && <p className="text-sm text-red-500 font-mono">{uploadError}</p>}
+            {uploadError && <p className="text-sm text-red-500">{uploadError}</p>}
           </div>
 
           {/* Download Link */}
           <div className="space-y-2">
-            <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Download/Edit Link *</Label>
+            <Label className="text-sm font-medium text-gray-600">Download/Edit Link *</Label>
             <Input
               value={template.downloadLink}
               onChange={(e) => setTemplate((prev) => ({ ...prev, downloadLink: e.target.value }))}
-              className="font-mono"
+              className="rounded-lg"
             />
           </div>
 
           {/* Status */}
           <div className="space-y-2">
-            <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Status</Label>
+            <Label className="text-sm font-medium text-gray-600">Status</Label>
             <Select
               value={template.status}
               onValueChange={(value) => setTemplate((prev) => ({ ...prev, status: value as 'draft' | 'published' }))}
             >
-              <SelectTrigger className="w-48 font-mono">
+              <SelectTrigger className="w-48 rounded-lg">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft" className="font-mono">Draft</SelectItem>
-                <SelectItem value="published" className="font-mono">Published</SelectItem>
+              <SelectContent className="rounded-lg">
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="published">Published</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-gray-500 font-mono">
+            <p className="text-xs text-gray-500">
               Published templates are visible to agents and realtors. Publishing will also send notification emails.
             </p>
           </div>
 
           {/* Release Notes */}
           <div className="space-y-2">
-            <Label className="font-mono text-xs uppercase tracking-wider text-gray-600">Release Notes (optional)</Label>
+            <Label className="text-sm font-medium text-gray-600">Release Notes (optional)</Label>
             <Textarea
               value={template.releaseNotes}
               onChange={(e) => setTemplate((prev) => ({ ...prev, releaseNotes: e.target.value }))}
               rows={2}
-              className="font-mono"
+              className="rounded-lg"
             />
           </div>
 
@@ -266,14 +266,14 @@ export default function NewTemplatePage() {
             <Button
               variant="outline"
               onClick={() => router.push('/admin/templates')}
-              className="font-mono uppercase tracking-wider"
+              className="rounded-lg"
             >
               Cancel
             </Button>
             <Button
               onClick={handleCreate}
               disabled={isCreating || !template.title.trim()}
-              className="font-mono uppercase tracking-wider"
+              className="rounded-lg"
               style={{ backgroundColor: brandColor }}
             >
               {isCreating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}

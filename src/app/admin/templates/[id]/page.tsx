@@ -423,29 +423,29 @@ export default function TemplateDetailPage() {
   if (showDeleteConfirm) {
     return (
       <div className="space-y-6">
-        <Button variant="ghost" onClick={() => setShowDeleteConfirm(false)} className="font-mono uppercase tracking-wider">
+        <Button variant="ghost" onClick={() => setShowDeleteConfirm(false)} className="rounded-lg">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <Card className="max-w-lg mx-auto border-0 overflow-hidden">
-          <div className="bg-red-600 px-6 py-4">
+        <Card className="max-w-lg mx-auto border-0 overflow-hidden rounded-lg">
+          <div className="bg-red-600 px-6 py-4 rounded-t-lg">
             <div className="flex items-center gap-3">
               <Trash2 className="h-6 w-6 text-white flex-shrink-0" />
               <div>
-                <h4 className="font-mono text-white font-medium uppercase tracking-wider">Delete Template?</h4>
-                <p className="text-sm text-red-100 font-mono mt-1">This action cannot be undone.</p>
+                <h4 className="text-white font-semibold">Delete Template?</h4>
+                <p className="text-sm text-red-100 mt-1">This action cannot be undone.</p>
               </div>
             </div>
           </div>
-          <CardContent className="p-6 space-y-4">
-            <p className="text-gray-700 font-mono">
+          <CardContent className="p-6 space-y-4 rounded-b-lg">
+            <p className="text-gray-700">
               Are you sure you want to delete "<span className="font-semibold">{template.title}</span>"? The template will be permanently removed.
             </p>
             <div className="flex gap-3 pt-2">
-              <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} className="flex-1 font-mono uppercase tracking-wider">
+              <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} className="flex-1 rounded-lg">
                 Cancel
               </Button>
-              <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="flex-1 font-mono uppercase tracking-wider">
+              <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="flex-1 rounded-lg">
                 {isDeleting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Trash2 className="h-4 w-4 mr-2" />}
                 Delete
               </Button>
@@ -460,29 +460,29 @@ export default function TemplateDetailPage() {
   if (showPublishedWarning) {
     return (
       <div className="space-y-6">
-        <Button variant="ghost" onClick={() => setShowPublishedWarning(false)} className="font-mono uppercase tracking-wider">
+        <Button variant="ghost" onClick={() => setShowPublishedWarning(false)} className="rounded-lg">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <Card className="max-w-lg mx-auto border-0 overflow-hidden">
-          <div className="bg-amber-500 px-6 py-4">
+        <Card className="max-w-lg mx-auto border-0 overflow-hidden rounded-lg">
+          <div className="bg-amber-500 px-6 py-4 rounded-t-lg">
             <div className="flex items-center gap-3">
               <AlertTriangle className="h-6 w-6 text-white flex-shrink-0" />
               <div>
-                <h4 className="font-mono text-white font-medium uppercase tracking-wider">Template is Published</h4>
-                <p className="text-sm text-amber-100 font-mono mt-1">Editing will change the template status.</p>
+                <h4 className="text-white font-semibold">Template is Published</h4>
+                <p className="text-sm text-amber-100 mt-1">Editing will change the template status.</p>
               </div>
             </div>
           </div>
-          <CardContent className="p-6 space-y-4">
-            <p className="text-gray-700 font-mono">
+          <CardContent className="p-6 space-y-4 rounded-b-lg">
+            <p className="text-gray-700">
               Editing will unpublish this template. It will be hidden from agents and realtors until you publish it again.
             </p>
             <div className="flex gap-3 pt-2">
-              <Button variant="outline" onClick={() => setShowPublishedWarning(false)} className="flex-1 font-mono uppercase tracking-wider">
+              <Button variant="outline" onClick={() => setShowPublishedWarning(false)} className="flex-1 rounded-lg">
                 Cancel
               </Button>
-              <Button onClick={startEditMode} className="flex-1 font-mono uppercase tracking-wider" style={{ backgroundColor: brandColor }}>
+              <Button onClick={startEditMode} className="flex-1 rounded-lg" style={{ backgroundColor: brandColor }}>
                 Continue to Edit
               </Button>
             </div>
@@ -497,7 +497,7 @@ export default function TemplateDetailPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleCancelEdit}>
+          <Button variant="ghost" size="icon" onClick={handleCancelEdit} className="rounded-lg">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
@@ -506,22 +506,23 @@ export default function TemplateDetailPage() {
           </div>
         </div>
 
-        <Card>
+        <Card className="rounded-lg">
           <CardContent className="pt-6 space-y-6">
             <div className="space-y-2">
-              <Label>Title</Label>
+              <Label className="text-sm font-medium">Title</Label>
               <Input
                 value={editData.title}
                 onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+                className="rounded-lg"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Category</Label>
+                <Label className="text-sm font-medium">Category</Label>
                 <Select value={editData.category} onValueChange={(v) => setEditData({ ...editData, category: v as TemplateCategory })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
+                  <SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+                  <SelectContent className="rounded-lg">
                     <SelectItem value="social-media">Social Media</SelectItem>
                     <SelectItem value="email">Email</SelectItem>
                     <SelectItem value="flyer">Flyer</SelectItem>
@@ -532,10 +533,10 @@ export default function TemplateDetailPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Format</Label>
+                <Label className="text-sm font-medium">Format</Label>
                 <Select value={editData.format} onValueChange={(v) => setEditData({ ...editData, format: v as TemplateFormat })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
+                  <SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+                  <SelectContent className="rounded-lg">
                     <SelectItem value="canva">Canva</SelectItem>
                     <SelectItem value="pdf">PDF</SelectItem>
                     <SelectItem value="doc">Document</SelectItem>
@@ -547,20 +548,21 @@ export default function TemplateDetailPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Description</Label>
+              <Label className="text-sm font-medium">Description</Label>
               <Textarea
                 value={editData.shortDescription}
                 onChange={(e) => setEditData({ ...editData, shortDescription: e.target.value })}
                 rows={3}
+                className="rounded-lg"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Preview Image</Label>
+              <Label className="text-sm font-medium">Preview Image</Label>
               {editData.previewImageUrl ? (
                 <div className="relative w-full max-w-md">
                   <img src={editData.previewImageUrl} alt="Preview" className="w-full h-48 object-cover rounded-lg border" />
-                  <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-8 w-8"
+                  <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-8 w-8 rounded-lg"
                     onClick={() => setEditData({ ...editData, previewImageUrl: '' })}>
                     <X className="h-4 w-4" />
                   </Button>
@@ -586,13 +588,13 @@ export default function TemplateDetailPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Download/Edit Link</Label>
-              <Input value={editData.downloadLink} onChange={(e) => setEditData({ ...editData, downloadLink: e.target.value })} placeholder="https://..." />
+              <Label className="text-sm font-medium">Download/Edit Link</Label>
+              <Input value={editData.downloadLink} onChange={(e) => setEditData({ ...editData, downloadLink: e.target.value })} placeholder="https://..." className="rounded-lg" />
             </div>
 
             <div className="space-y-2">
-              <Label>Release Notes</Label>
-              <Textarea value={editData.releaseNotes} onChange={(e) => setEditData({ ...editData, releaseNotes: e.target.value })} rows={2} />
+              <Label className="text-sm font-medium">Release Notes</Label>
+              <Textarea value={editData.releaseNotes} onChange={(e) => setEditData({ ...editData, releaseNotes: e.target.value })} rows={2} className="rounded-lg" />
             </div>
 
             {template.status === 'published' && (
@@ -603,8 +605,8 @@ export default function TemplateDetailPage() {
             )}
 
             <div className="flex gap-3 pt-4 border-t">
-              <Button variant="outline" onClick={handleCancelEdit}>Cancel</Button>
-              <Button onClick={handleSaveEdit} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
+              <Button variant="outline" onClick={handleCancelEdit} className="rounded-lg">Cancel</Button>
+              <Button onClick={handleSaveEdit} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 rounded-lg">
                 {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Save Changes
               </Button>
@@ -621,13 +623,13 @@ export default function TemplateDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.push('/admin/templates')}>
+          <Button variant="ghost" size="icon" onClick={() => router.push('/admin/templates')} className="rounded-lg">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-xl font-mono font-bold text-gray-900 uppercase tracking-wide">{template.title}</h1>
-              <span className={`px-3 py-1 text-sm font-mono font-medium uppercase tracking-wider ${
+              <h1 className="text-xl font-bold text-gray-900">{template.title}</h1>
+              <span className={`px-3 py-1 text-sm font-medium rounded-full ${
                 template.status === 'published'
                   ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
                   : 'bg-amber-100 text-amber-700 border border-amber-200'
@@ -636,19 +638,19 @@ export default function TemplateDetailPage() {
               </span>
             </div>
             <div className="flex items-center gap-2 mt-2">
-              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium uppercase tracking-wider ${getCategoryStyle(template.category)}`}>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full capitalize ${getCategoryStyle(template.category)}`}>
                 {getCategoryIcon(template.category)}
                 {template.category === 'social-media' ? 'Social' : template.category}
               </span>
-              <span className="px-2.5 py-1 text-xs font-mono font-medium uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">{template.format.toUpperCase()}</span>
+              <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 border border-gray-200">{template.format.toUpperCase()}</span>
             </div>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleStartEdit} className="font-mono uppercase tracking-wider">
+          <Button variant="outline" onClick={handleStartEdit} className="rounded-lg">
             <Pencil className="h-4 w-4 mr-2" />Edit
           </Button>
-          <Button variant="outline" onClick={() => setShowDeleteConfirm(true)} className="text-red-600 hover:text-red-700 hover:bg-red-50">
+          <Button variant="outline" onClick={() => setShowDeleteConfirm(true)} className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg">
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
@@ -671,26 +673,26 @@ export default function TemplateDetailPage() {
           </Card>
 
           {/* Details */}
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="text-white" style={{ backgroundColor: brandColor }}>
-              <CardTitle className="font-mono text-base font-bold uppercase tracking-wider">Details</CardTitle>
+          <Card className="border-0 shadow-sm rounded-lg">
+            <CardHeader className="text-white rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <CardTitle className="text-base font-semibold">Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 pt-4">
+            <CardContent className="space-y-4 pt-4 rounded-b-lg">
               <div>
-                <Label className="text-xs text-gray-400 font-mono uppercase tracking-widest">Description</Label>
-                <p className="text-gray-700 font-mono mt-1">{template.shortDescription || 'No description provided'}</p>
+                <Label className="text-xs text-gray-400 font-medium">Description</Label>
+                <p className="text-gray-700 mt-1">{template.shortDescription || 'No description provided'}</p>
               </div>
               {template.releaseNotes && (
                 <div>
-                  <Label className="text-xs text-gray-400 font-mono uppercase tracking-widest">Release Notes</Label>
-                  <p className="text-gray-700 font-mono mt-1">{template.releaseNotes}</p>
+                  <Label className="text-xs text-gray-400 font-medium">Release Notes</Label>
+                  <p className="text-gray-700 mt-1">{template.releaseNotes}</p>
                 </div>
               )}
               <Separator />
               <div>
-                <Label className="text-xs text-gray-400 font-mono uppercase tracking-widest">Download/Edit Link</Label>
+                <Label className="text-xs text-gray-400 font-medium">Download/Edit Link</Label>
                 <div className="mt-2">
-                  <Button onClick={() => template.downloadLink && window.open(template.downloadLink, '_blank')} className="bg-[#0077B6] hover:bg-[#006399] font-mono uppercase tracking-wider">
+                  <Button onClick={() => template.downloadLink && window.open(template.downloadLink, '_blank')} className="bg-[#0077B6] hover:bg-[#006399] rounded-lg">
                     <ExternalLink className="h-4 w-4 mr-2" />Open Template
                   </Button>
                 </div>
@@ -702,24 +704,24 @@ export default function TemplateDetailPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Status Control */}
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="text-white py-4" style={{ backgroundColor: brandColor }}>
-              <CardTitle className="font-mono text-base font-bold uppercase tracking-wider">Status</CardTitle>
-              <CardDescription className="text-gray-400 font-mono text-sm">Control template visibility</CardDescription>
+          <Card className="border-0 shadow-sm rounded-lg">
+            <CardHeader className="text-white py-4 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <CardTitle className="text-base font-semibold">Status</CardTitle>
+              <CardDescription className="text-gray-300 text-sm">Control template visibility</CardDescription>
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent className="pt-4 rounded-b-lg">
               {template.status === 'draft' ? (
-                <Button className="w-full bg-emerald-600 hover:bg-emerald-700 font-mono uppercase tracking-wider" onClick={() => handleUpdateStatus('published')} disabled={isUpdatingStatus}>
+                <Button className="w-full bg-emerald-600 hover:bg-emerald-700 rounded-lg" onClick={() => handleUpdateStatus('published')} disabled={isUpdatingStatus}>
                   {isUpdatingStatus ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Eye className="h-4 w-4 mr-2" />}
                   Publish & Notify All
                 </Button>
               ) : (
-                <Button variant="outline" className="w-full text-amber-600 hover:text-amber-700 hover:bg-amber-50 font-mono uppercase tracking-wider" onClick={() => handleUpdateStatus('draft')} disabled={isUpdatingStatus}>
+                <Button variant="outline" className="w-full text-amber-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg" onClick={() => handleUpdateStatus('draft')} disabled={isUpdatingStatus}>
                   {isUpdatingStatus ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <EyeOff className="h-4 w-4 mr-2" />}
                   Unpublish (Draft)
                 </Button>
               )}
-              <p className="text-xs text-gray-500 font-mono mt-2">
+              <p className="text-xs text-gray-500 mt-2">
                 {template.status === 'draft' ? 'Publishing will make this visible and automatically notify all agents and realtors.' : 'Unpublishing will hide this template from users.'}
               </p>
             </CardContent>
@@ -727,38 +729,38 @@ export default function TemplateDetailPage() {
 
           {/* Notifications - Only for published */}
           {template.status === 'published' && (
-            <Card className="border-0 shadow-sm">
-              <CardHeader className="text-white py-4" style={{ backgroundColor: brandColor }}>
-                <CardTitle className="font-mono text-base font-bold uppercase tracking-wider">Notify Agents</CardTitle>
-                <CardDescription className="text-gray-400 font-mono text-sm">Send email notifications manually</CardDescription>
+            <Card className="border-0 shadow-sm rounded-lg">
+              <CardHeader className="text-white py-4 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+                <CardTitle className="text-base font-semibold">Notify Agents</CardTitle>
+                <CardDescription className="text-gray-300 text-sm">Send email notifications manually</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4 pt-4">
+              <CardContent className="space-y-4 pt-4 rounded-b-lg">
                 <div className="flex gap-2">
                   <Button variant={notificationMode === 'all' ? 'default' : 'outline'} size="sm" onClick={() => handleNotificationModeChange('all')}
-                    className={`font-mono uppercase tracking-wider ${notificationMode === 'all' ? 'bg-[#0077B6] hover:bg-[#006399]' : ''}`}>
+                    className={`rounded-lg ${notificationMode === 'all' ? 'bg-[#0077B6] hover:bg-[#006399]' : ''}`}>
                     <Users className="h-4 w-4 mr-2" />All
                   </Button>
                   <Button variant={notificationMode === 'specific' ? 'default' : 'outline'} size="sm" onClick={() => handleNotificationModeChange('specific')}
-                    className={`font-mono uppercase tracking-wider ${notificationMode === 'specific' ? 'bg-[#0077B6] hover:bg-[#006399]' : ''}`}>
+                    className={`rounded-lg ${notificationMode === 'specific' ? 'bg-[#0077B6] hover:bg-[#006399]' : ''}`}>
                     <User className="h-4 w-4 mr-2" />Specific
                   </Button>
                 </div>
 
                 {notificationMode === 'specific' && (
-                  <div className="border p-3 max-h-48 overflow-y-auto space-y-2">
+                  <div className="border rounded-lg p-3 max-h-48 overflow-y-auto space-y-2">
                     {isLoadingAgents ? (
                       <div className="flex items-center justify-center py-4"><Loader2 className="h-5 w-5 animate-spin text-gray-400" /></div>
                     ) : agents.length === 0 ? (
-                      <p className="text-sm text-gray-500 font-mono text-center py-2">No active agents</p>
+                      <p className="text-sm text-gray-500 text-center py-2">No active agents</p>
                     ) : (
                       agents.map((agent) => (
-                        <div key={agent.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 cursor-pointer" onClick={() => toggleAgentSelection(agent.id)}>
-                          <div className={`w-4 h-4 border flex items-center justify-center ${selectedAgentIds.includes(agent.id) ? 'bg-[#0077B6] border-[#0077B6] text-white' : 'border-gray-300'}`}>
+                        <div key={agent.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer" onClick={() => toggleAgentSelection(agent.id)}>
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center ${selectedAgentIds.includes(agent.id) ? 'bg-[#0077B6] border-[#0077B6] text-white' : 'border-gray-300'}`}>
                             {selectedAgentIds.includes(agent.id) && <Check className="h-3 w-3" />}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-mono font-medium truncate">{agent.firstName} {agent.lastName}</p>
-                            <p className="text-xs text-gray-500 font-mono truncate">{agent.email}</p>
+                            <p className="text-sm font-medium truncate">{agent.firstName} {agent.lastName}</p>
+                            <p className="text-xs text-gray-500 truncate">{agent.email}</p>
                           </div>
                         </div>
                       ))
@@ -767,17 +769,17 @@ export default function TemplateDetailPage() {
                 )}
 
                 {notificationMode === 'specific' && selectedAgentIds.length > 0 && (
-                  <p className="text-xs text-[#0077B6] font-mono">{selectedAgentIds.length} agent{selectedAgentIds.length !== 1 ? 's' : ''} selected</p>
+                  <p className="text-xs text-[#0077B6]">{selectedAgentIds.length} agent{selectedAgentIds.length !== 1 ? 's' : ''} selected</p>
                 )}
 
-                <Button variant="outline" className="w-full text-[#0077B6] hover:text-[#006399] hover:bg-[#0077B6]/10 font-mono uppercase tracking-wider" onClick={handleSendNotification}
+                <Button variant="outline" className="w-full text-[#0077B6] hover:text-[#006399] hover:bg-[#0077B6]/10 rounded-lg" onClick={handleSendNotification}
                   disabled={isSendingNotification || (notificationMode === 'specific' && selectedAgentIds.length === 0)}>
                   {isSendingNotification ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
                   Send Notification
                 </Button>
 
                 {notificationResult && (
-                  <p className={`text-xs font-mono ${notificationResult.success ? 'text-emerald-600' : 'text-red-600'}`}>
+                  <p className={`text-xs ${notificationResult.success ? 'text-emerald-600' : 'text-red-600'}`}>
                     {notificationResult.success
                       ? `Sent to ${notificationResult.agentCount} agent${notificationResult.agentCount !== 1 ? 's' : ''}`
                       : 'Failed to send'}
@@ -789,39 +791,39 @@ export default function TemplateDetailPage() {
 
           {/* Notify Realtors - Only for published */}
           {template.status === 'published' && (
-            <Card className="border-0 shadow-sm">
-              <CardHeader className="text-white py-4" style={{ backgroundColor: brandColor }}>
-                <CardTitle className="font-mono text-base font-bold uppercase tracking-wider">Notify Realtors</CardTitle>
-                <CardDescription className="text-gray-400 font-mono text-sm">Send to realtors (appears from their agent)</CardDescription>
+            <Card className="border-0 shadow-sm rounded-lg">
+              <CardHeader className="text-white py-4 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+                <CardTitle className="text-base font-semibold">Notify Realtors</CardTitle>
+                <CardDescription className="text-gray-300 text-sm">Send to realtors (appears from their agent)</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4 pt-4">
+              <CardContent className="space-y-4 pt-4 rounded-b-lg">
                 <div className="flex gap-2">
                   <Button variant={realtorNotificationMode === 'all' ? 'default' : 'outline'} size="sm" onClick={() => handleRealtorNotificationModeChange('all')}
-                    className={`font-mono uppercase tracking-wider ${realtorNotificationMode === 'all' ? 'bg-orange-600 hover:bg-orange-700' : ''}`}>
+                    className={`rounded-lg ${realtorNotificationMode === 'all' ? 'bg-orange-600 hover:bg-orange-700' : ''}`}>
                     <Users className="h-4 w-4 mr-2" />All
                   </Button>
                   <Button variant={realtorNotificationMode === 'specific' ? 'default' : 'outline'} size="sm" onClick={() => handleRealtorNotificationModeChange('specific')}
-                    className={`font-mono uppercase tracking-wider ${realtorNotificationMode === 'specific' ? 'bg-orange-600 hover:bg-orange-700' : ''}`}>
+                    className={`rounded-lg ${realtorNotificationMode === 'specific' ? 'bg-orange-600 hover:bg-orange-700' : ''}`}>
                     <User className="h-4 w-4 mr-2" />Specific
                   </Button>
                 </div>
 
                 {realtorNotificationMode === 'specific' && (
-                  <div className="border p-3 max-h-48 overflow-y-auto space-y-2">
+                  <div className="border rounded-lg p-3 max-h-48 overflow-y-auto space-y-2">
                     {isLoadingRealtors ? (
                       <div className="flex items-center justify-center py-4"><Loader2 className="h-5 w-5 animate-spin text-gray-400" /></div>
                     ) : realtors.length === 0 ? (
-                      <p className="text-sm text-gray-500 font-mono text-center py-2">No active realtors</p>
+                      <p className="text-sm text-gray-500 text-center py-2">No active realtors</p>
                     ) : (
                       realtors.map((realtor) => (
-                        <div key={realtor.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 cursor-pointer" onClick={() => toggleRealtorSelection(realtor.id)}>
-                          <div className={`w-4 h-4 border flex items-center justify-center ${selectedRealtorIds.includes(realtor.id) ? 'bg-orange-600 border-orange-600 text-white' : 'border-gray-300'}`}>
+                        <div key={realtor.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer" onClick={() => toggleRealtorSelection(realtor.id)}>
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center ${selectedRealtorIds.includes(realtor.id) ? 'bg-orange-600 border-orange-600 text-white' : 'border-gray-300'}`}>
                             {selectedRealtorIds.includes(realtor.id) && <Check className="h-3 w-3" />}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-mono font-medium truncate">{realtor.firstName} {realtor.lastName}</p>
-                            <p className="text-xs text-gray-500 font-mono truncate">{realtor.email}</p>
-                            {realtor.agentName && <p className="text-xs text-gray-400 font-mono truncate">Agent: {realtor.agentName}</p>}
+                            <p className="text-sm font-medium truncate">{realtor.firstName} {realtor.lastName}</p>
+                            <p className="text-xs text-gray-500 truncate">{realtor.email}</p>
+                            {realtor.agentName && <p className="text-xs text-gray-400 truncate">Agent: {realtor.agentName}</p>}
                           </div>
                         </div>
                       ))
@@ -830,17 +832,17 @@ export default function TemplateDetailPage() {
                 )}
 
                 {realtorNotificationMode === 'specific' && selectedRealtorIds.length > 0 && (
-                  <p className="text-xs text-orange-600 font-mono">{selectedRealtorIds.length} realtor{selectedRealtorIds.length !== 1 ? 's' : ''} selected</p>
+                  <p className="text-xs text-orange-600">{selectedRealtorIds.length} realtor{selectedRealtorIds.length !== 1 ? 's' : ''} selected</p>
                 )}
 
-                <Button variant="outline" className="w-full text-orange-600 hover:text-orange-700 hover:bg-orange-50 font-mono uppercase tracking-wider" onClick={handleSendRealtorNotification}
+                <Button variant="outline" className="w-full text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded-lg" onClick={handleSendRealtorNotification}
                   disabled={isSendingRealtorNotification || (realtorNotificationMode === 'specific' && selectedRealtorIds.length === 0)}>
                   {isSendingRealtorNotification ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
                   Send Notification
                 </Button>
 
                 {realtorNotificationResult && (
-                  <p className={`text-xs font-mono ${realtorNotificationResult.success ? 'text-emerald-600' : 'text-red-600'}`}>
+                  <p className={`text-xs ${realtorNotificationResult.success ? 'text-emerald-600' : 'text-red-600'}`}>
                     {realtorNotificationResult.success
                       ? `Sent to ${realtorNotificationResult.count} realtor${realtorNotificationResult.count !== 1 ? 's' : ''}`
                       : 'Failed to send'}

@@ -115,38 +115,38 @@ export default function RealtorContactPage() {
       <div className="space-y-6">
         {/* Page Header */}
         <div className="border-b border-gray-200 pb-4">
-          <h1 className="dot-matrix text-2xl text-gray-900">CONTACT AGENT</h1>
-          <p className="text-base text-gray-700 mt-1 font-mono">
+          <h1 className="dot-matrix text-2xl text-gray-900">Contact Agent</h1>
+          <p className="text-base text-gray-700 mt-1">
             Get in touch with your mortgage partner
           </p>
         </div>
 
         {/* Success Message */}
         <div className="max-w-xl mx-auto">
-          <Card className="border-0 overflow-hidden">
-            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+          <Card className="border-0 overflow-hidden rounded-lg">
+            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
               <CheckCircle className="h-5 w-5 text-white" />
-              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+              <span className="text-white font-semibold text-base">
                 Message Sent
               </span>
             </div>
-            <CardContent className="p-6 bg-white text-center">
+            <CardContent className="p-6 bg-white text-center rounded-b-lg">
               <div
-                className="h-16 w-16 flex items-center justify-center mx-auto mb-4"
+                className="h-16 w-16 flex items-center justify-center mx-auto mb-4 rounded-lg"
                 style={{ backgroundColor: brandColor }}
               >
                 <CheckCircle className="h-8 w-8 text-white" />
               </div>
-              <h2 className="text-xl font-mono font-semibold text-gray-900 mb-2">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">
                 Message Sent Successfully
               </h2>
-              <p className="text-base text-gray-700 font-mono mb-6">
+              <p className="text-base text-gray-700 mb-6">
                 Your message has been sent to {agent?.firstName} {agent?.lastName}.
                 They&apos;ll get back to you soon.
               </p>
               <Button
                 onClick={() => setIsSent(false)}
-                className="rounded-none font-mono uppercase tracking-wider text-sm"
+                className="rounded-lg text-sm"
                 style={{ backgroundColor: brandColor }}
               >
                 Send Another Message
@@ -162,8 +162,8 @@ export default function RealtorContactPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-2xl text-gray-900">CONTACT AGENT</h1>
-        <p className="text-base text-gray-700 mt-1 font-mono">
+        <h1 className="dot-matrix text-2xl text-gray-900">Contact Agent</h1>
+        <p className="text-base text-gray-700 mt-1">
           Get in touch with your mortgage partner
         </p>
       </div>
@@ -171,28 +171,28 @@ export default function RealtorContactPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Contact Form */}
         <div className="lg:col-span-2">
-          <Card className="border-0 overflow-hidden">
-            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+          <Card className="border-0 overflow-hidden rounded-lg">
+            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
               <MessageSquare className="h-5 w-5 text-white" />
-              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+              <span className="text-white font-semibold text-base">
                 Send a Message
               </span>
             </div>
-            <CardContent className="p-6 bg-white">
-              <p className="text-base text-gray-700 font-mono mb-6">
+            <CardContent className="p-6 bg-white rounded-b-lg">
+              <p className="text-base text-gray-700 mb-6">
                 Have a question or need assistance? Send a message directly to your mortgage partner.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 {sendError && (
-                  <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 text-red-700 text-base font-mono">
+                  <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-base">
                     <AlertCircle className="h-4 w-4 flex-shrink-0" />
                     {sendError}
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="subject" className="font-mono text-gray-900 text-base">
+                  <Label htmlFor="subject" className="text-gray-900 text-base">
                     Subject <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -202,12 +202,12 @@ export default function RealtorContactPage() {
                       setFormData((prev) => ({ ...prev, subject: e.target.value }))
                     }
                     required
-                    className="rounded-none font-mono"
+                    className="rounded-lg"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="message" className="font-mono text-gray-900 text-base">
+                  <Label htmlFor="message" className="text-gray-900 text-base">
                     Message <span className="text-red-500">*</span>
                   </Label>
                   <Textarea
@@ -218,13 +218,13 @@ export default function RealtorContactPage() {
                     }
                     rows={6}
                     required
-                    className="rounded-none font-mono"
+                    className="rounded-lg"
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full rounded-none font-mono uppercase tracking-wider text-sm h-11"
+                  className="w-full rounded-lg text-sm h-11"
                   style={{ backgroundColor: brandColor }}
                   disabled={isSending}
                 >
@@ -238,14 +238,14 @@ export default function RealtorContactPage() {
 
         {/* Agent Info Sidebar - Same style as dashboard */}
         <div>
-          <Card className="border-0 overflow-hidden">
-            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+          <Card className="border-0 overflow-hidden rounded-lg">
+            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
               <User className="h-5 w-5 text-white" />
-              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+              <span className="text-white font-semibold text-base">
                 Your Mortgage Partner
               </span>
             </div>
-            <CardContent className="p-6 bg-white">
+            <CardContent className="p-6 bg-white rounded-b-lg">
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
@@ -258,38 +258,38 @@ export default function RealtorContactPage() {
                       <img
                         src={agent.logoUrl}
                         alt={agent.companyName}
-                        className="h-12 w-12 object-cover"
+                        className="h-12 w-12 object-cover rounded-lg"
                         style={{ backgroundColor: agent.brandColor }}
                       />
                     ) : (
                       <div
-                        className="h-12 w-12 flex items-center justify-center text-white font-mono font-bold"
+                        className="h-12 w-12 flex items-center justify-center text-white font-bold rounded-lg"
                         style={{ backgroundColor: agent.brandColor }}
                       >
                         {agent.firstName[0]}{agent.lastName[0]}
                       </div>
                     )}
                     <div>
-                      <h3 className="font-mono font-semibold text-gray-900 uppercase tracking-wider text-sm">
+                      <h3 className="font-semibold text-gray-900 text-sm">
                         {agent.firstName} {agent.lastName}
                       </h3>
-                      <p className="text-sm text-gray-500 font-mono">{agent.companyName}</p>
+                      <p className="text-sm text-gray-500">{agent.companyName}</p>
                     </div>
                   </div>
 
                   {/* Contact Info */}
                   <div className="space-y-2 pt-4 border-t border-gray-100">
-                    <div className="flex items-center gap-2 text-sm text-gray-600 font-mono">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Mail className="h-4 w-4 text-gray-400" />
                       {agent.email}
                     </div>
                     {agent.phone && (
-                      <div className="flex items-center gap-2 text-sm text-gray-600 font-mono">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Phone className="h-4 w-4 text-gray-400" />
                         {agent.phone}
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-sm text-gray-600 font-mono">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Building className="h-4 w-4 text-gray-400" />
                       {agent.companyName}
                     </div>
@@ -298,7 +298,7 @@ export default function RealtorContactPage() {
                   {/* Bio */}
                   {agent.bio && (
                     <div className="pt-4 border-t border-gray-100">
-                      <p className="text-sm text-gray-600 font-mono">{agent.bio}</p>
+                      <p className="text-sm text-gray-600">{agent.bio}</p>
                     </div>
                   )}
 
@@ -306,7 +306,7 @@ export default function RealtorContactPage() {
                   <div className="space-y-2 pt-4 border-t border-gray-100">
                     {agent.calendlyLink && (
                       <Button
-                        className="w-full rounded-none font-mono uppercase tracking-wider text-sm"
+                        className="w-full rounded-lg text-sm"
                         style={{ backgroundColor: agent.brandColor }}
                         asChild
                       >
@@ -323,7 +323,7 @@ export default function RealtorContactPage() {
                     {agent.cmaLink && (
                       <Button
                         variant="outline"
-                        className="w-full rounded-none font-mono uppercase tracking-wider text-sm"
+                        className="w-full rounded-lg text-sm"
                         asChild
                       >
                         <a
@@ -339,7 +339,7 @@ export default function RealtorContactPage() {
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-4 font-mono">
+                <p className="text-gray-500 text-center py-4">
                   Unable to load agent information
                 </p>
               )}

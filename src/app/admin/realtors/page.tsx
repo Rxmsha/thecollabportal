@@ -114,16 +114,16 @@ export default function AdminRealtorsPage() {
   })
 
   const getStatusBadge = (status: string) => {
-    const baseClasses = "px-3 py-1 text-sm font-mono font-medium uppercase tracking-wider"
+    const baseClasses = "px-3 py-1 text-sm font-medium rounded-full"
     switch (status) {
       case 'active':
-        return <span className={`${baseClasses} bg-emerald-100 text-emerald-700 border border-emerald-200`}>Active</span>
+        return <span className={`${baseClasses} bg-emerald-100 text-emerald-700`}>Active</span>
       case 'invited':
-        return <span className={`${baseClasses} bg-amber-100 text-amber-700 border border-amber-200`}>Invited</span>
+        return <span className={`${baseClasses} bg-amber-100 text-amber-700`}>Invited</span>
       case 'inactive':
-        return <span className={`${baseClasses} bg-gray-100 text-gray-600 border border-gray-200`}>Inactive</span>
+        return <span className={`${baseClasses} bg-gray-100 text-gray-600`}>Inactive</span>
       default:
-        return <span className={`${baseClasses} bg-gray-100 text-gray-600 border border-gray-200`}>{status}</span>
+        return <span className={`${baseClasses} bg-gray-100 text-gray-600`}>{status}</span>
     }
   }
 
@@ -270,7 +270,7 @@ export default function AdminRealtorsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <div>
-          <h1 className="dot-matrix text-xl text-gray-900">REALTORS</h1>
+          <h1 className="dot-matrix text-2xl text-gray-900">Realtors</h1>
           <p className="text-sm text-gray-500 mt-1">
             View all realtors across all agents on the platform
           </p>
@@ -317,15 +317,15 @@ export default function AdminRealtorsPage() {
           ) : filteredRealtors.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="border-b border-gray-700" style={{ backgroundColor: brandColor }}>
+                <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>
-                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Realtor</th>
-                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Brokerage</th>
-                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Status</th>
-                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Agent</th>
-                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Invited</th>
-                    <th className="text-left p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Last Active</th>
-                    <th className="text-right p-4 text-sm font-mono font-medium text-gray-300 uppercase tracking-widest">Actions</th>
+                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Realtor</th>
+                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Brokerage</th>
+                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Status</th>
+                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Agent</th>
+                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Invited</th>
+                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Last Active</th>
+                    <th className="text-right p-4 text-sm font-semibold text-gray-600">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -333,12 +333,12 @@ export default function AdminRealtorsPage() {
                       <tr key={realtor.id} className="hover:bg-gray-50/50">
                         <td className="p-4">
                           <div className="flex items-center gap-3">
-                            <div className="h-11 w-11 flex items-center justify-center text-white text-sm font-mono font-bold tracking-wider" style={{ backgroundColor: brandColor }}>
+                            <div className="h-11 w-11 rounded-full flex items-center justify-center text-white text-sm font-semibold" style={{ backgroundColor: brandColor }}>
                               {realtor.firstName[0]}{realtor.lastName[0]}
                             </div>
                             <div>
-                              <p className="font-mono text-base font-medium text-gray-900 tracking-wide">{realtor.firstName} {realtor.lastName}</p>
-                              <p className="text-sm text-gray-500 font-mono">{realtor.email}</p>
+                              <p className="text-base font-medium text-gray-900">{realtor.firstName} {realtor.lastName}</p>
+                              <p className="text-sm text-gray-500">{realtor.email}</p>
                             </div>
                           </div>
                         </td>
@@ -349,12 +349,12 @@ export default function AdminRealtorsPage() {
                           </div>
                         </td>
                         <td className="p-4">{getStatusBadge(realtor.status)}</td>
-                        <td className="p-4 text-base text-gray-500 font-mono">{realtor.agentId ? `#${realtor.agentId}` : 'Unlinked'}</td>
-                        <td className="p-4 text-base text-gray-500 font-mono">{formatDate(realtor.inviteSentAt)}</td>
-                        <td className="p-4 text-base text-gray-500 font-mono">{realtor.activatedAt ? formatDate(realtor.activatedAt) : 'Never'}</td>
+                        <td className="p-4 text-base text-gray-500">{realtor.agentId ? `#${realtor.agentId}` : 'Unlinked'}</td>
+                        <td className="p-4 text-base text-gray-500">{formatDate(realtor.inviteSentAt)}</td>
+                        <td className="p-4 text-base text-gray-500">{realtor.activatedAt ? formatDate(realtor.activatedAt) : 'Never'}</td>
                         <td className="p-4 text-right">
-                          <Button variant="outline" className="text-sm font-mono font-medium h-9 px-4 border-gray-300 hover:bg-gray-100 hover:border-gray-400" onClick={() => handleOpenDetails(realtor.id)}>
-                            MORE
+                          <Button variant="outline" className="text-sm font-medium rounded-lg h-9 px-4 border-gray-300 hover:bg-gray-100 hover:border-gray-400" onClick={() => handleOpenDetails(realtor.id)}>
+                            View
                           </Button>
                         </td>
                       </tr>
@@ -373,74 +373,72 @@ export default function AdminRealtorsPage() {
 
       {/* Create Realtor Modal */}
       <Dialog open={showCreateModal} onOpenChange={closeCreateModal}>
-        <DialogContent className="max-w-md p-0" closeClassName="text-white hover:text-gray-300">
+        <DialogContent className="max-w-md p-0 rounded-lg overflow-hidden" closeClassName="text-white hover:text-gray-300">
           <DialogHeader className="text-white p-6" style={{ backgroundColor: brandColor }}>
-            <DialogTitle className="font-mono text-lg font-bold uppercase tracking-wider">Create New Realtor</DialogTitle>
-            <DialogDescription className="text-gray-300 font-mono text-sm">
+            <DialogTitle className="text-lg font-semibold">Create New Realtor</DialogTitle>
+            <DialogDescription className="text-gray-300 text-sm">
               Add a new realtor to the platform. You can optionally link them to an agent.
             </DialogDescription>
           </DialogHeader>
 
           {createSuccess ? (
             <div className="space-y-4 p-6">
-              <div className={`${createSuccess.status === 'invited' ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'} border p-4`}>
-                <p className={`${createSuccess.status === 'invited' ? 'text-green-800' : 'text-amber-800'} font-mono font-medium`}>
+              <div className={`${createSuccess.status === 'invited' ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'} border rounded-lg p-4`}>
+                <p className={`${createSuccess.status === 'invited' ? 'text-green-800' : 'text-amber-800'} font-medium`}>
                   Realtor created successfully!
                 </p>
                 {createSuccess.status === 'invited' ? (
-                  <p className="text-green-700 text-sm font-mono mt-1">
+                  <p className="text-green-700 text-sm mt-1">
                     An onboarding email has been sent from {createSuccess.agentName}.
                   </p>
                 ) : (
-                  <p className="text-amber-700 text-sm font-mono mt-1">
+                  <p className="text-amber-700 text-sm mt-1">
                     No email was sent. The realtor is inactive until linked to an agent.
                   </p>
                 )}
               </div>
-              <div className="bg-gray-50 p-4 space-y-3">
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                 <div>
-                  <Label className="text-gray-500 text-xs font-mono uppercase tracking-wider">Email</Label>
-                  <p className="font-mono text-base">{createSuccess.email}</p>
+                  <Label className="text-gray-500 text-xs font-medium">Email</Label>
+                  <p className="text-base">{createSuccess.email}</p>
                 </div>
                 <div>
-                  <Label className="text-gray-500 text-xs font-mono uppercase tracking-wider">Temporary Password</Label>
-                  <p className="font-mono text-base bg-yellow-100 px-2 py-1 inline-block">{createSuccess.tempPassword}</p>
+                  <Label className="text-gray-500 text-xs font-medium">Temporary Password</Label>
+                  <p className="font-mono text-base bg-yellow-100 rounded px-2 py-1 inline-block">{createSuccess.tempPassword}</p>
                 </div>
                 {createSuccess.agentName && (
                   <div>
-                    <Label className="text-gray-500 text-xs font-mono uppercase tracking-wider">Linked Agent</Label>
-                    <p className="font-mono text-base">{createSuccess.agentName}</p>
+                    <Label className="text-gray-500 text-xs font-medium">Linked Agent</Label>
+                    <p className="text-base">{createSuccess.agentName}</p>
                   </div>
                 )}
                 <div>
-                  <Label className="text-gray-500 text-xs font-mono uppercase tracking-wider">Status</Label>
-                  <p className="font-mono text-base uppercase">{createSuccess.status}</p>
+                  <Label className="text-gray-500 text-xs font-medium">Status</Label>
+                  <p className="text-base capitalize">{createSuccess.status}</p>
                 </div>
               </div>
-              <Button onClick={closeCreateModal} className="w-full font-mono uppercase tracking-wider" style={{ backgroundColor: brandColor }}>Done</Button>
+              <Button onClick={closeCreateModal} className="w-full rounded-lg" style={{ backgroundColor: brandColor }}>Done</Button>
             </div>
           ) : (
             <form onSubmit={handleCreateRealtor} className="space-y-4 p-6">
               {createError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm font-mono">{createError}</div>
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm rounded-lg">{createError}</div>
               )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="font-mono text-sm uppercase tracking-wider">First Name <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="firstName" className="text-sm font-medium text-gray-500">First Name <span className="text-red-500">*</span></Label>
                   <Input
                     id="firstName"
-                    className="font-mono"
                     value={newRealtor.firstName}
                     onChange={(e) => setNewRealtor({ ...newRealtor, firstName: e.target.value })}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="font-mono text-sm uppercase tracking-wider">Last Name <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="lastName" className="text-sm font-medium text-gray-500">Last Name <span className="text-red-500">*</span></Label>
                   <Input
                     id="lastName"
-                    className="font-mono"
                     value={newRealtor.lastName}
                     onChange={(e) => setNewRealtor({ ...newRealtor, lastName: e.target.value })}
                     required
@@ -449,11 +447,10 @@ export default function AdminRealtorsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="font-mono text-sm uppercase tracking-wider">Email <span className="text-red-500">*</span></Label>
+                <Label htmlFor="email" className="text-sm font-medium text-gray-500">Email <span className="text-red-500">*</span></Label>
                 <Input
                   id="email"
                   type="email"
-                  className="font-mono"
                   value={newRealtor.email}
                   onChange={(e) => setNewRealtor({ ...newRealtor, email: e.target.value })}
                   required
@@ -461,28 +458,26 @@ export default function AdminRealtorsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="brokerage" className="font-mono text-sm uppercase tracking-wider">Brokerage</Label>
+                <Label htmlFor="brokerage" className="text-sm font-medium text-gray-500">Brokerage</Label>
                 <Input
                   id="brokerage"
-                  className="font-mono"
                   value={newRealtor.brokerage}
                   onChange={(e) => setNewRealtor({ ...newRealtor, brokerage: e.target.value })}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone" className="font-mono text-sm uppercase tracking-wider">Phone</Label>
+                <Label htmlFor="phone" className="text-sm font-medium text-gray-500">Phone</Label>
                 <Input
                   id="phone"
                   type="tel"
-                  className="font-mono"
                   value={newRealtor.phone}
                   onChange={(e) => handlePhoneChange(e.target.value)}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="agentId" className="font-mono text-sm uppercase tracking-wider">Link to Agent</Label>
+                <Label htmlFor="agentId" className="text-sm font-medium text-gray-500">Link to Agent</Label>
                 {isLoadingAgents ? (
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -514,10 +509,10 @@ export default function AdminRealtorsPage() {
               </div>
 
               <div className="flex gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1 font-mono uppercase tracking-wider">
+                <Button type="button" variant="outline" onClick={closeCreateModal} className="flex-1 rounded-lg">
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isCreating} className="flex-1 font-mono uppercase tracking-wider" style={{ backgroundColor: brandColor }}>
+                <Button type="submit" disabled={isCreating} className="flex-1 rounded-lg" style={{ backgroundColor: brandColor }}>
                   {isCreating ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />

@@ -122,8 +122,8 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-6">
       <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-2xl text-gray-900">SETTINGS</h1>
-        <p className="text-base text-gray-500 mt-1 font-mono">
+        <h1 className="dot-matrix text-2xl text-gray-900">Settings</h1>
+        <p className="text-base text-gray-500 mt-1">
           Manage your admin account settings
         </p>
       </div>
@@ -131,26 +131,26 @@ export default function AdminSettingsPage() {
       {/* Profile and Branding side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Profile Info */}
-        <Card className="border-0 overflow-hidden">
-          <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+        <Card className="border-0 overflow-hidden rounded-lg">
+          <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <User className="h-5 w-5 text-white" />
-            <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">Profile</span>
+            <span className="text-white font-semibold text-base">Profile</span>
           </div>
-          <CardContent className="p-6 bg-white space-y-6">
-            <p className="text-base text-gray-700 font-mono">Your admin account information</p>
+          <CardContent className="p-6 bg-white space-y-6 rounded-b-lg">
+            <p className="text-base text-gray-700">Your admin account information</p>
             <div className="space-y-5">
               <div className="space-y-1">
-                <Label className="font-mono text-sm uppercase tracking-wider text-gray-500">Name</Label>
-                <p className="text-gray-900 font-mono font-medium text-lg">{user?.name || 'Admin'}</p>
+                <Label className="text-sm font-medium text-gray-500">Name</Label>
+                <p className="text-gray-900 font-medium text-lg">{user?.name || 'Admin'}</p>
               </div>
               <div className="space-y-1">
-                <Label className="font-mono text-sm uppercase tracking-wider text-gray-500">Email</Label>
-                <p className="text-gray-900 font-mono font-medium text-lg">{user?.email || ''}</p>
+                <Label className="text-sm font-medium text-gray-500">Email</Label>
+                <p className="text-gray-900 font-medium text-lg">{user?.email || ''}</p>
               </div>
               <div className="space-y-1">
-                <Label className="font-mono text-sm uppercase tracking-wider text-gray-500">Role</Label>
+                <Label className="text-sm font-medium text-gray-500">Role</Label>
                 <div>
-                  <span className="inline-flex items-center px-4 py-2 text-sm font-mono uppercase tracking-wider border text-[#0077B6] border-[#0077B6] bg-white">
+                  <span className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-full text-[#0077B6] border border-[#0077B6] bg-white capitalize">
                     {user?.role || 'admin'}
                   </span>
                 </div>
@@ -160,32 +160,32 @@ export default function AdminSettingsPage() {
         </Card>
 
         {/* Branding */}
-        <Card className="border-0 overflow-hidden">
-          <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+        <Card className="border-0 overflow-hidden rounded-lg">
+          <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <Palette className="h-5 w-5 text-white" />
-            <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">Branding</span>
+            <span className="text-white font-semibold text-base">Branding</span>
           </div>
-          <CardContent className="p-6 bg-white space-y-6">
-            <p className="text-base text-gray-700 font-mono">Customize the portal appearance</p>
+          <CardContent className="p-6 bg-white space-y-6 rounded-b-lg">
+            <p className="text-base text-gray-700">Customize the portal appearance</p>
 
             {/* Portal Color */}
             <div className="space-y-5">
               <div className="space-y-1">
-                <Label className="font-mono text-sm uppercase tracking-wider text-gray-500">Portal Color</Label>
-                <p className="text-base text-gray-700 font-mono">
+                <Label className="text-sm font-medium text-gray-500">Portal Color</Label>
+                <p className="text-base text-gray-700">
                   Set the primary color for sidebar and headers
                 </p>
               </div>
               <div className="flex items-center gap-4">
                 <div
-                  className="w-12 h-12 border-2 border-gray-300"
+                  className="w-12 h-12 rounded-lg border-2 border-gray-300"
                   style={{ backgroundColor: brandColor }}
                 />
                 <div className="flex-1">
-                  <p className="font-mono font-medium text-gray-900 text-lg">
+                  <p className="font-medium text-gray-900 text-lg">
                     {BRAND_COLORS.find(c => c.value === brandColor)?.name || 'Custom'}
                   </p>
-                  <p className="text-sm font-mono text-gray-500">{brandColor}</p>
+                  <p className="text-sm text-gray-500">{brandColor}</p>
                 </div>
                 <Button
                   variant="outline"
@@ -193,7 +193,7 @@ export default function AdminSettingsPage() {
                     setSelectedColor(brandColor)
                     setBrandingDialogOpen(true)
                   }}
-                  className="rounded-none font-mono uppercase tracking-wider text-sm h-10"
+                  className="rounded-lg text-sm h-10"
                 >
                   <Palette className="h-4 w-4 mr-2" />
                   Change
@@ -204,8 +204,8 @@ export default function AdminSettingsPage() {
             {/* Portal Logo */}
             <div className="space-y-5 pt-4 border-t border-gray-100">
               <div className="space-y-1">
-                <Label className="font-mono text-sm uppercase tracking-wider text-gray-500">Portal Logo</Label>
-                <p className="text-base text-gray-700 font-mono">
+                <Label className="text-sm font-medium text-gray-500">Portal Logo</Label>
+                <p className="text-base text-gray-700">
                   Upload a custom logo for the sidebar (all users)
                 </p>
               </div>
@@ -214,25 +214,25 @@ export default function AdminSettingsPage() {
                   <img
                     src={logo}
                     alt="Logo"
-                    className="w-12 h-12 object-contain border-2 border-gray-300"
+                    className="w-12 h-12 rounded-lg object-contain border-2 border-gray-300"
                   />
                 ) : (
-                  <div className="w-12 h-12 bg-[#0077B6] flex items-center justify-center text-white text-sm font-bold border-2 border-gray-300">
+                  <div className="w-12 h-12 rounded-lg bg-[#0077B6] flex items-center justify-center text-white text-sm font-bold border-2 border-gray-300">
                     CP
                   </div>
                 )}
                 <div className="flex-1">
-                  <p className="font-mono font-medium text-gray-900 text-lg">
+                  <p className="font-medium text-gray-900 text-lg">
                     {logo ? 'Custom Logo' : 'Default Logo'}
                   </p>
-                  <p className="text-sm font-mono text-gray-700">
+                  <p className="text-sm text-gray-700">
                     {logo ? 'Custom image uploaded' : 'Using default CP logo'}
                   </p>
                 </div>
                 <Button
                   variant="outline"
                   onClick={() => setLogoDialogOpen(true)}
-                  className="rounded-none font-mono uppercase tracking-wider text-sm h-10"
+                  className="rounded-lg text-sm h-10"
                 >
                   <ImageIcon className="h-4 w-4 mr-2" />
                   Change
@@ -245,24 +245,24 @@ export default function AdminSettingsPage() {
 
       {/* Security - full width below */}
       <div className="w-full lg:w-1/2">
-        <Card className="border-0 overflow-hidden">
-          <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+        <Card className="border-0 overflow-hidden rounded-lg">
+          <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <Shield className="h-5 w-5 text-white" />
-            <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">Security</span>
+            <span className="text-white font-semibold text-base">Security</span>
           </div>
-          <CardContent className="p-6 bg-white space-y-6">
-            <p className="text-base text-gray-700 font-mono">Manage your account security settings</p>
+          <CardContent className="p-6 bg-white space-y-6 rounded-b-lg">
+            <p className="text-base text-gray-700">Manage your account security settings</p>
             <div className="flex items-center justify-between py-4 border-t border-gray-100">
               <div>
-                <p className="font-mono font-medium text-gray-900 uppercase tracking-wider text-base">Password</p>
-                <p className="text-base text-gray-700 font-mono mt-1">
+                <p className="font-medium text-gray-900 text-base">Password</p>
+                <p className="text-base text-gray-700 mt-1">
                   Update your account password
                 </p>
               </div>
               <Button
                 variant="outline"
                 onClick={() => setPasswordDialogOpen(true)}
-                className="rounded-none font-mono uppercase tracking-wider text-sm h-10"
+                className="rounded-lg text-sm h-10"
               >
                 <Lock className="h-4 w-4 mr-2" />
                 Change Password
@@ -274,17 +274,17 @@ export default function AdminSettingsPage() {
 
       {/* Branding Color Dialog */}
       <Dialog open={brandingDialogOpen} onOpenChange={setBrandingDialogOpen}>
-        <DialogContent className="sm:max-w-md p-0 gap-0 rounded-none border-0 overflow-hidden">
-          <div className="px-6 py-4" style={{ backgroundColor: selectedColor }}>
+        <DialogContent className="sm:max-w-md p-0 gap-0 rounded-lg border-0 overflow-hidden">
+          <div className="px-6 py-4 rounded-t-lg" style={{ backgroundColor: selectedColor }}>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-3 text-white font-mono uppercase tracking-wider">
+              <DialogTitle className="flex items-center gap-3 text-white font-semibold">
                 <Palette className="h-5 w-5" />
                 Portal Branding
               </DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6 space-y-6">
-            <p className="text-sm text-gray-500 font-mono">
+            <p className="text-sm text-gray-500">
               Select a primary color for your portal. This will change the sidebar, headers, and accent colors.
             </p>
 
@@ -293,7 +293,7 @@ export default function AdminSettingsPage() {
                 <button
                   key={color.value}
                   onClick={() => setSelectedColor(color.value)}
-                  className={`relative aspect-square border-2 transition-all ${
+                  className={`relative aspect-square rounded-lg border-2 transition-all ${
                     selectedColor === color.value
                       ? 'border-gray-900 scale-105'
                       : 'border-gray-200 hover:border-gray-400'
@@ -311,19 +311,19 @@ export default function AdminSettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="font-mono text-xs uppercase tracking-wider text-gray-500">
+              <Label className="text-sm font-medium text-gray-500">
                 Selected Color
               </Label>
               <div className="flex items-center gap-3">
                 <div
-                  className="w-12 h-12 border border-gray-200"
+                  className="w-12 h-12 rounded-lg border border-gray-200"
                   style={{ backgroundColor: selectedColor }}
                 />
                 <div>
-                  <p className="font-mono font-medium text-gray-900">
+                  <p className="font-medium text-gray-900">
                     {BRAND_COLORS.find(c => c.value === selectedColor)?.name || 'Custom'}
                   </p>
-                  <p className="text-xs font-mono text-gray-500">{selectedColor}</p>
+                  <p className="text-xs text-gray-500">{selectedColor}</p>
                 </div>
               </div>
             </div>
@@ -332,12 +332,12 @@ export default function AdminSettingsPage() {
               <Button
                 variant="outline"
                 onClick={() => setBrandingDialogOpen(false)}
-                className="flex-1 rounded-none font-mono uppercase tracking-wider"
+                className="flex-1 rounded-lg"
               >
                 Cancel
               </Button>
               <Button
-                className="flex-1 rounded-none font-mono uppercase tracking-wider"
+                className="flex-1 rounded-lg"
                 style={{ backgroundColor: selectedColor }}
                 onClick={() => {
                   setBrandColor(selectedColor)
@@ -353,35 +353,35 @@ export default function AdminSettingsPage() {
 
       {/* Change Password Dialog */}
       <Dialog open={passwordDialogOpen} onOpenChange={resetPasswordDialog}>
-        <DialogContent className="sm:max-w-md p-0 gap-0 rounded-none border-0 overflow-hidden">
-          <div className="px-6 py-4" style={{ backgroundColor: brandColor }}>
+        <DialogContent className="sm:max-w-md p-0 gap-0 rounded-lg border-0 overflow-hidden">
+          <div className="px-6 py-4 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-3 text-white font-mono uppercase tracking-wider">
+              <DialogTitle className="flex items-center gap-3 text-white font-semibold">
                 <Lock className="h-5 w-5" />
                 Change Password
               </DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6 space-y-4">
-            <p className="text-sm text-gray-500 font-mono">
+            <p className="text-sm text-gray-500">
               Enter your current password and choose a new one.
             </p>
 
             {passwordError && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 text-red-700 text-sm font-mono">
+              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 {passwordError}
               </div>
             )}
             {passwordSuccess && (
-              <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-mono">
+              <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 text-sm">
                 <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
                 Password changed successfully!
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="currentPassword" className="font-mono text-xs uppercase tracking-wider text-gray-500">
+              <Label htmlFor="currentPassword" className="text-sm font-medium text-gray-500">
                 Current Password
               </Label>
               <div className="relative">
@@ -393,12 +393,12 @@ export default function AdminSettingsPage() {
                   onChange={(e) =>
                     setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))
                   }
-                  className="pl-10 rounded-none font-mono"
+                  className="pl-10 rounded-lg"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="newPassword" className="font-mono text-xs uppercase tracking-wider text-gray-500">
+              <Label htmlFor="newPassword" className="text-sm font-medium text-gray-500">
                 New Password
               </Label>
               <div className="relative">
@@ -410,12 +410,12 @@ export default function AdminSettingsPage() {
                   onChange={(e) =>
                     setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))
                   }
-                  className="pl-10 rounded-none font-mono"
+                  className="pl-10 rounded-lg"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="font-mono text-xs uppercase tracking-wider text-gray-500">
+              <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-500">
                 Confirm New Password
               </Label>
               <div className="relative">
@@ -427,7 +427,7 @@ export default function AdminSettingsPage() {
                   onChange={(e) =>
                     setPasswordForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
                   }
-                  className="pl-10 rounded-none font-mono"
+                  className="pl-10 rounded-lg"
                 />
               </div>
             </div>
@@ -435,12 +435,12 @@ export default function AdminSettingsPage() {
               <Button
                 variant="outline"
                 onClick={resetPasswordDialog}
-                className="flex-1 rounded-none font-mono uppercase tracking-wider"
+                className="flex-1 rounded-lg"
               >
                 Cancel
               </Button>
               <Button
-                className="flex-1 rounded-none font-mono uppercase tracking-wider"
+                className="flex-1 rounded-lg"
                 style={{ backgroundColor: brandColor }}
                 onClick={handleChangePassword}
                 disabled={isChangingPassword}
@@ -461,37 +461,37 @@ export default function AdminSettingsPage() {
 
       {/* Logo Upload Dialog */}
       <Dialog open={logoDialogOpen} onOpenChange={setLogoDialogOpen}>
-        <DialogContent className="sm:max-w-md p-0 gap-0 rounded-none border-0 overflow-hidden">
-          <div className="px-6 py-4" style={{ backgroundColor: brandColor }}>
+        <DialogContent className="sm:max-w-md p-0 gap-0 rounded-lg border-0 overflow-hidden">
+          <div className="px-6 py-4 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-3 text-white font-mono uppercase tracking-wider">
+              <DialogTitle className="flex items-center gap-3 text-white font-semibold">
                 <ImageIcon className="h-5 w-5" />
                 Portal Logo
               </DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6 space-y-6">
-            <p className="text-sm text-gray-500 font-mono">
+            <p className="text-sm text-gray-500">
               Upload a custom logo for the sidebar. This will be visible to all users (admins, agents, and realtors).
             </p>
 
             {/* Current Logo Preview */}
-            <div className="flex flex-col items-center gap-4 p-6 border-2 border-dashed border-gray-200 bg-gray-50">
-              <Label className="font-mono text-xs uppercase tracking-wider text-gray-500">
+            <div className="flex flex-col items-center gap-4 p-6 border-2 border-dashed border-gray-200 bg-gray-50 rounded-lg">
+              <Label className="text-sm font-medium text-gray-500">
                 Current Logo
               </Label>
               {logo ? (
                 <img
                   src={logo}
                   alt="Current Logo"
-                  className="w-20 h-20 object-contain"
+                  className="w-20 h-20 object-contain rounded-lg"
                 />
               ) : (
-                <div className="w-20 h-20 bg-[#0077B6] flex items-center justify-center text-white text-2xl font-bold">
+                <div className="w-20 h-20 bg-[#0077B6] rounded-lg flex items-center justify-center text-white text-2xl font-bold">
                   CP
                 </div>
               )}
-              <p className="text-xs font-mono text-gray-500">
+              <p className="text-xs text-gray-500">
                 {logo ? 'Custom logo uploaded' : 'Default logo'}
               </p>
             </div>
@@ -506,10 +506,10 @@ export default function AdminSettingsPage() {
             />
 
             {/* Upload guidelines */}
-            <div className="text-xs text-gray-500 font-mono space-y-1">
-              <p>• Recommended size: 40x40 pixels</p>
-              <p>• Max file size: 500KB</p>
-              <p>• Supported formats: PNG, JPG, SVG</p>
+            <div className="text-xs text-gray-500 space-y-1">
+              <p>Recommended size: 40x40 pixels</p>
+              <p>Max file size: 500KB</p>
+              <p>Supported formats: PNG, JPG, SVG</p>
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -517,7 +517,7 @@ export default function AdminSettingsPage() {
                 <Button
                   variant="outline"
                   onClick={handleRemoveLogo}
-                  className="rounded-none font-mono uppercase tracking-wider text-red-600 border-red-600 hover:bg-red-50"
+                  className="rounded-lg text-red-600 border-red-600 hover:bg-red-50"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Remove
@@ -526,12 +526,12 @@ export default function AdminSettingsPage() {
               <Button
                 variant="outline"
                 onClick={() => setLogoDialogOpen(false)}
-                className="flex-1 rounded-none font-mono uppercase tracking-wider"
+                className="flex-1 rounded-lg"
               >
                 Cancel
               </Button>
               <Button
-                className="flex-1 rounded-none font-mono uppercase tracking-wider"
+                className="flex-1 rounded-lg"
                 style={{ backgroundColor: brandColor }}
                 onClick={() => fileInputRef.current?.click()}
               >

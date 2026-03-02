@@ -26,10 +26,10 @@ export function StatsCard({
   trend,
 }: StatsCardProps) {
   return (
-    <div className="border border-gray-200 bg-white p-6">
+    <div className="border border-gray-200 bg-white p-6 rounded-lg">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{title}</p>
+          <p className="text-sm font-medium text-gray-500">{title}</p>
           <p className="text-3xl font-bold text-gray-900">{value}</p>
           {subtitle && (
             <p className="text-sm text-gray-500">{subtitle}</p>
@@ -46,7 +46,7 @@ export function StatsCard({
             </p>
           )}
         </div>
-        <div className={cn('p-3', iconBgColor)}>
+        <div className={cn('p-3 rounded-lg', iconBgColor)}>
           <Icon className={cn('h-6 w-6', iconColor)} />
         </div>
       </div>

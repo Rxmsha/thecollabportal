@@ -56,35 +56,35 @@ export default function AdminToolsPage() {
               variant="ghost"
               size="icon"
               onClick={() => setActiveTool(null)}
-              className="hover:bg-gray-100"
+              className="hover:bg-gray-100 rounded-lg"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="dot-matrix text-xl text-gray-900">{currentTool.name.toUpperCase()}</h1>
-              <p className="text-sm text-gray-500 font-mono">{currentTool.subtitle}</p>
+              <h1 className="dot-matrix text-2xl text-gray-900">{currentTool.name}</h1>
+              <p className="text-sm text-gray-500">{currentTool.subtitle}</p>
             </div>
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={() => window.open(currentTool.url, '_blank')}
-            className="font-mono uppercase tracking-wider"
+            className="rounded-lg"
           >
             <ExternalLink className="h-4 w-4 mr-2" />
             Open in New Tab
           </Button>
         </div>
         <div className="flex-1 overflow-hidden border-0">
-          <Card className="h-full border-0 overflow-hidden">
-            <div className={`${currentTool.bgColor} px-6 py-3 flex items-center gap-3`}>
+          <Card className="h-full border-0 overflow-hidden rounded-lg">
+            <div className={`${currentTool.bgColor} px-6 py-3 flex items-center gap-3 rounded-t-lg`}>
               <Icon className="h-5 w-5 text-white" />
-              <span className="text-white font-mono font-medium">{currentTool.name}</span>
-              <span className="text-white/70 font-mono text-sm">- {currentTool.subtitle}</span>
+              <span className="text-white font-semibold">{currentTool.name}</span>
+              <span className="text-white/70 text-sm">- {currentTool.subtitle}</span>
             </div>
             <iframe
               src={currentTool.url}
-              className="w-full h-[calc(100%-48px)] bg-white"
+              className="w-full h-[calc(100%-48px)] bg-white rounded-b-lg"
               title={currentTool.name}
               allow="clipboard-write"
             />
@@ -100,15 +100,15 @@ export default function AdminToolsPage() {
   return (
     <div className="space-y-8">
       <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-xl text-gray-900">AI TOOLS</h1>
-        <p className="text-sm text-gray-500 mt-1 font-mono">
+        <h1 className="dot-matrix text-2xl text-gray-900">AI Tools</h1>
+        <p className="text-sm text-gray-500 mt-1">
           Preview and test all AI-powered tools available to agents and realtors.
         </p>
       </div>
 
       {/* Agent Tools */}
       <div>
-        <h2 className="font-mono text-sm tracking-wider uppercase text-gray-900 mb-4 flex items-center gap-2">
+        <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Bot className="h-4 w-4 text-[#0077B6]" />
           Agent Tools
         </h2>
@@ -118,19 +118,19 @@ export default function AdminToolsPage() {
             return (
               <Card
                 key={tool.id}
-                className="border-0 overflow-hidden cursor-pointer transition-all hover:shadow-lg group"
+                className="border-0 overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg group"
                 onClick={() => setActiveTool(tool.id)}
               >
-                <div className={`${tool.bgColor} px-6 py-3 flex items-center justify-between`}>
+                <div className={`${tool.bgColor} px-6 py-3 flex items-center justify-between rounded-t-lg`}>
                   <div className="flex items-center gap-3">
                     <Icon className="h-5 w-5 text-white" />
-                    <span className="text-white font-mono font-semibold uppercase tracking-wider">{tool.name}</span>
+                    <span className="text-white font-semibold">{tool.name}</span>
                   </div>
                   <ExternalLink className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
                 </div>
-                <CardContent className="p-6 bg-white">
-                  <p className="text-sm font-mono font-medium text-gray-700">{tool.subtitle}</p>
-                  <p className="text-gray-500 font-mono text-sm mt-2">{tool.description}</p>
+                <CardContent className="p-6 bg-white rounded-b-lg">
+                  <p className="text-sm font-medium text-gray-700">{tool.subtitle}</p>
+                  <p className="text-gray-500 text-sm mt-2">{tool.description}</p>
                 </CardContent>
               </Card>
             )
@@ -140,7 +140,7 @@ export default function AdminToolsPage() {
 
       {/* Realtor Tools */}
       <div>
-        <h2 className="font-mono text-sm tracking-wider uppercase text-gray-900 mb-4 flex items-center gap-2">
+        <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Bot className="h-4 w-4 text-emerald-600" />
           Realtor Tools
         </h2>
@@ -150,19 +150,19 @@ export default function AdminToolsPage() {
             return (
               <Card
                 key={tool.id}
-                className="border-0 overflow-hidden cursor-pointer transition-all hover:shadow-lg group"
+                className="border-0 overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg group"
                 onClick={() => setActiveTool(tool.id)}
               >
-                <div className={`${tool.bgColor} px-6 py-3 flex items-center justify-between`}>
+                <div className={`${tool.bgColor} px-6 py-3 flex items-center justify-between rounded-t-lg`}>
                   <div className="flex items-center gap-3">
                     <Icon className="h-5 w-5 text-white" />
-                    <span className="text-white font-mono font-semibold uppercase tracking-wider">{tool.name}</span>
+                    <span className="text-white font-semibold">{tool.name}</span>
                   </div>
                   <ExternalLink className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
                 </div>
-                <CardContent className="p-6 bg-white">
-                  <p className="text-sm font-mono font-medium text-gray-700">{tool.subtitle}</p>
-                  <p className="text-gray-500 font-mono text-sm mt-2">{tool.description}</p>
+                <CardContent className="p-6 bg-white rounded-b-lg">
+                  <p className="text-sm font-medium text-gray-700">{tool.subtitle}</p>
+                  <p className="text-gray-500 text-sm mt-2">{tool.description}</p>
                 </CardContent>
               </Card>
             )

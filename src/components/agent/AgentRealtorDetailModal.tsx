@@ -227,25 +227,25 @@ export default function AgentRealtorDetailModal({
     switch (status) {
       case 'active':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200">
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
             Active
           </span>
         )
       case 'invited':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-200">
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-700 border border-amber-200">
             Invited
           </span>
         )
       case 'inactive':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 border border-gray-200">
             Inactive
           </span>
         )
       default:
         return (
-          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 border border-gray-200">
             {status}
           </span>
         )
@@ -254,10 +254,10 @@ export default function AgentRealtorDetailModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0 rounded-none border-0" closeClassName="text-white">
-        <div className="px-6 py-4" style={{ backgroundColor: brandColor }}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0 rounded-lg border-0" closeClassName="text-white">
+        <div className="px-6 py-4 rounded-t-lg" style={{ backgroundColor: brandColor }}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-3 text-white font-mono uppercase tracking-wider">
+            <DialogTitle className="flex items-center gap-3 text-white font-semibold">
               <User className="h-5 w-5" />
               Realtor Details
             </DialogTitle>
@@ -269,7 +269,7 @@ export default function AgentRealtorDetailModal({
             <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
           </div>
         ) : error ? (
-          <div className="bg-red-50 text-red-600 p-4 font-mono text-base">
+          <div className="bg-red-50 text-red-600 p-4 text-base rounded-b-lg">
             {error}
           </div>
         ) : details ? (
@@ -278,14 +278,14 @@ export default function AgentRealtorDetailModal({
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div
-                  className="h-12 w-12 flex items-center justify-center text-white font-mono font-bold text-sm"
+                  className="h-12 w-12 flex items-center justify-center text-white font-bold text-sm rounded-lg"
                   style={{ backgroundColor: brandColor }}
                 >
                   {details.firstName[0]}
                   {details.lastName[0]}
                 </div>
                 <div>
-                  <p className="font-mono font-semibold text-gray-900 text-base">
+                  <p className="font-semibold text-gray-900 text-base">
                     {details.firstName} {details.lastName}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
@@ -295,36 +295,36 @@ export default function AgentRealtorDetailModal({
               </div>
 
               <div className="border-t border-gray-200 pt-4 space-y-3">
-                <div className="flex items-center gap-2 text-base font-mono">
+                <div className="flex items-center gap-2 text-base">
                   <Mail className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-900">{details.email}</span>
                 </div>
                 {details.phone && (
-                  <div className="flex items-center gap-2 text-base font-mono">
+                  <div className="flex items-center gap-2 text-base">
                     <Phone className="h-4 w-4 text-gray-400" />
                     <span className="text-gray-900">{details.phone}</span>
                   </div>
                 )}
                 {details.brokerage && (
-                  <div className="flex items-center gap-2 text-base font-mono">
+                  <div className="flex items-center gap-2 text-base">
                     <Building className="h-4 w-4 text-gray-400" />
                     <span className="text-gray-900">{details.brokerage}</span>
                   </div>
                 )}
                 {details.areaServiced && (
-                  <div className="flex items-start gap-2 text-base font-mono">
+                  <div className="flex items-start gap-2 text-base">
                     <User className="h-4 w-4 text-gray-400 mt-0.5" />
                     <span className="text-gray-900">Area Serviced: {details.areaServiced}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2 text-base font-mono">
+                <div className="flex items-center gap-2 text-base">
                   <Calendar className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-900">
                     Invited: {formatDate(details.inviteSentAt)}
                   </span>
                 </div>
                 {details.activatedAt && (
-                  <div className="flex items-center gap-2 text-base font-mono">
+                  <div className="flex items-center gap-2 text-base">
                     <Calendar className="h-4 w-4 text-gray-400" />
                     <span className="text-gray-900">
                       Last Active: {formatDate(details.activatedAt)}
@@ -336,7 +336,7 @@ export default function AgentRealtorDetailModal({
 
             {/* Actions */}
             <div className="space-y-3 border-t border-gray-200 pt-4">
-              <Label className="text-sm text-gray-900 uppercase tracking-wider font-mono">
+              <Label className="text-sm text-gray-900 font-medium">
                 Actions
               </Label>
 
@@ -346,7 +346,7 @@ export default function AgentRealtorDetailModal({
                     variant="outline"
                     onClick={handleResetPassword}
                     disabled={isResettingPassword}
-                    className="rounded-none font-mono uppercase tracking-wider text-sm"
+                    className="rounded-lg text-sm"
                   >
                     {isResettingPassword ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -362,7 +362,7 @@ export default function AgentRealtorDetailModal({
                     variant="outline"
                     onClick={handleResendInvite}
                     disabled={isResendingInvite}
-                    className="rounded-none font-mono uppercase tracking-wider text-sm"
+                    className="rounded-lg text-sm"
                   >
                     {isResendingInvite ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -376,7 +376,7 @@ export default function AgentRealtorDetailModal({
                 {(details.status === 'active' || details.status === 'invited') ? (
                   <Button
                     variant="outline"
-                    className="rounded-none font-mono uppercase tracking-wider text-sm text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                    className="rounded-lg text-sm text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                     onClick={handleDeactivate}
                     disabled={isChangingStatus}
                   >
@@ -390,7 +390,7 @@ export default function AgentRealtorDetailModal({
                 ) : details.status === 'inactive' ? (
                   <Button
                     variant="outline"
-                    className="rounded-none font-mono uppercase tracking-wider text-sm text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200"
+                    className="rounded-lg text-sm text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200"
                     onClick={handleActivate}
                     disabled={isChangingStatus}
                   >
@@ -404,7 +404,7 @@ export default function AgentRealtorDetailModal({
                 ) : null}
               </div>
 
-              <p className="text-sm text-gray-900 font-mono">
+              <p className="text-sm text-gray-700">
                 {details.status === 'active'
                   ? 'Resetting password will generate a new temporary password and send an email to the realtor.'
                   : details.status === 'inactive'
@@ -416,12 +416,12 @@ export default function AgentRealtorDetailModal({
             {/* Unlink Section */}
             <div className="space-y-3 border-t border-gray-200 pt-4">
               {showUnlinkConfirm ? (
-                <div className="bg-red-50 border border-red-200 p-4 space-y-3">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
                   <div className="flex items-start gap-3">
                     <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
                     <div>
-                      <p className="font-mono font-semibold text-red-800 text-base">Are you sure you want to unlink this realtor?</p>
-                      <p className="text-sm text-red-600 mt-1 font-mono">
+                      <p className="font-semibold text-red-800 text-base">Are you sure you want to unlink this realtor?</p>
+                      <p className="text-sm text-red-600 mt-1">
                         {details.firstName} {details.lastName} will be removed from your network.
                       </p>
                     </div>
@@ -432,7 +432,7 @@ export default function AgentRealtorDetailModal({
                       size="sm"
                       onClick={() => setShowUnlinkConfirm(false)}
                       disabled={isUnlinking}
-                      className="rounded-none font-mono uppercase tracking-wider text-sm"
+                      className="rounded-lg text-sm"
                     >
                       Cancel
                     </Button>
@@ -441,7 +441,7 @@ export default function AgentRealtorDetailModal({
                       size="sm"
                       onClick={handleUnlink}
                       disabled={isUnlinking}
-                      className="rounded-none font-mono uppercase tracking-wider text-sm"
+                      className="rounded-lg text-sm"
                     >
                       {isUnlinking ? (
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -456,13 +456,13 @@ export default function AgentRealtorDetailModal({
                 <>
                   <Button
                     variant="outline"
-                    className="rounded-none font-mono uppercase tracking-wider text-sm text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-200"
+                    className="rounded-lg text-sm text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-200"
                     onClick={() => setShowUnlinkConfirm(true)}
                   >
                     <Unlink className="h-4 w-4 mr-2" />
                     Unlink from My Network
                   </Button>
-                  <p className="text-sm text-gray-900 font-mono">
+                  <p className="text-sm text-gray-700">
                     Unlinking removes this realtor from your network.
                   </p>
                 </>

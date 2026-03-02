@@ -63,8 +63,8 @@ export default function RealtorTemplatesPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-2xl text-gray-900">TEMPLATES</h1>
-        <p className="text-base text-gray-500 mt-1 font-mono">
+        <h1 className="dot-matrix text-2xl text-gray-900">Templates</h1>
+        <p className="text-base text-gray-500 mt-1">
           Browse marketing templates provided by your mortgage partner
         </p>
       </div>
@@ -76,18 +76,18 @@ export default function RealtorTemplatesPage() {
           placeholder="Search templates..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 rounded-none font-mono"
+          className="pl-10 rounded-lg"
         />
       </div>
 
       {/* Category Tabs */}
       <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-        <TabsList className="bg-gray-100 rounded-none p-1">
+        <TabsList className="bg-gray-100 rounded-lg p-1">
           {categories.map((category) => (
             <TabsTrigger
               key={category.value}
               value={category.value}
-              className="rounded-none font-mono text-sm uppercase tracking-wider data-[state=active]:bg-white"
+              className="rounded-lg text-sm data-[state=active]:bg-white"
             >
               {category.label}
             </TabsTrigger>
@@ -113,43 +113,43 @@ export default function RealtorTemplatesPage() {
           ) : filteredTemplates.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {filteredTemplates.map((template) => (
-                <Card key={template.id} className="border-0 overflow-hidden hover:shadow-md transition-shadow rounded-none">
+                <Card key={template.id} className="border-0 overflow-hidden hover:shadow-md transition-shadow rounded-lg">
                   {/* Image Preview */}
-                  <div className="aspect-[4/3] bg-gray-100 relative flex items-center justify-center">
+                  <div className="aspect-[4/3] bg-gray-100 relative flex items-center justify-center rounded-t-lg">
                     {template.previewImageUrl ? (
                       <img
                         src={template.previewImageUrl}
                         alt={template.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover rounded-t-lg"
                       />
                     ) : (
                       <FileText className="h-16 w-16 text-gray-300" />
                     )}
                     {/* Category Badge - Top Right */}
                     <div className="absolute top-3 right-3">
-                      <span className="inline-flex items-center px-2.5 py-1 text-xs font-mono font-medium uppercase tracking-wider bg-white/90 text-gray-700 border border-gray-200">
+                      <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full bg-white/90 text-gray-700 border border-gray-200">
                         {template.category}
                       </span>
                     </div>
                   </div>
                   {/* Content - Dark footer */}
-                  <div className="p-4 flex flex-col h-[120px]" style={{ backgroundColor: brandColor }}>
-                    <h3 className="font-mono font-semibold text-white text-base mb-1 truncate">
+                  <div className="p-4 flex flex-col h-[120px] rounded-b-lg" style={{ backgroundColor: brandColor }}>
+                    <h3 className="font-semibold text-white text-base mb-1 truncate">
                       {template.title}
                     </h3>
-                    <p className="text-sm text-gray-300 font-mono line-clamp-1 flex-grow">
+                    <p className="text-sm text-gray-300 line-clamp-1 flex-grow">
                       {template.shortDescription || '\u00A0'}
                     </p>
                     {/* Footer */}
                     <div className="flex items-center justify-between mt-auto">
-                      <span className="text-xs font-mono font-medium text-gray-300 uppercase tracking-wider">
+                      <span className="text-xs font-medium text-gray-300">
                         {template.format.replace('_', ' ')}
                       </span>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => handleUseTemplate(template)}
-                        className="rounded-none bg-transparent border-gray-400 text-white hover:bg-white/10 hover:text-white font-mono uppercase tracking-wider text-xs"
+                        className="rounded-lg bg-transparent border-gray-400 text-white hover:bg-white/10 hover:text-white text-xs"
                       >
                         <ExternalLink className="h-4 w-4 mr-1" />
                         Use
@@ -160,20 +160,20 @@ export default function RealtorTemplatesPage() {
               ))}
             </div>
           ) : (
-            <Card className="border-0 overflow-hidden">
+            <Card className="border-0 overflow-hidden rounded-lg">
               <div
-                className="px-6 py-4 flex items-center gap-3"
+                className="px-6 py-4 flex items-center gap-3 rounded-t-lg"
                 style={{ backgroundColor: brandColor }}
               >
                 <FileText className="h-5 w-5 text-white" />
-                <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                <span className="text-white font-semibold text-base">
                   Templates
                 </span>
               </div>
-              <CardContent className="py-12 text-center bg-white">
+              <CardContent className="py-12 text-center bg-white rounded-b-lg">
                 <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-base text-gray-700 font-mono">No templates found</p>
-                <p className="text-base text-gray-500 mt-1 font-mono">
+                <p className="text-base text-gray-700">No templates found</p>
+                <p className="text-base text-gray-500 mt-1">
                   Try adjusting your search or category filter
                 </p>
               </CardContent>

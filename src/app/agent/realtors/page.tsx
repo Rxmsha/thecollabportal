@@ -77,25 +77,25 @@ export default function AgentRealtorsPage() {
     switch (status) {
       case 'active':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200">
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
             Active
           </span>
         )
       case 'invited':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-200">
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-700 border border-amber-200">
             Invited
           </span>
         )
       case 'inactive':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 border border-gray-200">
             Inactive
           </span>
         )
       default:
         return (
-          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">
+          <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 border border-gray-200 capitalize">
             {status}
           </span>
         )
@@ -182,14 +182,14 @@ export default function AgentRealtorsPage() {
         {/* Page Header */}
         <div className="flex items-center justify-between border-b border-gray-200 pb-4">
           <div>
-            <h1 className="dot-matrix text-2xl text-gray-900">MY REALTORS</h1>
-            <p className="text-base text-gray-700 mt-1 font-mono">
+            <h1 className="dot-matrix text-2xl text-gray-900">My Realtors</h1>
+            <p className="text-base text-gray-700 mt-1">
               Manage the realtors in your network
             </p>
           </div>
           <Link href="/agent/invite">
             <Button
-              className="rounded-none font-mono uppercase tracking-wider text-sm h-10"
+              className="rounded-lg text-sm h-10"
               style={{ backgroundColor: brandColor }}
             >
               <UserPlus className="h-4 w-4 mr-2" />
@@ -206,18 +206,18 @@ export default function AgentRealtorsPage() {
               placeholder="Search realtors..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 rounded-none font-mono"
+              className="pl-10 rounded-lg"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-40 rounded-none font-mono">
+            <SelectTrigger className="w-full sm:w-40 rounded-lg">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all" className="font-mono">All Status</SelectItem>
-              <SelectItem value="active" className="font-mono">Active</SelectItem>
-              <SelectItem value="invited" className="font-mono">Invited</SelectItem>
-              <SelectItem value="inactive" className="font-mono">Inactive</SelectItem>
+            <SelectContent className="rounded-lg">
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="invited">Invited</SelectItem>
+              <SelectItem value="inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -226,14 +226,14 @@ export default function AgentRealtorsPage() {
         {isLoading ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <Card key={i} className="border-0 overflow-hidden">
-                <div className="px-4 py-3 bg-gray-200 animate-pulse" />
-                <CardContent className="p-6 bg-white">
+              <Card key={i} className="border-0 overflow-hidden rounded-lg">
+                <div className="px-4 py-3 bg-gray-200 animate-pulse rounded-t-lg" />
+                <CardContent className="p-6 bg-white rounded-b-lg">
                   <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 bg-gray-100 animate-pulse" />
+                    <div className="h-12 w-12 bg-gray-100 rounded-lg animate-pulse" />
                     <div className="space-y-2 flex-1">
-                      <div className="h-4 bg-gray-100 w-2/3 animate-pulse" />
-                      <div className="h-3 bg-gray-100 w-1/2 animate-pulse" />
+                      <div className="h-4 bg-gray-100 w-2/3 rounded animate-pulse" />
+                      <div className="h-3 bg-gray-100 w-1/2 rounded animate-pulse" />
                     </div>
                   </div>
                 </CardContent>
@@ -243,20 +243,20 @@ export default function AgentRealtorsPage() {
         ) : filteredRealtors.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredRealtors.map((realtor) => (
-              <Card key={realtor.id} className="border-0 overflow-hidden hover:shadow-md transition-shadow h-[280px]">
-                <CardContent className="p-0 bg-white h-full flex flex-col">
+              <Card key={realtor.id} className="border-0 overflow-hidden rounded-lg hover:shadow-md transition-shadow h-[280px]">
+                <CardContent className="p-0 bg-white h-full flex flex-col rounded-lg">
                   <div className="p-4 border-b border-gray-100">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <div
-                          className="h-12 w-12 flex items-center justify-center text-white font-mono font-bold text-sm"
+                          className="h-12 w-12 rounded-lg flex items-center justify-center text-white font-semibold text-sm"
                           style={{ backgroundColor: brandColor }}
                         >
                           {realtor.firstName[0]}
                           {realtor.lastName[0]}
                         </div>
                         <div>
-                          <h3 className="font-mono font-semibold text-gray-900 text-base">
+                          <h3 className="font-semibold text-gray-900 text-base">
                             {realtor.firstName} {realtor.lastName}
                           </h3>
                           {getStatusBadge(realtor.status)}
@@ -266,7 +266,7 @@ export default function AgentRealtorsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleOpenDetails(realtor.id)}
-                        className="rounded-none font-mono text-sm uppercase tracking-wider"
+                        className="rounded-lg text-sm"
                       >
                         More
                       </Button>
@@ -274,18 +274,18 @@ export default function AgentRealtorsPage() {
                   </div>
 
                   <div className="p-4 space-y-2 flex-1">
-                    <div className="flex items-center gap-2 text-gray-700 font-mono text-base">
+                    <div className="flex items-center gap-2 text-gray-700 text-base">
                       <Mail className="h-4 w-4 text-gray-400" />
                       {realtor.email}
                     </div>
                     {realtor.brokerage && (
-                      <div className="flex items-center gap-2 text-gray-700 font-mono text-base">
+                      <div className="flex items-center gap-2 text-gray-700 text-base">
                         <Building className="h-4 w-4 text-gray-400" />
                         {realtor.brokerage}
                       </div>
                     )}
                     {realtor.phone && (
-                      <div className="flex items-center gap-2 text-gray-700 font-mono text-base">
+                      <div className="flex items-center gap-2 text-gray-700 text-base">
                         <Phone className="h-4 w-4 text-gray-400" />
                         {realtor.phone}
                       </div>
@@ -293,10 +293,10 @@ export default function AgentRealtorsPage() {
                   </div>
 
                   <div
-                    className="px-4 h-12 flex items-center justify-between"
+                    className="px-4 h-12 flex items-center justify-between rounded-b-lg"
                     style={{ backgroundColor: brandColor }}
                   >
-                    <span className="text-base text-white/80 font-mono">
+                    <span className="text-base text-white/80">
                       Invited {formatDate(realtor.inviteSentAt)}
                     </span>
                     {realtor.status === 'invited' && (
@@ -304,7 +304,7 @@ export default function AgentRealtorsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleResendInvite(realtor.id)}
-                        className="rounded-none font-mono text-sm uppercase tracking-wider h-8 text-white hover:bg-white/10"
+                        className="rounded-lg text-sm h-8 text-white hover:bg-white/10"
                       >
                         Resend Invite
                       </Button>
@@ -315,19 +315,19 @@ export default function AgentRealtorsPage() {
             ))}
           </div>
         ) : (
-          <Card className="border-0 overflow-hidden">
-            <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+          <Card className="border-0 overflow-hidden rounded-lg">
+            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
               <Users className="h-5 w-5 text-white" />
-              <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+              <span className="text-white font-semibold text-base">
                 Realtors
               </span>
             </div>
-            <CardContent className="py-12 text-center bg-white">
+            <CardContent className="py-12 text-center bg-white rounded-b-lg">
               <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-base text-gray-700 font-mono mb-4">No realtors found</p>
+              <p className="text-base text-gray-700 mb-4">No realtors found</p>
               <Link href="/agent/invite">
                 <Button
-                  className="rounded-none font-mono uppercase tracking-wider text-sm"
+                  className="rounded-lg text-sm"
                   style={{ backgroundColor: brandColor }}
                 >
                   <UserPlus className="h-4 w-4 mr-2" />

@@ -129,31 +129,31 @@ export default function AdminErrorsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4 border-b border-gray-200 pb-4">
         <div>
-          <h1 className="dot-matrix text-xl text-gray-900">ERROR LOGS</h1>
-          <p className="text-sm text-gray-500 mt-1 font-mono">
+          <h1 className="dot-matrix text-2xl text-gray-900">Error Logs</h1>
+          <p className="text-sm text-gray-500 mt-1">
             Monitor and resolve system errors
           </p>
         </div>
         <div className="flex gap-3">
           <Select value={severityFilter} onValueChange={setSeverityFilter}>
-            <SelectTrigger className="w-40 font-mono text-xs uppercase tracking-wider rounded-none border-gray-300">
+            <SelectTrigger className="w-40 text-sm rounded-lg border-gray-300 bg-white">
               <SelectValue placeholder="Severity" />
             </SelectTrigger>
-            <SelectContent className="rounded-none">
-              <SelectItem value="all" className="font-mono text-xs uppercase">All Severities</SelectItem>
-              <SelectItem value="critical" className="font-mono text-xs uppercase">Critical</SelectItem>
-              <SelectItem value="warning" className="font-mono text-xs uppercase">Warning</SelectItem>
-              <SelectItem value="info" className="font-mono text-xs uppercase">Info</SelectItem>
+            <SelectContent className="rounded-lg">
+              <SelectItem value="all" className="text-sm">All Severities</SelectItem>
+              <SelectItem value="critical" className="text-sm">Critical</SelectItem>
+              <SelectItem value="warning" className="text-sm">Warning</SelectItem>
+              <SelectItem value="info" className="text-sm">Info</SelectItem>
             </SelectContent>
           </Select>
           <Select value={resolvedFilter} onValueChange={setResolvedFilter}>
-            <SelectTrigger className="w-40 font-mono text-xs uppercase tracking-wider rounded-none border-gray-300">
+            <SelectTrigger className="w-40 text-sm rounded-lg border-gray-300 bg-white">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
-            <SelectContent className="rounded-none">
-              <SelectItem value="all" className="font-mono text-xs uppercase">All Status</SelectItem>
-              <SelectItem value="unresolved" className="font-mono text-xs uppercase">Unresolved</SelectItem>
-              <SelectItem value="resolved" className="font-mono text-xs uppercase">Resolved</SelectItem>
+            <SelectContent className="rounded-lg">
+              <SelectItem value="all" className="text-sm">All Status</SelectItem>
+              <SelectItem value="unresolved" className="text-sm">Unresolved</SelectItem>
+              <SelectItem value="resolved" className="text-sm">Resolved</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -161,49 +161,49 @@ export default function AdminErrorsPage() {
 
       {/* Stats summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="border-0 overflow-hidden">
-          <div className="bg-red-600 px-4 py-2 flex items-center gap-2">
+        <Card className="border-0 overflow-hidden rounded-lg">
+          <div className="bg-red-600 px-4 py-2 flex items-center gap-2 rounded-t-lg">
             <AlertCircle className="h-4 w-4 text-white" />
-            <span className="text-white font-mono text-xs uppercase tracking-wider">Critical</span>
+            <span className="text-white text-sm font-medium">Critical</span>
           </div>
-          <CardContent className="p-4 bg-white">
-            <div className="text-3xl font-bold text-red-600 font-mono">{criticalCount}</div>
+          <CardContent className="p-4 bg-white rounded-b-lg">
+            <div className="text-3xl font-bold text-red-600">{criticalCount}</div>
           </CardContent>
         </Card>
-        <Card className="border-0 overflow-hidden">
-          <div className="bg-amber-600 px-4 py-2 flex items-center gap-2">
+        <Card className="border-0 overflow-hidden rounded-lg">
+          <div className="bg-amber-600 px-4 py-2 flex items-center gap-2 rounded-t-lg">
             <AlertTriangle className="h-4 w-4 text-white" />
-            <span className="text-white font-mono text-xs uppercase tracking-wider">Warning</span>
+            <span className="text-white text-sm font-medium">Warning</span>
           </div>
-          <CardContent className="p-4 bg-white">
-            <div className="text-3xl font-bold text-amber-600 font-mono">{warningCount}</div>
+          <CardContent className="p-4 bg-white rounded-b-lg">
+            <div className="text-3xl font-bold text-amber-600">{warningCount}</div>
           </CardContent>
         </Card>
-        <Card className="border-0 overflow-hidden">
-          <div className="bg-blue-600 px-4 py-2 flex items-center gap-2">
+        <Card className="border-0 overflow-hidden rounded-lg">
+          <div className="bg-blue-600 px-4 py-2 flex items-center gap-2 rounded-t-lg">
             <Info className="h-4 w-4 text-white" />
-            <span className="text-white font-mono text-xs uppercase tracking-wider">Info</span>
+            <span className="text-white text-sm font-medium">Info</span>
           </div>
-          <CardContent className="p-4 bg-white">
-            <div className="text-3xl font-bold text-blue-600 font-mono">{infoCount}</div>
+          <CardContent className="p-4 bg-white rounded-b-lg">
+            <div className="text-3xl font-bold text-blue-600">{infoCount}</div>
           </CardContent>
         </Card>
-        <Card className="border-0 overflow-hidden">
-          <div className="bg-emerald-600 px-4 py-2 flex items-center gap-2">
+        <Card className="border-0 overflow-hidden rounded-lg">
+          <div className="bg-emerald-600 px-4 py-2 flex items-center gap-2 rounded-t-lg">
             <CheckCircle className="h-4 w-4 text-white" />
-            <span className="text-white font-mono text-xs uppercase tracking-wider">Resolved</span>
+            <span className="text-white text-sm font-medium">Resolved</span>
           </div>
-          <CardContent className="p-4 bg-white">
-            <div className="text-3xl font-bold text-emerald-600 font-mono">{resolvedCount}</div>
+          <CardContent className="p-4 bg-white rounded-b-lg">
+            <div className="text-3xl font-bold text-emerald-600">{resolvedCount}</div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-0 overflow-hidden">
-        <div className="px-6 py-3 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+      <Card className="border-0 overflow-hidden rounded-lg">
+        <div className="px-6 py-3 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
           <Bug className="h-5 w-5 text-white" />
-          <span className="text-white font-mono font-medium uppercase tracking-wider">Error Log</span>
-          <span className="text-white/60 font-mono text-sm ml-auto">
+          <span className="text-white font-semibold">Error Log</span>
+          <span className="text-white/60 text-sm ml-auto">
             {errors.length} {errors.length === 1 ? 'error' : 'errors'}
             {totalPages > 1 && ` • Page ${currentPage} of ${totalPages}`}
           </span>
@@ -213,11 +213,11 @@ export default function AdminErrorsPage() {
             <div className="p-6 space-y-4">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-start gap-4">
-                  <div className="h-10 w-10 bg-gray-100 animate-pulse" />
+                  <div className="h-10 w-10 bg-gray-100 rounded-lg animate-pulse" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-100 w-1/4 animate-pulse" />
-                    <div className="h-3 bg-gray-100 w-1/2 animate-pulse" />
-                    <div className="h-3 bg-gray-100 w-3/4 animate-pulse" />
+                    <div className="h-4 bg-gray-100 rounded w-1/4 animate-pulse" />
+                    <div className="h-3 bg-gray-100 rounded w-1/2 animate-pulse" />
+                    <div className="h-3 bg-gray-100 rounded w-3/4 animate-pulse" />
                   </div>
                 </div>
               ))}
@@ -238,31 +238,31 @@ export default function AdminErrorsPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-4">
-                        <div className={`h-10 w-10 ${severityConfig.bgColor} flex items-center justify-center flex-shrink-0`}>
+                        <div className={`h-10 w-10 rounded-lg ${severityConfig.bgColor} flex items-center justify-center flex-shrink-0`}>
                           <SeverityIcon className="h-5 w-5 text-white" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <span className={`inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider border ${severityConfig.color} border-current bg-white`}>
+                            <span className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border ${severityConfig.color} border-current bg-white`}>
                               {severityConfig.label}
                             </span>
-                            <span className={`inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider border ${sourceConfig.color} border-current bg-white`}>
+                            <span className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border ${sourceConfig.color} border-current bg-white capitalize`}>
                               {error.source}
                             </span>
                             {error.resolved && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-mono uppercase tracking-wider border text-emerald-600 border-emerald-600 bg-white">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full border text-emerald-600 border-emerald-600 bg-white">
                                 <CheckCircle className="h-3 w-3" />
                                 Resolved
                               </span>
                             )}
                           </div>
-                          <h3 className="font-mono font-medium text-gray-900">
+                          <h3 className="font-medium text-gray-900">
                             {error.scenarioName}
                           </h3>
-                          <p className="text-sm text-gray-500 font-mono mt-1">
+                          <p className="text-sm text-gray-500 mt-1">
                             {error.message}
                           </p>
-                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-400 font-mono">
+                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                             <span>{formatDateTime(error.createdAt)}</span>
                             {error.resolved && error.resolvedBy && (
                               <span>Resolved by {error.resolvedBy}</span>
@@ -275,7 +275,7 @@ export default function AdminErrorsPage() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleResolve(error.id)}
-                          className="rounded-none font-mono uppercase tracking-wider text-xs"
+                          className="rounded-lg text-xs"
                         >
                           <CheckCircle className="h-4 w-4 mr-1" />
                           Resolve
@@ -288,11 +288,11 @@ export default function AdminErrorsPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <div className="h-12 w-12 bg-emerald-600 flex items-center justify-center mx-auto mb-4">
+              <div className="h-12 w-12 bg-emerald-600 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-6 w-6 text-white" />
               </div>
-              <p className="text-gray-500 font-mono uppercase tracking-wider">No errors found</p>
-              <p className="text-sm text-gray-400 mt-1 font-mono">
+              <p className="text-gray-500 font-medium">No errors found</p>
+              <p className="text-sm text-gray-400 mt-1">
                 {resolvedFilter === 'unresolved'
                   ? 'All errors have been resolved!'
                   : 'No matching errors'}
@@ -303,8 +303,8 @@ export default function AdminErrorsPage() {
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
-            <div className="text-sm text-gray-500 font-mono">
+          <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200 rounded-b-lg">
+            <div className="text-sm text-gray-500">
               Showing {startIndex + 1}-{Math.min(endIndex, errors.length)} of {errors.length}
             </div>
             <div className="flex items-center gap-1">
@@ -313,7 +313,7 @@ export default function AdminErrorsPage() {
                 size="sm"
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
-                className="rounded-none font-mono"
+                className="rounded-lg"
               >
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
@@ -322,7 +322,7 @@ export default function AdminErrorsPage() {
                 size="sm"
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="rounded-none font-mono"
+                className="rounded-lg"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -340,13 +340,13 @@ export default function AdminErrorsPage() {
                     return (
                       <React.Fragment key={page}>
                         {showEllipsisBefore && (
-                          <span className="px-2 text-gray-400 font-mono">...</span>
+                          <span className="px-2 text-gray-400">...</span>
                         )}
                         <Button
                           variant={currentPage === page ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => setCurrentPage(page)}
-                          className="rounded-none font-mono min-w-[36px]"
+                          className="rounded-lg min-w-[36px]"
                           style={currentPage === page ? { backgroundColor: brandColor } : undefined}
                         >
                           {page}
@@ -361,7 +361,7 @@ export default function AdminErrorsPage() {
                 size="sm"
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="rounded-none font-mono"
+                className="rounded-lg"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -370,7 +370,7 @@ export default function AdminErrorsPage() {
                 size="sm"
                 onClick={() => setCurrentPage(totalPages)}
                 disabled={currentPage === totalPages}
-                className="rounded-none font-mono"
+                className="rounded-lg"
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>

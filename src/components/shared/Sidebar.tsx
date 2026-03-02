@@ -116,13 +116,13 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
   const getRoleTitle = (): string => {
     switch (user?.role) {
       case 'admin':
-        return 'ADMIN PORTAL'
+        return 'Admin Portal'
       case 'agent':
-        return 'AGENT PORTAL'
+        return 'Agent Portal'
       case 'realtor':
-        return 'REALTOR PORTAL'
+        return 'Realtor Portal'
       default:
-        return 'PORTAL'
+        return 'Portal'
     }
   }
 
@@ -137,12 +137,12 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
       <Link
         key={item.name}
         href={item.href}
-        className={`flex items-center gap-3 px-3 py-2 text-sm transition-colors relative group ${
+        className={`flex items-center gap-3 px-3 py-2 text-sm transition-colors relative group rounded-lg ${
           isCollapsed ? 'justify-center px-2' : ''
         } ${
           isActive
-            ? 'bg-white/10 text-white'
-            : 'text-white/70 hover:bg-white/5 hover:text-white'
+            ? 'bg-white/15 text-white'
+            : 'text-white/70 hover:bg-white/10 hover:text-white'
         }`}
         title={isCollapsed ? item.name : undefined}
       >
@@ -151,7 +151,7 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
 
         {/* Tooltip for collapsed state */}
         {isCollapsed && (
-          <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+          <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
             {item.name}
           </div>
         )}
@@ -173,16 +173,16 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
             <img
               src={logo}
               alt="Logo"
-              className="w-10 h-10 object-contain flex-shrink-0"
+              className="w-10 h-10 object-contain flex-shrink-0 rounded-lg"
             />
           ) : (
-            <div className="w-10 h-10 bg-white/20 flex items-center justify-center text-sm font-bold flex-shrink-0">
+            <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0">
               CP
             </div>
           )}
           {!isCollapsed && (
             <div>
-              <p className="dot-matrix text-sm">THE COLLAB</p>
+              <p className="font-semibold text-sm">The Collab</p>
               <p className="text-xs text-white/60">{getRoleTitle()}</p>
             </div>
           )}
@@ -239,7 +239,7 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
         {bottomItems.map(renderNavLink)}
         <button
           onClick={logout}
-          className={`flex items-center gap-3 px-3 py-2 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors w-full relative group ${
+          className={`flex items-center gap-3 px-3 py-2 text-sm text-white/70 hover:bg-white/10 hover:text-white transition-colors w-full relative group rounded-lg ${
             isCollapsed ? 'justify-center px-2' : ''
           }`}
           title={isCollapsed ? 'Sign Out' : undefined}
@@ -249,7 +249,7 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
 
           {/* Tooltip for collapsed state */}
           {isCollapsed && (
-            <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+            <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
               Sign Out
             </div>
           )}

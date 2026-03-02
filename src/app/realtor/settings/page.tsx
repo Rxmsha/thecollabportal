@@ -159,30 +159,30 @@ export default function RealtorSettingsPage() {
   return (
     <div className="space-y-6">
       <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-2xl text-gray-900">SETTINGS</h1>
-        <p className="text-base text-gray-900 mt-1 font-mono">
+        <h1 className="dot-matrix text-2xl text-gray-900">Settings</h1>
+        <p className="text-base text-gray-700 mt-1">
           Manage your account settings and preferences
         </p>
       </div>
 
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Profile Settings */}
-        <Card className="border-0 overflow-hidden">
-          <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+        <Card className="border-0 overflow-hidden rounded-lg">
+          <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <User className="h-5 w-5 text-white" />
-            <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">Profile</span>
+            <span className="text-white font-semibold text-base">Profile</span>
           </div>
-          <CardContent className="p-6 bg-white space-y-6">
-            <p className="text-base text-gray-900 font-mono">Update your personal information</p>
+          <CardContent className="p-6 bg-white space-y-6 rounded-b-lg">
+            <p className="text-base text-gray-700">Update your personal information</p>
 
             {saveError && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 text-red-700 text-sm font-mono">
+              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 {saveError}
               </div>
             )}
             {saveSuccess && (
-              <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-mono">
+              <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 text-sm">
                 <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
                 Profile saved successfully!
               </div>
@@ -190,7 +190,7 @@ export default function RealtorSettingsPage() {
 
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="firstName" className="font-mono text-sm uppercase tracking-wider text-gray-900">
+                <Label htmlFor="firstName" className="text-sm font-medium text-gray-500">
                   First Name
                 </Label>
                 <Input
@@ -199,11 +199,11 @@ export default function RealtorSettingsPage() {
                   onChange={(e) =>
                     setProfile((prev) => ({ ...prev, firstName: e.target.value }))
                   }
-                  className="rounded-none font-mono"
+                  className="rounded-lg"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName" className="font-mono text-sm uppercase tracking-wider text-gray-900">
+                <Label htmlFor="lastName" className="text-sm font-medium text-gray-500">
                   Last Name
                 </Label>
                 <Input
@@ -212,14 +212,14 @@ export default function RealtorSettingsPage() {
                   onChange={(e) =>
                     setProfile((prev) => ({ ...prev, lastName: e.target.value }))
                   }
-                  className="rounded-none font-mono"
+                  className="rounded-lg"
                 />
               </div>
             </div>
 
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="email" className="font-mono text-sm uppercase tracking-wider text-gray-900">
+                <Label htmlFor="email" className="text-sm font-medium text-gray-500">
                   Email
                 </Label>
                 <Input
@@ -227,12 +227,12 @@ export default function RealtorSettingsPage() {
                   type="email"
                   value={profile.email}
                   disabled
-                  className="rounded-none font-mono bg-gray-50 text-gray-500 cursor-not-allowed"
+                  className="rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
                 />
-                <p className="text-xs text-gray-600 font-mono">Email cannot be changed</p>
+                <p className="text-xs text-gray-400">Email cannot be changed</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone" className="font-mono text-sm uppercase tracking-wider text-gray-900">
+                <Label htmlFor="phone" className="text-sm font-medium text-gray-500">
                   Phone Number
                 </Label>
                 <Input
@@ -241,13 +241,13 @@ export default function RealtorSettingsPage() {
                   onChange={(e) =>
                     setProfile((prev) => ({ ...prev, phone: e.target.value }))
                   }
-                  className="rounded-none font-mono"
+                  className="rounded-lg"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="brokerage" className="font-mono text-sm uppercase tracking-wider text-gray-900">
+              <Label htmlFor="brokerage" className="text-sm font-medium text-gray-500">
                 Brokerage
               </Label>
               <Input
@@ -256,12 +256,12 @@ export default function RealtorSettingsPage() {
                 onChange={(e) =>
                   setProfile((prev) => ({ ...prev, brokerage: e.target.value }))
                 }
-                className="rounded-none font-mono"
+                className="rounded-lg"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="areaServiced" className="font-mono text-sm uppercase tracking-wider text-gray-900">
+              <Label htmlFor="areaServiced" className="text-sm font-medium text-gray-500">
                 Area Serviced
               </Label>
               <Input
@@ -271,7 +271,7 @@ export default function RealtorSettingsPage() {
                   setProfile((prev) => ({ ...prev, areaServiced: e.target.value }))
                 }
                 placeholder="e.g., Greater Toronto Area, Downtown Vancouver"
-                className="rounded-none font-mono"
+                className="rounded-lg"
               />
             </div>
 
@@ -279,7 +279,7 @@ export default function RealtorSettingsPage() {
               <Button
                 onClick={handleSaveProfile}
                 disabled={isSaving}
-                className="rounded-none font-mono uppercase tracking-wider text-sm h-10"
+                className="rounded-lg text-sm h-10"
                 style={{ backgroundColor: brandColor }}
               >
                 <Save className="h-4 w-4 mr-2" />
@@ -290,25 +290,25 @@ export default function RealtorSettingsPage() {
         </Card>
 
         {/* Security */}
-        <Card className="border-0 overflow-hidden">
-          <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: brandColor }}>
+        <Card className="border-0 overflow-hidden rounded-lg">
+          <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <Shield className="h-5 w-5 text-white" />
-            <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">Security</span>
+            <span className="text-white font-semibold text-base">Security</span>
           </div>
-          <CardContent className="p-6 bg-white space-y-6">
-            <p className="text-base text-gray-900 font-mono">Manage your account security settings</p>
+          <CardContent className="p-6 bg-white space-y-6 rounded-b-lg">
+            <p className="text-base text-gray-700">Manage your account security settings</p>
 
             <div className="flex items-center justify-between py-4 border-t border-gray-100">
               <div>
-                <p className="font-mono font-medium text-gray-900 uppercase tracking-wider text-base">Password</p>
-                <p className="text-base text-gray-900 font-mono mt-1">
+                <p className="font-medium text-gray-900 text-base">Password</p>
+                <p className="text-base text-gray-700 mt-1">
                   Update your account password
                 </p>
               </div>
               <Button
                 variant="outline"
                 onClick={() => setPasswordDialogOpen(true)}
-                className="rounded-none font-mono uppercase tracking-wider text-sm h-10"
+                className="rounded-lg text-sm h-10"
               >
                 <Lock className="h-4 w-4 mr-2" />
                 Change Password
@@ -320,35 +320,35 @@ export default function RealtorSettingsPage() {
 
       {/* Change Password Dialog */}
       <Dialog open={passwordDialogOpen} onOpenChange={resetPasswordDialog}>
-        <DialogContent className="sm:max-w-md p-0 gap-0 rounded-none border-0 overflow-hidden">
-          <div className="px-6 py-4" style={{ backgroundColor: brandColor }}>
+        <DialogContent className="sm:max-w-md p-0 gap-0 rounded-lg border-0 overflow-hidden">
+          <div className="px-6 py-4 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-3 text-white font-mono uppercase tracking-wider">
+              <DialogTitle className="flex items-center gap-3 text-white font-semibold">
                 <Lock className="h-5 w-5" />
                 Change Password
               </DialogTitle>
             </DialogHeader>
           </div>
           <div className="p-6 space-y-4">
-            <p className="text-sm text-gray-900 font-mono">
+            <p className="text-sm text-gray-500">
               Enter your current password and choose a new one.
             </p>
 
             {passwordError && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 text-red-700 text-sm font-mono">
+              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 {passwordError}
               </div>
             )}
             {passwordSuccess && (
-              <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-mono">
+              <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 text-sm">
                 <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
                 Password changed successfully!
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="currentPassword" className="font-mono text-xs uppercase tracking-wider text-gray-900">
+              <Label htmlFor="currentPassword" className="text-xs font-medium text-gray-500">
                 Current Password
               </Label>
               <div className="relative">
@@ -360,12 +360,12 @@ export default function RealtorSettingsPage() {
                   onChange={(e) =>
                     setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))
                   }
-                  className="pl-10 rounded-none font-mono"
+                  className="pl-10 rounded-lg"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="newPassword" className="font-mono text-xs uppercase tracking-wider text-gray-900">
+              <Label htmlFor="newPassword" className="text-xs font-medium text-gray-500">
                 New Password
               </Label>
               <div className="relative">
@@ -377,12 +377,12 @@ export default function RealtorSettingsPage() {
                   onChange={(e) =>
                     setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))
                   }
-                  className="pl-10 rounded-none font-mono"
+                  className="pl-10 rounded-lg"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="font-mono text-xs uppercase tracking-wider text-gray-900">
+              <Label htmlFor="confirmPassword" className="text-xs font-medium text-gray-500">
                 Confirm New Password
               </Label>
               <div className="relative">
@@ -394,7 +394,7 @@ export default function RealtorSettingsPage() {
                   onChange={(e) =>
                     setPasswordForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
                   }
-                  className="pl-10 rounded-none font-mono"
+                  className="pl-10 rounded-lg"
                 />
               </div>
             </div>
@@ -402,12 +402,12 @@ export default function RealtorSettingsPage() {
               <Button
                 variant="outline"
                 onClick={resetPasswordDialog}
-                className="flex-1 rounded-none font-mono uppercase tracking-wider"
+                className="flex-1 rounded-lg"
               >
                 Cancel
               </Button>
               <Button
-                className="flex-1 rounded-none font-mono uppercase tracking-wider"
+                className="flex-1 rounded-lg"
                 style={{ backgroundColor: brandColor }}
                 onClick={handleChangePassword}
                 disabled={isChangingPassword}

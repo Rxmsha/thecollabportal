@@ -158,8 +158,8 @@ export default function AgentTemplatesPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-2xl text-gray-900">TEMPLATES</h1>
-        <p className="text-base text-gray-700 mt-1 font-mono">
+        <h1 className="dot-matrix text-2xl text-gray-900">Templates</h1>
+        <p className="text-base text-gray-700 mt-1">
           Browse and use marketing templates for your business
         </p>
       </div>
@@ -171,18 +171,18 @@ export default function AgentTemplatesPage() {
           placeholder="Search templates..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 rounded-none font-mono"
+          className="pl-10 rounded-lg"
         />
       </div>
 
       {/* Category Tabs */}
       <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-        <TabsList className="bg-gray-100 rounded-none p-1">
+        <TabsList className="bg-gray-100 rounded-lg p-1">
           {categories.map((category) => (
             <TabsTrigger
               key={category.value}
               value={category.value}
-              className="rounded-none font-mono text-sm uppercase tracking-wider data-[state=active]:bg-white"
+              className="rounded-lg text-sm data-[state=active]:bg-white"
             >
               {category.label}
             </TabsTrigger>
@@ -193,13 +193,13 @@ export default function AgentTemplatesPage() {
           {isLoading ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {[...Array(6)].map((_, i) => (
-                <Card key={i} className="border-0 overflow-hidden">
-                  <div className="px-4 py-3 bg-gray-200 animate-pulse" />
-                  <CardContent className="p-0 bg-white">
+                <Card key={i} className="border-0 overflow-hidden rounded-lg">
+                  <div className="px-4 py-3 bg-gray-200 animate-pulse rounded-t-lg" />
+                  <CardContent className="p-0 bg-white rounded-b-lg">
                     <div className="aspect-video bg-gray-100 animate-pulse" />
                     <div className="p-4 space-y-3">
-                      <div className="h-4 bg-gray-100 animate-pulse" />
-                      <div className="h-3 bg-gray-100 w-2/3 animate-pulse" />
+                      <div className="h-4 bg-gray-100 rounded animate-pulse" />
+                      <div className="h-3 bg-gray-100 w-2/3 rounded animate-pulse" />
                     </div>
                   </CardContent>
                 </Card>
@@ -208,9 +208,9 @@ export default function AgentTemplatesPage() {
           ) : filteredTemplates.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {filteredTemplates.map((template) => (
-                <Card key={template.id} className="border-0 overflow-hidden hover:shadow-md transition-shadow rounded-none">
+                <Card key={template.id} className="border-0 overflow-hidden hover:shadow-md transition-shadow rounded-lg">
                   {/* Image Preview */}
-                  <div className="aspect-[4/3] bg-gray-100 relative flex items-center justify-center">
+                  <div className="aspect-[4/3] bg-gray-100 relative flex items-center justify-center rounded-t-lg overflow-hidden">
                     {template.previewImageUrl ? (
                       <img
                         src={template.previewImageUrl}
@@ -222,22 +222,22 @@ export default function AgentTemplatesPage() {
                     )}
                     {/* Category Badge - Top Right */}
                     <div className="absolute top-3 right-3">
-                      <span className="inline-flex items-center px-2.5 py-1 text-xs font-mono font-medium uppercase tracking-wider bg-white/90 text-gray-700 border border-gray-200">
+                      <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full bg-white/90 text-gray-700 border border-gray-200 capitalize">
                         {template.category}
                       </span>
                     </div>
                   </div>
                   {/* Content - Dark footer */}
-                  <div className="p-4 flex flex-col h-[120px]" style={{ backgroundColor: brandColor }}>
-                    <h3 className="font-mono font-semibold text-white text-base mb-1 truncate">
+                  <div className="p-4 flex flex-col h-[120px] rounded-b-lg" style={{ backgroundColor: brandColor }}>
+                    <h3 className="font-semibold text-white text-base mb-1 truncate">
                       {template.title}
                     </h3>
-                    <p className="text-sm text-gray-300 font-mono line-clamp-1 flex-grow">
+                    <p className="text-sm text-gray-300 line-clamp-1 flex-grow">
                       {template.shortDescription || '\u00A0'}
                     </p>
                     {/* Footer */}
                     <div className="flex items-center justify-between mt-auto">
-                      <span className="text-xs font-mono font-medium text-gray-300 uppercase tracking-wider">
+                      <span className="text-xs font-medium text-gray-300 uppercase">
                         {template.format.replace('_', ' ')}
                       </span>
                       <div className="flex gap-2">
@@ -246,7 +246,7 @@ export default function AgentTemplatesPage() {
                           variant="outline"
                           onClick={(e) => handleOpenNotifyModal(template, e)}
                           title="Notify Realtors"
-                          className="rounded-none bg-transparent border-gray-400 text-white hover:bg-white/10 hover:text-white"
+                          className="rounded-lg bg-transparent border-gray-400 text-white hover:bg-white/10 hover:text-white"
                         >
                           <Mail className="h-4 w-4" />
                         </Button>
@@ -254,7 +254,7 @@ export default function AgentTemplatesPage() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleUseTemplate(template)}
-                          className="rounded-none bg-transparent border-gray-400 text-white hover:bg-white/10 hover:text-white font-mono uppercase tracking-wider text-xs"
+                          className="rounded-lg bg-transparent border-gray-400 text-white hover:bg-white/10 hover:text-white text-xs"
                         >
                           <ExternalLink className="h-4 w-4 mr-1" />
                           Use
@@ -266,20 +266,20 @@ export default function AgentTemplatesPage() {
               ))}
             </div>
           ) : (
-            <Card className="border-0 overflow-hidden">
+            <Card className="border-0 overflow-hidden rounded-lg">
               <div
-                className="px-6 py-4 flex items-center gap-3"
+                className="px-6 py-4 flex items-center gap-3 rounded-t-lg"
                 style={{ backgroundColor: brandColor }}
               >
                 <FileText className="h-5 w-5 text-white" />
-                <span className="text-white font-mono font-semibold uppercase tracking-wider text-base">
+                <span className="text-white font-semibold text-base">
                   Templates
                 </span>
               </div>
-              <CardContent className="py-12 text-center bg-white">
+              <CardContent className="py-12 text-center bg-white rounded-b-lg">
                 <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-base text-gray-700 font-mono">No templates found</p>
-                <p className="text-base text-gray-500 mt-1 font-mono">
+                <p className="text-base text-gray-700">No templates found</p>
+                <p className="text-base text-gray-500 mt-1">
                   Try adjusting your search or category filter
                 </p>
               </CardContent>
@@ -290,10 +290,10 @@ export default function AgentTemplatesPage() {
 
       {/* Notify Realtors Modal */}
       <Dialog open={showNotifyModal} onOpenChange={handleCloseNotifyModal}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-0 gap-0 rounded-none border-0" closeClassName="text-white">
-          <div className="px-6 py-4" style={{ backgroundColor: brandColor }}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-0 gap-0 rounded-lg border-0" closeClassName="text-white">
+          <div className="px-6 py-4 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-3 text-white font-mono uppercase tracking-wider">
+              <DialogTitle className="flex items-center gap-3 text-white font-semibold">
                 <Mail className="h-5 w-5" />
                 Notify Realtors
               </DialogTitle>
@@ -302,33 +302,33 @@ export default function AgentTemplatesPage() {
 
           {selectedTemplate && (
             <div className="p-6 space-y-4">
-              <p className="text-base text-gray-700 font-mono">
+              <p className="text-base text-gray-700">
                 Send an email about this template to your realtors.
               </p>
 
               {/* Template Preview */}
-              <div className="bg-gray-50 border border-gray-200 p-3 flex items-center gap-3">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 flex items-center gap-3">
                 {selectedTemplate.previewImageUrl ? (
                   <img
                     src={selectedTemplate.previewImageUrl}
                     alt={selectedTemplate.title}
-                    className="w-16 h-12 object-cover"
+                    className="w-16 h-12 object-cover rounded"
                   />
                 ) : (
-                  <div className="w-16 h-12 bg-gray-200 flex items-center justify-center">
+                  <div className="w-16 h-12 bg-gray-200 rounded flex items-center justify-center">
                     <FileText className="h-6 w-6 text-gray-400" />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="font-mono font-semibold text-gray-900 truncate">{selectedTemplate.title}</p>
-                  <p className="text-sm text-gray-500 font-mono uppercase">{selectedTemplate.category}</p>
+                  <p className="font-semibold text-gray-900 truncate">{selectedTemplate.title}</p>
+                  <p className="text-sm text-gray-500 capitalize">{selectedTemplate.category}</p>
                 </div>
               </div>
 
               {/* Notification Result */}
               {notificationResult && (
                 <div
-                  className={`p-3 border flex items-center gap-2 font-mono text-base ${
+                  className={`p-3 border rounded-lg flex items-center gap-2 text-base ${
                     notificationResult.success
                       ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                       : 'bg-red-50 text-red-700 border-red-200'
@@ -356,7 +356,7 @@ export default function AgentTemplatesPage() {
                   {/* Realtor Selection */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-mono font-semibold text-gray-900 uppercase tracking-wider">
+                      <label className="text-sm font-semibold text-gray-900">
                         Select Realtors
                       </label>
                       {realtors.length > 0 && (
@@ -364,7 +364,7 @@ export default function AgentTemplatesPage() {
                           variant="ghost"
                           size="sm"
                           onClick={selectAllRealtors}
-                          className="text-xs h-7 font-mono uppercase tracking-wider rounded-none"
+                          className="text-xs h-7 rounded-lg"
                         >
                           {selectedRealtorIds.length === realtors.length
                             ? 'Deselect All'
@@ -378,12 +378,12 @@ export default function AgentTemplatesPage() {
                         <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
                       </div>
                     ) : realtors.length === 0 ? (
-                      <div className="text-center py-6 bg-gray-50 border border-gray-200">
+                      <div className="text-center py-6 bg-gray-50 border border-gray-200 rounded-lg">
                         <Users className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                        <p className="text-base text-gray-500 font-mono">No active realtors</p>
+                        <p className="text-base text-gray-500">No active realtors</p>
                       </div>
                     ) : (
-                      <div className="border border-gray-200 max-h-48 overflow-y-auto">
+                      <div className="border border-gray-200 rounded-lg max-h-48 overflow-y-auto">
                         {realtors.map((realtor) => (
                           <label
                             key={realtor.id}
@@ -392,13 +392,13 @@ export default function AgentTemplatesPage() {
                             <Checkbox
                               checked={selectedRealtorIds.includes(realtor.id)}
                               onCheckedChange={() => toggleRealtorSelection(realtor.id)}
-                              className="rounded-none"
+                              className="rounded"
                             />
                             <div className="flex-1 min-w-0">
-                              <p className="text-base font-mono font-semibold text-gray-900">
+                              <p className="text-base font-semibold text-gray-900">
                                 {realtor.firstName} {realtor.lastName}
                               </p>
-                              <p className="text-sm text-gray-500 font-mono truncate">
+                              <p className="text-sm text-gray-500 truncate">
                                 {realtor.email}
                               </p>
                             </div>
@@ -411,7 +411,7 @@ export default function AgentTemplatesPage() {
                   {/* Action Buttons */}
                   <div className="flex gap-2 pt-2">
                     <Button
-                      className="flex-1 rounded-none font-mono uppercase tracking-wider text-sm"
+                      className="flex-1 rounded-lg text-sm"
                       variant="outline"
                       onClick={() => handleSendNotification(true)}
                       disabled={isSendingNotification || realtors.length === 0}
@@ -424,7 +424,7 @@ export default function AgentTemplatesPage() {
                       Notify All ({realtors.length})
                     </Button>
                     <Button
-                      className="flex-1 rounded-none font-mono uppercase tracking-wider text-sm"
+                      className="flex-1 rounded-lg text-sm"
                       onClick={() => handleSendNotification(false)}
                       disabled={isSendingNotification || selectedRealtorIds.length === 0}
                       style={{ backgroundColor: brandColor }}
@@ -443,7 +443,7 @@ export default function AgentTemplatesPage() {
               {/* Close Button after success */}
               {notificationResult?.success && (
                 <Button
-                  className="w-full rounded-none font-mono uppercase tracking-wider text-sm"
+                  className="w-full rounded-lg text-sm"
                   onClick={handleCloseNotifyModal}
                   style={{ backgroundColor: brandColor }}
                 >
