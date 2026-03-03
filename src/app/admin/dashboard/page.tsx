@@ -142,15 +142,30 @@ export default function AdminDashboardPage() {
   const getEventBadgeColor = (eventType: string) => {
     switch (eventType) {
       case 'template_published':
+      case 'template_created':
+      case 'realtor_activated':
+      case 'agent_activated':
         return 'success'
       case 'realtor_invited':
+      case 'template_notification_sent_to_realtors':
         return 'default'
-      case 'realtor_activated':
-        return 'success'
       case 'agent_created':
+      case 'template_notification_sent_to_agents':
         return 'purple'
       case 'branding_updated':
+      case 'resource_created':
+      case 'resource_updated':
         return 'orange'
+      case 'template_deleted':
+      case 'resource_deleted':
+      case 'agent_deactivated':
+      case 'realtor_deactivated_by_agent':
+      case 'realtor_deactivated_by_admin':
+        return 'destructive'
+      case 'agent_reactivated':
+      case 'realtor_reactivated_by_agent':
+      case 'realtor_reactivated_by_admin':
+        return 'success'
       default:
         return 'secondary'
     }
