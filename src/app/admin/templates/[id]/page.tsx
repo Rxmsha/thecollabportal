@@ -389,6 +389,8 @@ export default function TemplateDetailPage() {
       case 'checklist': return 'bg-yellow-100 text-yellow-700 border border-yellow-200'
       case 'guide': return 'bg-teal-100 text-teal-700 border border-teal-200'
       case 'video': return 'bg-red-100 text-red-700 border border-red-200'
+      case 'business-card': return 'bg-pink-100 text-pink-700 border border-pink-200'
+      case 'print': return 'bg-indigo-100 text-indigo-700 border border-indigo-200'
       default: return 'bg-gray-100 text-gray-700 border border-gray-200'
     }
   }
@@ -529,6 +531,8 @@ export default function TemplateDetailPage() {
                     <SelectItem value="presentation">Presentation</SelectItem>
                     <SelectItem value="checklist">Checklist</SelectItem>
                     <SelectItem value="guide">Guide</SelectItem>
+                    <SelectItem value="business-card">Business Cards</SelectItem>
+                    <SelectItem value="print">Print Materials</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -152,6 +152,8 @@ export default function AgentTemplatesPage() {
     { value: 'presentation', label: 'Presentation' },
     { value: 'checklist', label: 'Checklist' },
     { value: 'guide', label: 'Guide' },
+    { value: 'business-card', label: 'Business Cards' },
+    { value: 'print', label: 'Print Materials' },
   ]
 
   return (

@@ -42,6 +42,8 @@ import {
   Users,
   Building2,
   GripVertical,
+  Info,
+  Tag,
 } from 'lucide-react'
 import xano from '@/services/xano'
 import { toast } from '@/hooks/use-toast'
@@ -55,10 +57,19 @@ interface Resource {
   resourceUrl: string
   resourceType: 'link' | 'file'
   audience: 'agents' | 'realtors' | 'both'
+  category: string
   displayOrder: number
   isActive: boolean
   createdAt: string
 }
+
+const RESOURCE_CATEGORIES = [
+  { value: 'marketing', label: 'Marketing' },
+  { value: 'training', label: 'Training' },
+  { value: 'tools', label: 'Tools' },
+  { value: 'guides', label: 'Guides' },
+  { value: 'other', label: 'Other' },
+]
 
 export default function AdminResourcesPage() {
   const { brandColor } = useBranding()
@@ -79,6 +90,7 @@ export default function AdminResourcesPage() {
   const [resourceUrl, setResourceUrl] = useState('')
   const [resourceType, setResourceType] = useState<'link' | 'file'>('link')
   const [audience, setAudience] = useState<'agents' | 'realtors' | 'both'>('both')
+  const [category, setCategory] = useState('other')
   const [displayOrder, setDisplayOrder] = useState(0)
 
   useEffect(() => {
@@ -90,7 +102,14 @@ export default function AdminResourcesPage() {
     try {
       const { data } = await xano.adminGetResources()
       if (data) {
-        setResources(data)
+        // Sort by display_order, then by id for consistent ordering
+        const sorted = [...data].sort((a, b) => {
+          if (a.displayOrder !== b.displayOrder) {
+            return a.displayOrder - b.displayOrder
+          }
+          return a.id - b.id
+        })
+        setResources(sorted)
       }
     } catch (error) {
       console.error('Failed to load resources:', error)
@@ -106,6 +125,7 @@ export default function AdminResourcesPage() {
     setResourceUrl('')
     setResourceType('link')
     setAudience('both')
+    setCategory('other')
     setDisplayOrder(0)
   }
 
@@ -128,6 +148,7 @@ export default function AdminResourcesPage() {
         resourceUrl,
         resourceType,
         audience,
+        category,
         displayOrder,
       })
 
@@ -169,6 +190,7 @@ export default function AdminResourcesPage() {
         resourceUrl,
         resourceType,
         audience,
+        category,
         displayOrder,
       })
 
@@ -292,6 +314,7 @@ export default function AdminResourcesPage() {
     setResourceUrl(resource.resourceUrl)
     setResourceType(resource.resourceType)
     setAudience(resource.audience)
+    setCategory(resource.category || 'other')
     setDisplayOrder(resource.displayOrder)
     setShowEditModal(true)
   }
@@ -314,19 +337,43 @@ export default function AdminResourcesPage() {
     }
   }
 
+  const getCategoryBadge = (cat: string) => {
+    const category = RESOURCE_CATEGORIES.find(c => c.value === cat)
+    const label = category?.label || cat
+    return (
+      <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-slate-100 text-slate-700">
+        <Tag className="h-3 w-3" />
+        {label}
+      </span>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <div>
           <h1 className="dot-matrix text-2xl text-gray-900">Resources</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Manage helpful resources for agents and realtors
+            Add links or files that appear on agent and realtor dashboards
           </p>
         </div>
         <Button className="rounded-lg" style={{ backgroundColor: brandColor }} onClick={openCreateModal}>
           <Plus className="h-4 w-4 mr-2" />
           Add Resource
         </Button>
+      </div>
+
+      {/* How it works info box */}
+      <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+        <div className="text-sm text-blue-800">
+          <p className="font-medium mb-1">How Resources Work</p>
+          <p className="text-blue-700">
+            Resources you add here will appear in the "Resources" section on agent and realtor dashboards.
+            Use the <strong>Audience</strong> setting to control who sees each resource. You can add external links (like Canva templates)
+            or upload files directly.
+          </p>
+        </div>
       </div>
 
       {/* Resources List */}
@@ -366,6 +413,7 @@ export default function AdminResourcesPage() {
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <h3 className="font-semibold text-gray-900">{resource.title}</h3>
                           {getAudienceBadge(resource.audience)}
+                          {resource.category && getCategoryBadge(resource.category)}
                           {!resource.isActive && (
                             <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800">Inactive</span>
                           )}
@@ -451,7 +499,7 @@ export default function AdminResourcesPage() {
 
       {/* Create Modal */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col rounded-lg">
+        <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col rounded-lg" closeClassName="text-white">
           <div className="px-6 py-4 flex-shrink-0 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <DialogHeader>
               <DialogTitle className="text-white font-semibold">Add Resource</DialogTitle>
@@ -572,6 +620,25 @@ export default function AdminResourcesPage() {
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-600">Category</Label>
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {RESOURCE_CATEGORIES.map((cat) => (
+                    <SelectItem key={cat.value} value={cat.value}>
+                      <div className="flex items-center gap-2">
+                        <Tag className="h-4 w-4" />
+                        {cat.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
               <Button
                 variant="outline"
@@ -600,7 +667,7 @@ export default function AdminResourcesPage() {
 
       {/* Edit Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col rounded-lg">
+        <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col rounded-lg" closeClassName="text-white">
           <div className="px-6 py-4 flex-shrink-0 rounded-t-lg" style={{ backgroundColor: brandColor }}>
             <DialogHeader>
               <DialogTitle className="text-white font-semibold">Edit Resource</DialogTitle>
@@ -717,6 +784,25 @@ export default function AdminResourcesPage() {
                       Realtors Only
                     </div>
                   </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-600">Category</Label>
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {RESOURCE_CATEGORIES.map((cat) => (
+                    <SelectItem key={cat.value} value={cat.value}>
+                      <div className="flex items-center gap-2">
+                        <Tag className="h-4 w-4" />
+                        {cat.label}
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

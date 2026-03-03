@@ -138,6 +138,8 @@ export default function NewTemplatePage() {
                   <SelectItem value="presentation">Presentation</SelectItem>
                   <SelectItem value="checklist">Checklist</SelectItem>
                   <SelectItem value="guide">Guide</SelectItem>
+                  <SelectItem value="business-card">Business Cards</SelectItem>
+                  <SelectItem value="print">Print Materials</SelectItem>
                 </SelectContent>
               </Select>
             </div>

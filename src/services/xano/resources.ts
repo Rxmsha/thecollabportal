@@ -31,6 +31,7 @@ export function addResourceMethods<T extends XanoClient>(client: T) {
       resourceUrl: string
       resourceType: 'link' | 'file'
       audience: 'agents' | 'realtors' | 'both'
+      category?: string
       displayOrder?: number
     }) {
       return client.request<{ success: boolean; resource: any }>('/admin_create_resource', {
@@ -42,6 +43,7 @@ export function addResourceMethods<T extends XanoClient>(client: T) {
           resource_url: data.resourceUrl,
           resource_type: data.resourceType,
           audience: data.audience,
+          category: data.category || 'other',
           display_order: data.displayOrder || 0,
         }),
       })
@@ -55,6 +57,7 @@ export function addResourceMethods<T extends XanoClient>(client: T) {
       resourceUrl?: string
       resourceType?: 'link' | 'file'
       audience?: 'agents' | 'realtors' | 'both'
+      category?: string
       displayOrder?: number
       isActive?: boolean
     }) {
@@ -68,6 +71,7 @@ export function addResourceMethods<T extends XanoClient>(client: T) {
           resource_url: data.resourceUrl,
           resource_type: data.resourceType,
           audience: data.audience,
+          category: data.category,
           display_order: data.displayOrder,
           is_active: data.isActive,
         }),

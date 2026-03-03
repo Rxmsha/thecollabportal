@@ -50,7 +50,7 @@ export interface Realtor {
 }
 
 // Template types
-export type TemplateCategory = 'social-media' | 'email' | 'flyer' | 'presentation' | 'checklist' | 'guide'
+export type TemplateCategory = 'social-media' | 'email' | 'flyer' | 'presentation' | 'checklist' | 'guide' | 'business-card' | 'print'
 export type TemplateFormat = 'canva' | 'pdf' | 'doc' | 'video' | 'link'
 export type TemplateAudience = 'mortgage_agents' | 'realtors'
 export type TemplateStatus = 'draft' | 'published'
