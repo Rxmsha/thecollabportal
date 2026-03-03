@@ -80,6 +80,8 @@ class XanoService extends XanoClient {
   sendTemplateNotificationToRealtors: ReturnType<typeof addAdminMethods>['sendTemplateNotificationToRealtors']
   getAllRealtors: ReturnType<typeof addAdminMethods>['getAllRealtors']
   getAdminStats: ReturnType<typeof addAdminMethods>['getAdminStats']
+  trackResourceClick: ReturnType<typeof addAdminMethods>['trackResourceClick']
+  getResourceStats: ReturnType<typeof addAdminMethods>['getResourceStats']
   recalculateAllSeats: ReturnType<typeof addAdminMethods>['recalculateAllSeats']
   resetAgentPassword: ReturnType<typeof addAdminMethods>['resetAgentPassword']
   adminGetAgentDetails: ReturnType<typeof addAdminMethods>['adminGetAgentDetails']
@@ -186,6 +188,8 @@ class XanoService extends XanoClient {
     this.sendTemplateNotificationToRealtors = adminMethods.sendTemplateNotificationToRealtors
     this.getAllRealtors = adminMethods.getAllRealtors
     this.getAdminStats = adminMethods.getAdminStats
+    this.trackResourceClick = adminMethods.trackResourceClick
+    this.getResourceStats = adminMethods.getResourceStats
     this.recalculateAllSeats = adminMethods.recalculateAllSeats
     this.resetAgentPassword = adminMethods.resetAgentPassword
     this.adminGetAgentDetails = adminMethods.adminGetAgentDetails

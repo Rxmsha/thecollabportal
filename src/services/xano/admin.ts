@@ -161,14 +161,55 @@ export function addAdminMethods<T extends XanoClient>(client: T) {
 
     // Admin: Get dashboard stats
     async getAdminStats() {
-      return client.request<{
+      const response = await client.request<{
         totalAgents: number
         activeAgents: number
+        pendingAgents: number
         totalRealtors: number
         activeRealtors: number
         totalTemplates: number
         publishedTemplates: number
+        totalResources: number
+        totalResourceClicks: number
+        totalEmailOpens: number
+        totalEmailsDelivered: number
+        allAgents: any[]
+        publishedTemplatesList: any[]
       }>('/dashboard_stats')
+      if (response.data) {
+        if (response.data.allAgents) {
+          response.data.allAgents = transformKeys(response.data.allAgents)
+        }
+        if (response.data.publishedTemplatesList) {
+          response.data.publishedTemplatesList = transformKeys(response.data.publishedTemplatesList)
+        }
+      }
+      return response
+    },
+
+    // Track resource click
+    async trackResourceClick(resourceId: number) {
+      return client.request<{ success: boolean; clickId: number }>('/track_resource_click', {
+        method: 'POST',
+        body: JSON.stringify({ resource_id: resourceId }),
+      })
+    },
+
+    // Admin: Get resource click stats
+    async getResourceStats() {
+      const response = await client.request<{
+        clicks: any[]
+        resources: any[]
+      }>('/admin_get_resource_stats')
+      if (response.data) {
+        if (response.data.clicks) {
+          response.data.clicks = transformKeys(response.data.clicks)
+        }
+        if (response.data.resources) {
+          response.data.resources = transformKeys(response.data.resources)
+        }
+      }
+      return response
     },
 
     // Admin: Recalculate seats_used for all agents

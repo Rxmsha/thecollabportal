@@ -120,6 +120,16 @@ export default function RealtorDashboardPage() {
     }
   }
 
+  // Track resource click
+  const handleResourceClick = async (resourceId: number) => {
+    try {
+      await xano.trackResourceClick(resourceId)
+    } catch (error) {
+      // Silent fail - don't block navigation
+      console.error('Failed to track resource click:', error)
+    }
+  }
+
   const insertBullet = () => {
     const textarea = notesRef.current
     if (!textarea) return
@@ -252,6 +262,7 @@ export default function RealtorDashboardPage() {
                             href={resource.resourceUrl}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() => handleResourceClick(resource.id)}
                           >
                             {resource.buttonText}
                             <ExternalLink className="h-3 w-3 ml-2" />

@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     const toEmails = adminEmails.filter(e => typeof e === 'string' && e.length > 0).join(', ')
 
     const mailOptions = {
-      from: `"${agentName || 'Agent'} via TheCollabPortal" <${process.env.SMTP_USER || 'noreply@thecollabportal.com'}>`,
+      from: `"${agentName || 'Agent'} via The Collab Portal" <${process.env.SMTP_USER || 'noreply@thecollabportal.com'}>`,
       to: toEmails,
       replyTo: agentEmail,
       subject: `[Support] ${subject}`,

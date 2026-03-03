@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const transporter = createTransporter()
 
     const mailOptions = {
-      from: `"${realtorName} via TheCollabPortal" <${process.env.SMTP_USER || 'noreply@thecollabportal.com'}>`,
+      from: `"${realtorName} via The Collab Portal" <${process.env.SMTP_USER || 'noreply@thecollabportal.com'}>`,
       to: agentEmail,
       replyTo: realtorEmail,
       subject: subject,

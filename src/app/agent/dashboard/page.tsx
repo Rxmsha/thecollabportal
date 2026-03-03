@@ -102,6 +102,16 @@ export default function AgentDashboardPage() {
 
   const seatUsagePercent = (stats.seatsUsed / stats.seatLimit) * 100
 
+  // Track resource click
+  const handleResourceClick = async (resourceId: number) => {
+    try {
+      await xano.trackResourceClick(resourceId)
+    } catch (error) {
+      // Silent fail - don't block navigation
+      console.error('Failed to track resource click:', error)
+    }
+  }
+
   const quickActions = [
     {
       title: 'Invite Realtor',
@@ -267,6 +277,7 @@ export default function AgentDashboardPage() {
                         href={resource.resourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => handleResourceClick(resource.id)}
                       >
                         {resource.buttonText}
                         <ExternalLink className="h-3 w-3 ml-2" />

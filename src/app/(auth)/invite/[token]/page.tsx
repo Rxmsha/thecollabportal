@@ -156,7 +156,7 @@ export default function InvitePage() {
           <div className="h-12 w-12 rounded-xl bg-blue-600 flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-xl">CP</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">TheCollabPortal</h1>
+          <h1 className="text-2xl font-bold text-gray-900">The Collab Portal</h1>
           <p className="text-gray-500 mt-1">Accept your invitation</p>
         </div>
 
@@ -164,7 +164,7 @@ export default function InvitePage() {
           <CardHeader>
             <CardTitle>You&apos;re invited!</CardTitle>
             <CardDescription>
-              {inviteData?.agentName} from {inviteData?.agentCompany} has invited you to join TheCollabPortal
+              {inviteData?.agentName} from {inviteData?.agentCompany} has invited you to join The Collab Portal
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -222,7 +222,7 @@ export default function InvitePage() {
         </Card>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          &copy; {new Date().getFullYear()} TheCollabPortal. All rights reserved.
+          &copy; {new Date().getFullYear()} The Collab Portal. All rights reserved.
         </p>
       </div>
     </div>

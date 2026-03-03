@@ -28,9 +28,9 @@ async function sendWelcomeEmail(
   const loginUrl = process.env.NEXT_PUBLIC_APP_URL + '/login'
 
   const mailOptions = {
-    from: `"TheCollabPortal" <${process.env.SMTP_USER || 'noreply@thecollabportal.com'}>`,
+    from: `"The Collab Portal" <${process.env.SMTP_USER || 'noreply@thecollabportal.com'}>`,
     to,
-    subject: 'Welcome to TheCollabPortal - Your Account is Ready!',
+    subject: 'Welcome to The Collab Portal - Your Account is Ready!',
     html: `
       <!DOCTYPE html>
       <html>
@@ -40,13 +40,13 @@ async function sendWelcomeEmail(
       </head>
       <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
-          <h1 style="color: white; margin: 0; font-size: 24px;">Welcome to TheCollabPortal</h1>
+          <h1 style="color: white; margin: 0; font-size: 24px;">Welcome to The Collab Portal</h1>
         </div>
 
         <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 10px 10px;">
           <p style="font-size: 16px; margin-bottom: 20px;">Hi ${firstName},</p>
 
-          <p style="font-size: 16px; margin-bottom: 20px;">Your TheCollabPortal account is ready!</p>
+          <p style="font-size: 16px; margin-bottom: 20px;">Your The Collab Portal account is ready!</p>
 
           <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin: 20px 0;">
             <p style="margin: 0 0 10px 0; font-size: 14px; color: #6b7280;">Your login credentials:</p>
@@ -70,7 +70,7 @@ async function sendWelcomeEmail(
 
           <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
 
-          <p style="font-size: 14px; color: #6b7280; margin: 0;">— The TheCollabPortal Team</p>
+          <p style="font-size: 14px; color: #6b7280; margin: 0;">— The Collab Portal Team</p>
         </div>
       </body>
       </html>
@@ -78,7 +78,7 @@ async function sendWelcomeEmail(
     text: `
 Hi ${firstName},
 
-Your TheCollabPortal account is ready!
+Your The Collab Portal account is ready!
 
 Your login credentials:
 Email: ${to}
@@ -92,7 +92,7 @@ Here's what to do next:
 
 We'll handle all updates and notifications automatically.
 
-The TheCollabPortal Team
+The The Collab Portal Team
     `,
   }
 

@@ -10,7 +10,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'TheCollabPortal - Mortgage Agent & Realtor Collaboration Platform',
+  title: 'The Collab Portal - Mortgage Agent & Realtor Collaboration Platform',
   description: 'Connect mortgage agents with real estate professionals through a branded collaboration portal.',
 }
 

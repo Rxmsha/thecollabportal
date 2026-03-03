@@ -65,7 +65,7 @@ export default function AgentContactSupportPage() {
         <div className="border-b border-gray-200 pb-4">
           <h1 className="dot-matrix text-2xl text-gray-900">Contact Support</h1>
           <p className="text-base text-gray-700 mt-1">
-            Get help from the TheCollabPortal team
+            Get help from The Collab Portal team
           </p>
         </div>
 
@@ -112,7 +112,7 @@ export default function AgentContactSupportPage() {
       <div className="border-b border-gray-200 pb-4">
         <h1 className="dot-matrix text-2xl text-gray-900">Contact Support</h1>
         <p className="text-base text-gray-700 mt-1">
-          Get help from the TheCollabPortal team
+          Get help from The Collab Portal team
         </p>
       </div>
 

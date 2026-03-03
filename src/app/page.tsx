@@ -38,7 +38,7 @@ export default function Home() {
         <div className="h-12 w-12 bg-gray-900 flex items-center justify-center mx-auto mb-4">
           <span className="text-white font-mono font-bold text-xl">CP</span>
         </div>
-        <h1 className="dot-matrix text-2xl text-gray-900 mb-2">THECOLLABPORTAL</h1>
+        <h1 className="dot-matrix text-2xl text-gray-900 mb-2">THE COLLAB PORTAL</h1>
         <p className="text-gray-900 font-mono uppercase tracking-wider text-sm">Loading...</p>
       </div>
     </div>

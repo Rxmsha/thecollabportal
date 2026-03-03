@@ -182,7 +182,7 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
           )}
           {!isCollapsed && (
             <div>
-              <p className="font-semibold text-sm">The Collab</p>
+              <p className="font-semibold text-sm">The Collab Portal</p>
               <p className="text-xs text-white/60">{getRoleTitle()}</p>
             </div>
           )}
