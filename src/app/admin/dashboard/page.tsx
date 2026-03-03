@@ -16,8 +16,6 @@ import {
   UserPlus,
   LayoutTemplate,
   FolderOpen,
-  Eye,
-  ArrowUpRight,
 } from 'lucide-react'
 import xano from '@/services/xano'
 import { formatDateTime } from '@/lib/utils'
@@ -53,7 +51,6 @@ export default function AdminDashboardPage() {
     publishedTemplates: 0,
     totalResources: 0,
     totalResourceClicks: 0,
-    totalEmailOpens: 0,
     totalEmailsDelivered: 0,
   })
   const [recentAgents, setRecentAgents] = useState<AgentData[]>([])
@@ -87,7 +84,6 @@ export default function AdminDashboardPage() {
           publishedTemplates: statsRes.data.publishedTemplates,
           totalResources: statsRes.data.totalResources || 0,
           totalResourceClicks: statsRes.data.totalResourceClicks || 0,
-          totalEmailOpens: statsRes.data.totalEmailOpens || 0,
           totalEmailsDelivered: statsRes.data.totalEmailsDelivered || 0,
         })
 
@@ -170,10 +166,6 @@ export default function AdminDashboardPage() {
         return 'secondary'
     }
   }
-
-  const emailOpenRate = stats.totalEmailsDelivered > 0
-    ? Math.round((stats.totalEmailOpens / stats.totalEmailsDelivered) * 100)
-    : 0
 
   return (
     <div className="space-y-6">
@@ -293,50 +285,20 @@ export default function AdminDashboardPage() {
         </Card>
       </div>
 
-      {/* Secondary Stats - Email Metrics */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-0">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-blue-100">
-                <Mail className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Emails Delivered</p>
-                <p className="text-xl font-bold text-gray-900">{stats.totalEmailsDelivered}</p>
-              </div>
+      {/* Email Stats */}
+      <Card className="border-0">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-blue-100">
+              <Mail className="h-5 w-5 text-blue-600" />
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-green-100">
-                <Eye className="h-5 w-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Email Opens</p>
-                <p className="text-xl font-bold text-gray-900">{stats.totalEmailOpens}</p>
-              </div>
+            <div>
+              <p className="text-sm text-gray-500">Emails Delivered</p>
+              <p className="text-xl font-bold text-gray-900">{stats.totalEmailsDelivered}</p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-purple-100">
-                <ArrowUpRight className="h-5 w-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Open Rate</p>
-                <p className="text-xl font-bold text-gray-900">{emailOpenRate}%</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Three Column Layout */}
       <div className="grid gap-6 lg:grid-cols-3">
