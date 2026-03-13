@@ -56,7 +56,7 @@ Desktop: > 1024px
 4. Realtors
 5. Templates (list + forms)
 6. Resources
-7. Ai Tools
+7. AI Tools
 8. Calculators
 9. Usage logs
 10. Error logs

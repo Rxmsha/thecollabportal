@@ -350,21 +350,21 @@ export default function AdminResourcesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-4">
         <div>
           <h1 className="dot-matrix text-2xl text-gray-900">Resources</h1>
           <p className="text-sm text-gray-500 mt-1">
             Add links or files that appear on agent and realtor dashboards
           </p>
         </div>
-        <Button className="rounded-lg" style={{ backgroundColor: brandColor }} onClick={openCreateModal}>
+        <Button className="rounded-lg w-full sm:w-auto" style={{ backgroundColor: brandColor }} onClick={openCreateModal}>
           <Plus className="h-4 w-4 mr-2" />
           Add Resource
         </Button>
       </div>
 
       {/* How it works info box */}
-      <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="flex items-start gap-3 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
         <div className="text-sm text-blue-800">
           <p className="font-medium mb-1">How Resources Work</p>
@@ -380,14 +380,14 @@ export default function AdminResourcesPage() {
       {isLoading ? (
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <Card key={i} className="border-0 overflow-hidden">
+            <Card key={i} className="border-0 overflow-hidden rounded-lg">
               <CardContent className="p-0">
-                <div className="p-6 bg-white">
-                  <div className="h-6 bg-gray-100 w-1/3 animate-pulse mb-2" />
-                  <div className="h-4 bg-gray-100 w-2/3 animate-pulse" />
+                <div className="p-4 sm:p-6 bg-white">
+                  <div className="h-6 bg-gray-100 w-1/3 animate-pulse mb-2 rounded" />
+                  <div className="h-4 bg-gray-100 w-2/3 animate-pulse rounded" />
                 </div>
-                <div className="p-4" style={{ backgroundColor: brandColor }}>
-                  <div className="h-4 bg-gray-700 w-1/4 animate-pulse" />
+                <div className="p-3 sm:p-4" style={{ backgroundColor: brandColor }}>
+                  <div className="h-4 bg-gray-700 w-1/4 animate-pulse rounded" />
                 </div>
               </CardContent>
             </Card>
@@ -402,48 +402,46 @@ export default function AdminResourcesPage() {
             >
               <CardContent className="p-0">
                 {/* Main Content */}
-                <div className="p-6 bg-white rounded-t-lg">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-4 flex-1">
-                      <div className="flex items-center text-gray-400">
-                        <GripVertical className="h-5 w-5" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          <h3 className="font-semibold text-gray-900">{resource.title}</h3>
-                          {getAudienceBadge(resource.audience)}
-                          {resource.category && getCategoryBadge(resource.category)}
-                          {!resource.isActive && (
-                            <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800">Inactive</span>
-                          )}
-                          {resource.resourceType === 'file' && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700">
-                              <FileText className="h-3 w-3" />
-                              File
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-600 mb-3">{resource.description}</p>
-                        <div className="flex items-center gap-3 text-sm">
-                          <span className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">
-                            Button: "{resource.buttonText}"
+                <div className="p-4 sm:p-6 bg-white rounded-t-lg">
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="hidden sm:flex items-center text-gray-400">
+                      <GripVertical className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <h3 className="font-semibold text-gray-900 break-words">{resource.title}</h3>
+                        {getAudienceBadge(resource.audience)}
+                        {resource.category && getCategoryBadge(resource.category)}
+                        {!resource.isActive && (
+                          <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800">Inactive</span>
+                        )}
+                        {resource.resourceType === 'file' && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700">
+                            <FileText className="h-3 w-3" />
+                            File
                           </span>
-                          <a
-                            href={resource.resourceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-[#0077B6] hover:underline text-xs"
-                          >
-                            <ExternalLink className="h-3 w-3" />
-                            View Resource
-                          </a>
-                        </div>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">{resource.description}</p>
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm">
+                        <span className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">
+                          Button: "{resource.buttonText}"
+                        </span>
+                        <a
+                          href={resource.resourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-[#0077B6] hover:underline text-xs"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          View Resource
+                        </a>
                       </div>
                     </div>
                   </div>
                 </div>
                 {/* Dark Footer with Actions */}
-                <div className="px-6 py-3 flex items-center justify-end gap-2 rounded-b-lg" style={{ backgroundColor: brandColor }}>
+                <div className="px-4 sm:px-6 py-3 flex flex-wrap items-center justify-end gap-2 rounded-b-lg" style={{ backgroundColor: brandColor }}>
                   <Button
                     variant="outline"
                     size="sm"
@@ -638,18 +636,18 @@ export default function AdminResourcesPage() {
               </Select>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-gray-200">
               <Button
                 variant="outline"
                 onClick={() => {
                   setShowCreateModal(false)
                   resetForm()
                 }}
-                className="rounded-lg"
+                className="rounded-lg w-full sm:w-auto"
               >
                 Cancel
               </Button>
-              <Button className="rounded-lg" style={{ backgroundColor: brandColor }} onClick={handleCreate} disabled={isSaving}>
+              <Button className="rounded-lg w-full sm:w-auto" style={{ backgroundColor: brandColor }} onClick={handleCreate} disabled={isSaving}>
                 {isSaving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -806,7 +804,7 @@ export default function AdminResourcesPage() {
               </Select>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-gray-200">
               <Button
                 variant="outline"
                 onClick={() => {
@@ -814,11 +812,11 @@ export default function AdminResourcesPage() {
                   setSelectedResource(null)
                   resetForm()
                 }}
-                className="rounded-lg"
+                className="rounded-lg w-full sm:w-auto"
               >
                 Cancel
               </Button>
-              <Button className="rounded-lg" style={{ backgroundColor: brandColor }} onClick={handleEdit} disabled={isSaving}>
+              <Button className="rounded-lg w-full sm:w-auto" style={{ backgroundColor: brandColor }} onClick={handleEdit} disabled={isSaving}>
                 {isSaving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -835,7 +833,7 @@ export default function AdminResourcesPage() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="p-0 overflow-hidden rounded-lg">
+        <AlertDialogContent className="p-0 overflow-hidden rounded-lg max-w-md">
           <div className="bg-red-600 px-6 py-4 rounded-t-lg">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-white font-semibold">Delete Resource?</AlertDialogTitle>
@@ -848,11 +846,11 @@ export default function AdminResourcesPage() {
             <p className="text-gray-700">
               Are you sure you want to delete "<span className="font-semibold">{selectedResource?.title}</span>"?
             </p>
-            <AlertDialogFooter className="mt-4">
-              <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+            <AlertDialogFooter className="mt-4 flex-col-reverse sm:flex-row gap-2 sm:gap-0">
+              <AlertDialogCancel className="rounded-lg w-full sm:w-auto">Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDelete}
-                className="bg-red-600 hover:bg-red-700 rounded-lg"
+                className="bg-red-600 hover:bg-red-700 rounded-lg w-full sm:w-auto"
                 disabled={isDeleting}
               >
                 {isDeleting ? (

@@ -50,18 +50,18 @@ export default function AdminToolsPage() {
     const Icon = currentTool.icon
     return (
       <div className="h-[calc(100vh-2rem)] flex flex-col">
-        <div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 border-b border-gray-200 pb-4">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setActiveTool(null)}
-              className="hover:bg-gray-100 rounded-lg"
+              className="hover:bg-gray-100 rounded-lg flex-shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div>
-              <h1 className="dot-matrix text-2xl text-gray-900">{currentTool.name}</h1>
+            <div className="min-w-0">
+              <h1 className="dot-matrix text-xl sm:text-2xl text-gray-900">{currentTool.name}</h1>
               <p className="text-sm text-gray-500">{currentTool.subtitle}</p>
             </div>
           </div>
@@ -69,7 +69,7 @@ export default function AdminToolsPage() {
             variant="outline"
             size="sm"
             onClick={() => window.open(currentTool.url, '_blank')}
-            className="rounded-lg"
+            className="rounded-lg w-full sm:w-auto"
           >
             <ExternalLink className="h-4 w-4 mr-2" />
             Open in New Tab
@@ -77,10 +77,10 @@ export default function AdminToolsPage() {
         </div>
         <div className="flex-1 overflow-hidden border-0">
           <Card className="h-full border-0 overflow-hidden rounded-lg">
-            <div className={`${currentTool.bgColor} px-6 py-3 flex items-center gap-3 rounded-t-lg`}>
-              <Icon className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold">{currentTool.name}</span>
-              <span className="text-white/70 text-sm">- {currentTool.subtitle}</span>
+            <div className={`${currentTool.bgColor} px-4 sm:px-6 py-3 flex items-center gap-2 sm:gap-3 rounded-t-lg`}>
+              <Icon className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold truncate">{currentTool.name}</span>
+              <span className="text-white/70 text-sm hidden sm:inline">- {currentTool.subtitle}</span>
             </div>
             <iframe
               src={currentTool.url}
@@ -112,7 +112,7 @@ export default function AdminToolsPage() {
           <Bot className="h-4 w-4 text-[#0077B6]" />
           Agent Tools
         </h2>
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
           {agentTools.map((tool) => {
             const Icon = tool.icon
             return (
@@ -121,14 +121,14 @@ export default function AdminToolsPage() {
                 className="border-0 overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg group"
                 onClick={() => setActiveTool(tool.id)}
               >
-                <div className={`${tool.bgColor} px-6 py-3 flex items-center justify-between rounded-t-lg`}>
-                  <div className="flex items-center gap-3">
-                    <Icon className="h-5 w-5 text-white" />
-                    <span className="text-white font-semibold">{tool.name}</span>
+                <div className={`${tool.bgColor} px-4 sm:px-6 py-3 flex items-center justify-between rounded-t-lg`}>
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <Icon className="h-5 w-5 text-white flex-shrink-0" />
+                    <span className="text-white font-semibold truncate">{tool.name}</span>
                   </div>
-                  <ExternalLink className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
+                  <ExternalLink className="h-4 w-4 text-white/70 group-hover:text-white transition-colors flex-shrink-0" />
                 </div>
-                <CardContent className="p-6 bg-white rounded-b-lg">
+                <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
                   <p className="text-sm font-medium text-gray-700">{tool.subtitle}</p>
                   <p className="text-gray-500 text-sm mt-2">{tool.description}</p>
                 </CardContent>
@@ -144,7 +144,7 @@ export default function AdminToolsPage() {
           <Bot className="h-4 w-4 text-emerald-600" />
           Realtor Tools
         </h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
           {realtorTools.map((tool) => {
             const Icon = tool.icon
             return (
@@ -153,14 +153,14 @@ export default function AdminToolsPage() {
                 className="border-0 overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg group"
                 onClick={() => setActiveTool(tool.id)}
               >
-                <div className={`${tool.bgColor} px-6 py-3 flex items-center justify-between rounded-t-lg`}>
-                  <div className="flex items-center gap-3">
-                    <Icon className="h-5 w-5 text-white" />
-                    <span className="text-white font-semibold">{tool.name}</span>
+                <div className={`${tool.bgColor} px-4 sm:px-6 py-3 flex items-center justify-between rounded-t-lg`}>
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <Icon className="h-5 w-5 text-white flex-shrink-0" />
+                    <span className="text-white font-semibold truncate">{tool.name}</span>
                   </div>
-                  <ExternalLink className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
+                  <ExternalLink className="h-4 w-4 text-white/70 group-hover:text-white transition-colors flex-shrink-0" />
                 </div>
-                <CardContent className="p-6 bg-white rounded-b-lg">
+                <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
                   <p className="text-sm font-medium text-gray-700">{tool.subtitle}</p>
                   <p className="text-gray-500 text-sm mt-2">{tool.description}</p>
                 </CardContent>

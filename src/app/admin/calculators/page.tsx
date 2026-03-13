@@ -108,7 +108,7 @@ export default function AdminCalculatorsPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
         {calculators.map((calc) => {
           const Icon = calc.icon
           const isActive = activeCalculator === calc.id
@@ -121,16 +121,16 @@ export default function AdminCalculatorsPage() {
               onClick={() => setActiveCalculator(calc.id)}
             >
               <div
-                className={`px-4 py-3 flex items-center justify-center rounded-t-lg ${
+                className={`px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-center rounded-t-lg ${
                   isActive ? '' : 'bg-gray-100'
                 }`}
                 style={isActive ? { backgroundColor: brandColor } : undefined}
               >
-                <Icon className={`h-6 w-6 ${isActive ? 'text-white' : 'text-gray-600'}`} />
+                <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${isActive ? 'text-white' : 'text-gray-600'}`} />
               </div>
-              <CardContent className="p-3 bg-white rounded-b-lg">
+              <CardContent className="p-2 sm:p-3 bg-white rounded-b-lg">
                 <h3
-                  className={`text-xs text-center ${
+                  className={`text-[10px] sm:text-xs text-center leading-tight ${
                     isActive ? 'font-semibold' : 'text-gray-700'
                   }`}
                   style={isActive ? { color: brandColor } : undefined}
@@ -144,17 +144,17 @@ export default function AdminCalculatorsPage() {
       </div>
 
       <Card className="border-0 overflow-hidden rounded-lg">
-        <div className="px-6 py-3 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+        <div className="px-4 sm:px-6 py-3 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
           {activeCalc && (
             <>
-              <activeCalc.icon className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold">
+              <activeCalc.icon className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base truncate">
                 {activeCalc.name}
               </span>
             </>
           )}
         </div>
-        <CardContent className="p-6 bg-white rounded-b-lg">
+        <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
           <BendigiCalculator toolId={activeCalculator} />
         </CardContent>
       </Card>
