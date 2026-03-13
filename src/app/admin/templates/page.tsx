@@ -143,6 +143,8 @@ export default function AdminTemplatesPage() {
         return 'bg-pink-100 text-pink-700 border-pink-200'
       case 'print':
         return 'bg-indigo-100 text-indigo-700 border-indigo-200'
+      case 'other':
+        return 'bg-slate-100 text-slate-700 border-slate-200'
       default:
         return 'bg-gray-100 text-gray-700 border-gray-200'
     }
@@ -152,6 +154,10 @@ export default function AdminTemplatesPage() {
     switch (category) {
       case 'social-media':
         return 'social'
+      case 'business-card':
+        return 'business cards'
+      case 'other':
+        return 'other'
       default:
         return category
     }
@@ -272,6 +278,7 @@ export default function AdminTemplatesPage() {
             <SelectItem value="guide">Guide</SelectItem>
             <SelectItem value="business-card">Business Cards</SelectItem>
             <SelectItem value="print">Print Materials</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>
         <Select value={formatFilter} onValueChange={setFormatFilter}>

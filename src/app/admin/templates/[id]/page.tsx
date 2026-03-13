@@ -391,6 +391,7 @@ export default function TemplateDetailPage() {
       case 'video': return 'bg-red-100 text-red-700 border border-red-200'
       case 'business-card': return 'bg-pink-100 text-pink-700 border border-pink-200'
       case 'print': return 'bg-indigo-100 text-indigo-700 border border-indigo-200'
+      case 'other': return 'bg-slate-100 text-slate-700 border border-slate-200'
       default: return 'bg-gray-100 text-gray-700 border border-gray-200'
     }
   }
@@ -533,6 +534,7 @@ export default function TemplateDetailPage() {
                     <SelectItem value="guide">Guide</SelectItem>
                     <SelectItem value="business-card">Business Cards</SelectItem>
                     <SelectItem value="print">Print Materials</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
