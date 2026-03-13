@@ -20,7 +20,6 @@ import {
   Briefcase,
   Loader2,
   StickyNote,
-  List,
   Save,
   Lock,
 } from 'lucide-react'
@@ -130,23 +129,40 @@ export default function RealtorDashboardPage() {
     }
   }
 
-  const insertBullet = () => {
-    const textarea = notesRef.current
-    if (!textarea) return
+  const handleNotesKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter') {
+      const textarea = notesRef.current
+      if (!textarea) return
 
-    const start = textarea.selectionStart
-    const lineStart = notes.lastIndexOf('\n', start - 1) + 1
-    const beforeLine = notes.substring(0, lineStart)
-    const afterStart = notes.substring(lineStart)
-    const newText = beforeLine + '• ' + afterStart
-    const cursorOffset = start + 2
+      const start = textarea.selectionStart
+      const lineStart = notes.lastIndexOf('\n', start - 1) + 1
+      const currentLine = notes.substring(lineStart, start)
 
-    setNotes(newText)
+      // Check if current line starts with a bullet
+      if (currentLine.startsWith('• ')) {
+        e.preventDefault()
 
-    setTimeout(() => {
-      textarea.focus()
-      textarea.setSelectionRange(cursorOffset, cursorOffset)
-    }, 0)
+        // If the line is just "• " (empty bullet), remove it instead of adding another
+        if (currentLine.trim() === '•') {
+          const beforeLine = notes.substring(0, lineStart)
+          const afterCursor = notes.substring(start)
+          setNotes(beforeLine + afterCursor)
+          setTimeout(() => {
+            textarea.setSelectionRange(lineStart, lineStart)
+          }, 0)
+        } else {
+          // Add new line with bullet
+          const beforeCursor = notes.substring(0, start)
+          const afterCursor = notes.substring(start)
+          const newText = beforeCursor + '\n• ' + afterCursor
+          setNotes(newText)
+          setTimeout(() => {
+            const newPos = start + 3 // \n + • + space
+            textarea.setSelectionRange(newPos, newPos)
+          }, 0)
+        }
+      }
+    }
   }
 
   const quickLinks = [
@@ -410,26 +426,27 @@ export default function RealtorDashboardPage() {
                 </p>
               </div>
 
-              {/* Formatting Toolbar */}
-              <div className="flex items-center gap-1 border-b border-gray-200 pb-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 rounded-lg"
-                  onClick={insertBullet}
-                  title="Add bullet point"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </div>
-
               {/* Notes Textarea */}
               <Textarea
                 ref={notesRef}
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Write your personal notes here..."
+                onChange={(e) => {
+                  const newValue = e.target.value
+                  // If user starts typing in empty field, auto-add bullet
+                  if (!notes && newValue.length === 1 && newValue !== '•') {
+                    setNotes('• ' + newValue)
+                    setTimeout(() => {
+                      const textarea = notesRef.current
+                      if (textarea) {
+                        textarea.setSelectionRange(3, 3)
+                      }
+                    }, 0)
+                  } else {
+                    setNotes(newValue)
+                  }
+                }}
+                onKeyDown={handleNotesKeyDown}
+                placeholder="• Start typing your notes..."
                 className="min-h-[150px] text-sm rounded-lg resize-none"
               />
 

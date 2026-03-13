@@ -522,16 +522,20 @@ export default function AdminAgentsPage() {
               </div>
 
               <div className="p-6 space-y-6">
-                {/* Contact & Stats Grid */}
+                {/* Email - Full Width */}
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Email</p>
+                  <a href={`mailto:${agentDetails.email}`} className="text-gray-700 text-base hover:text-blue-600 hover:underline break-all">{agentDetails.email}</a>
+                </div>
+
+                {/* Phone - Full Width */}
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Phone</p>
+                  <p className="text-gray-700 text-base">{agentDetails.phone || 'N/A'}</p>
+                </div>
+
+                {/* Stats Grid */}
                 <div className="grid grid-cols-2 gap-5">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-gray-500">Email</p>
-                    <a href={`mailto:${agentDetails.email}`} className="text-gray-700 text-base truncate block hover:text-blue-600 hover:underline">{agentDetails.email}</a>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-gray-500">Phone</p>
-                    <p className="text-gray-700 text-base">{agentDetails.phone || 'N/A'}</p>
-                  </div>
                   <div className="space-y-1">
                     <p className="text-sm font-medium text-gray-500">Joined</p>
                     <p className="text-gray-700 text-base">{formatDate(agentDetails.createdAt)}</p>
