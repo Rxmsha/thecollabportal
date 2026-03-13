@@ -361,7 +361,7 @@ export default function RealtorDetailModal({
         ) : details ? (
           <div className="p-6 space-y-5">
             {/* Header - Avatar, Name, Brokerage, Status */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="h-14 w-14 bg-[#1a2332] rounded-lg flex items-center justify-center text-white font-semibold text-lg">
                   {details.firstName[0]}{details.lastName[0]}
@@ -379,7 +379,7 @@ export default function RealtorDetailModal({
             </div>
 
             {/* Info Grid - 2 columns */}
-            <div className="grid grid-cols-2 gap-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div>
                 <Label className="text-xs text-gray-500 font-medium">Email</Label>
                 <p className="text-sm text-gray-900 mt-1">{details.email}</p>
@@ -396,7 +396,7 @@ export default function RealtorDetailModal({
                 <Label className="text-xs text-gray-500 font-medium">Last Active</Label>
                 <p className="text-sm text-gray-900 mt-1">{details.activatedAt ? formatDate(details.activatedAt) : 'Never'}</p>
               </div>
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <Label className="text-xs text-gray-500 font-medium">Area Serviced</Label>
                 <p className="text-sm text-gray-900 mt-1">{details.areaServiced || '-'}</p>
               </div>

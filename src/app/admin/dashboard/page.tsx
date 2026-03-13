@@ -212,7 +212,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Primary Stats Grid - 4 cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border-0 overflow-hidden">
           <CardContent className="p-0">
             <div className="p-4 bg-white">
@@ -335,7 +335,7 @@ export default function AdminDashboardPage() {
       </Card>
 
       {/* Popular Content */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
         {/* Most Clicked Resources */}
         <Card className="border-0 overflow-hidden">
           <div className="p-4 border-b border-gray-100">
@@ -420,7 +420,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Three Column Layout */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Recently Added Agents */}
         <Card className="border-0 overflow-hidden">
           <div className="p-4 border-b border-gray-100">

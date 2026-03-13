@@ -93,12 +93,12 @@ export default function NewTemplatePage() {
           variant="ghost"
           size="icon"
           onClick={() => router.push('/admin/templates')}
-          className="hover:bg-gray-100 rounded-lg"
+          className="hover:bg-gray-100 rounded-lg flex-shrink-0"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div>
-          <h1 className="dot-matrix text-2xl text-gray-900">Create New Template</h1>
+        <div className="min-w-0">
+          <h1 className="dot-matrix text-xl sm:text-2xl text-gray-900">Create New Template</h1>
           <p className="text-sm text-gray-500 mt-1">Add a new template to the library</p>
         </div>
       </div>
@@ -121,7 +121,7 @@ export default function NewTemplatePage() {
           </div>
 
           {/* Category and Format */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-600">Category</Label>
               <Select
@@ -240,7 +240,7 @@ export default function NewTemplatePage() {
               value={template.status}
               onValueChange={(value) => setTemplate((prev) => ({ ...prev, status: value as 'draft' | 'published' }))}
             >
-              <SelectTrigger className="w-48 rounded-lg">
+              <SelectTrigger className="w-full sm:w-48 rounded-lg">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="rounded-lg">
@@ -265,18 +265,18 @@ export default function NewTemplatePage() {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t border-gray-200">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4 border-t border-gray-200">
             <Button
               variant="outline"
               onClick={() => router.push('/admin/templates')}
-              className="rounded-lg"
+              className="rounded-lg w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               onClick={handleCreate}
               disabled={isCreating || !template.title.trim()}
-              className="rounded-lg"
+              className="rounded-lg w-full sm:w-auto"
               style={{ backgroundColor: brandColor }}
             >
               {isCreating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}

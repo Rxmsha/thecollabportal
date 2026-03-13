@@ -76,9 +76,10 @@ const realtorBottomItems: NavItem[] = [
 interface SidebarProps {
   collapsed?: boolean
   onCollapsedChange?: (collapsed: boolean) => void
+  onNavigate?: () => void
 }
 
-export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) {
+export function Sidebar({ collapsed = false, onCollapsedChange, onNavigate }: SidebarProps) {
   const pathname = usePathname()
   const { user, logout } = useAuth()
   const { brandColor, brandColorHover, logo, profilePhoto } = useBranding()
@@ -137,6 +138,7 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
       <Link
         key={item.name}
         href={item.href}
+        onClick={onNavigate}
         className={`flex items-center gap-3 px-3 py-2 text-sm transition-colors relative group rounded-lg ${
           isCollapsed ? 'justify-center px-2' : ''
         } ${
@@ -161,7 +163,7 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
 
   return (
     <aside
-      className={`h-screen text-white flex flex-col fixed left-0 top-0 transition-all duration-300 z-40 ${
+      className={`h-screen text-white flex flex-col transition-all duration-300 ${
         isCollapsed ? 'w-16' : 'w-64'
       }`}
       style={{ backgroundColor: brandColor }}
@@ -189,10 +191,10 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
         </div>
       </div>
 
-      {/* Collapse Toggle Button */}
+      {/* Collapse Toggle Button - hidden on mobile */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-20 w-6 h-6 border border-white/20 rounded-full flex items-center justify-center cursor-pointer z-10 transition-colors"
+        className="absolute -right-3 top-20 w-6 h-6 border border-white/20 rounded-full hidden lg:flex items-center justify-center cursor-pointer z-10 transition-colors"
         style={{ backgroundColor: brandColor }}
         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColorHover}
         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = brandColor}

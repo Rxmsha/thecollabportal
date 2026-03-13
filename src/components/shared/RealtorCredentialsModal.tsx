@@ -60,7 +60,7 @@ export default function RealtorCredentialsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md p-0" closeClassName="text-white hover:text-gray-300">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-0" closeClassName="text-white hover:text-gray-300">
         <DialogHeader className="bg-[#1a2332] text-white p-6">
           <DialogTitle className="font-mono text-lg font-bold uppercase tracking-wider">
             {isReactivation ? 'Realtor Reactivated' : 'Realtor Invited'}

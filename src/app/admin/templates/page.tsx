@@ -166,7 +166,7 @@ export default function AdminTemplatesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-4">
         <div>
           <h1 className="dot-matrix text-2xl text-gray-900">Templates</h1>
           <p className="text-sm text-gray-500 mt-1">
@@ -176,7 +176,7 @@ export default function AdminTemplatesPage() {
         <Button
           style={{ backgroundColor: brandColor }}
           onClick={() => router.push('/admin/templates/new')}
-          className="rounded-lg"
+          className="rounded-lg w-full sm:w-auto"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Template
@@ -185,7 +185,7 @@ export default function AdminTemplatesPage() {
 
       {/* Selection Bar - Shows when templates are selected */}
       {selectedIds.length > 0 && (
-        <div className="flex items-center justify-between bg-[#0077B6]/10 border border-[#0077B6]/20 rounded-lg px-4 py-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-[#0077B6]/10 border border-[#0077B6]/20 rounded-lg px-4 py-3">
           <div className="flex items-center gap-3">
             <span className="text-sm font-medium text-[#0077B6]">
               {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''} selected
@@ -194,10 +194,10 @@ export default function AdminTemplatesPage() {
               {selectedIds.length === templates.length ? 'Deselect All' : 'Select All'}
             </Button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {showDeleteConfirm ? (
               <>
-                <span className="text-sm text-red-600 mr-2">Delete {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''}?</span>
+                <span className="text-sm text-red-600 mr-2 w-full sm:w-auto">Delete {selectedIds.length} template{selectedIds.length !== 1 ? 's' : ''}?</span>
                 <Button
                   variant="outline"
                   size="sm"
@@ -244,18 +244,18 @@ export default function AdminTemplatesPage() {
       )}
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3">
-        <div className="relative">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-3">
+        <div className="relative sm:col-span-2 lg:w-auto">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Search templates..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 w-[200px] bg-white rounded-lg"
+            className="pl-10 w-full lg:w-[200px] bg-white rounded-lg"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[140px] bg-white rounded-lg">
+          <SelectTrigger className="w-full lg:w-[140px] bg-white rounded-lg">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent className="rounded-lg">
@@ -265,7 +265,7 @@ export default function AdminTemplatesPage() {
           </SelectContent>
         </Select>
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-[160px] bg-white rounded-lg">
+          <SelectTrigger className="w-full lg:w-[160px] bg-white rounded-lg">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent className="rounded-lg">
@@ -282,7 +282,7 @@ export default function AdminTemplatesPage() {
           </SelectContent>
         </Select>
         <Select value={formatFilter} onValueChange={setFormatFilter}>
-          <SelectTrigger className="w-[140px] bg-white rounded-lg">
+          <SelectTrigger className="w-full sm:col-span-2 lg:col-span-1 lg:w-[140px] bg-white rounded-lg">
             <SelectValue placeholder="All Formats" />
           </SelectTrigger>
           <SelectContent className="rounded-lg">

@@ -382,13 +382,13 @@ export default function AdminAgentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-4">
         <div>
           <h1 className="dot-matrix text-2xl text-gray-900">Agents</h1>
           <p className="text-sm text-gray-500 mt-1">Manage all mortgage agents on the platform</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleRecalculateSeats} disabled={isRecalculating}>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={handleRecalculateSeats} disabled={isRecalculating} className="w-full sm:w-auto">
             {isRecalculating ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : (
@@ -396,7 +396,7 @@ export default function AdminAgentsPage() {
             )}
             Recalculate Seats
           </Button>
-          <Button style={{ backgroundColor: brandColor }} onClick={() => setShowCreateModal(true)}>
+          <Button style={{ backgroundColor: brandColor }} onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Create Agent
           </Button>
@@ -437,54 +437,93 @@ export default function AdminAgentsPage() {
               ))}
             </div>
           ) : filteredAgents.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="border-b border-gray-200 bg-gray-50">
-                  <tr>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Agent</th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Company</th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Status</th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Realtors</th>
-                    <th className="text-left p-4 text-sm font-semibold text-gray-600">Joined</th>
-                    <th className="text-right p-4 text-sm font-semibold text-gray-600">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredAgents.map((agent) => (
-                      <tr key={agent.id} className="hover:bg-gray-50/50">
-                        <td className="p-4">
-                          <div className="flex items-center gap-4">
-                            <div
-                              className="h-11 w-11 rounded-full flex items-center justify-center text-white text-sm font-semibold"
-                              style={{ backgroundColor: agent.brandColor || '#1a2332' }}
-                            >
-                              {agent.firstName[0]}{agent.lastName[0]}
+            <>
+              {/* Mobile Card View */}
+              <div className="md:hidden divide-y divide-gray-200">
+                {filteredAgents.map((agent) => (
+                  <div key={agent.id} className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div
+                          className="h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0"
+                          style={{ backgroundColor: agent.brandColor || '#1a2332' }}
+                        >
+                          {agent.firstName[0]}{agent.lastName[0]}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate">{agent.firstName} {agent.lastName}</p>
+                          <p className="text-xs text-gray-500 truncate">{agent.email}</p>
+                        </div>
+                      </div>
+                      {getStatusBadge(agent.status)}
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">{agent.companyName}</span>
+                      <div className="flex items-center gap-1.5 text-gray-600">
+                        <Users className="h-3.5 w-3.5" />
+                        <span>{agent.seatsUsed}/{agent.seatLimit}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-400">{formatDate(agent.createdAt)}</span>
+                      <Button variant="outline" size="sm" onClick={() => handleOpenDetails(agent.id)}>
+                        View Details
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b border-gray-200 bg-gray-50">
+                    <tr>
+                      <th className="text-left p-4 text-sm font-semibold text-gray-600">Agent</th>
+                      <th className="text-left p-4 text-sm font-semibold text-gray-600">Company</th>
+                      <th className="text-left p-4 text-sm font-semibold text-gray-600">Status</th>
+                      <th className="text-left p-4 text-sm font-semibold text-gray-600">Realtors</th>
+                      <th className="text-left p-4 text-sm font-semibold text-gray-600">Joined</th>
+                      <th className="text-right p-4 text-sm font-semibold text-gray-600">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {filteredAgents.map((agent) => (
+                        <tr key={agent.id} className="hover:bg-gray-50/50">
+                          <td className="p-4">
+                            <div className="flex items-center gap-4">
+                              <div
+                                className="h-11 w-11 rounded-full flex items-center justify-center text-white text-sm font-semibold"
+                                style={{ backgroundColor: agent.brandColor || '#1a2332' }}
+                              >
+                                {agent.firstName[0]}{agent.lastName[0]}
+                              </div>
+                              <div>
+                                <p className="text-base font-medium text-gray-900">{agent.firstName} {agent.lastName}</p>
+                                <p className="text-sm text-gray-500">{agent.email}</p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-base font-medium text-gray-900">{agent.firstName} {agent.lastName}</p>
-                              <p className="text-sm text-gray-500">{agent.email}</p>
+                          </td>
+                          <td className="p-4"><p className="text-base text-gray-700 font-medium">{agent.companyName}</p></td>
+                          <td className="p-4">{getStatusBadge(agent.status)}</td>
+                          <td className="p-4">
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4 text-gray-400" />
+                              <span className="text-base text-gray-700">{agent.seatsUsed}/{agent.seatLimit}</span>
                             </div>
-                          </div>
-                        </td>
-                        <td className="p-4"><p className="text-base text-gray-700 font-medium">{agent.companyName}</p></td>
-                        <td className="p-4">{getStatusBadge(agent.status)}</td>
-                        <td className="p-4">
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-gray-400" />
-                            <span className="text-base text-gray-700">{agent.seatsUsed}/{agent.seatLimit}</span>
-                          </div>
-                        </td>
-                        <td className="p-4 text-base text-gray-500">{formatDate(agent.createdAt)}</td>
-                        <td className="p-4 text-right">
-                          <Button variant="outline" className="text-sm font-medium rounded-lg border-gray-300 hover:bg-gray-100 hover:border-gray-400 h-9 px-4" onClick={() => handleOpenDetails(agent.id)}>
-                            View
-                          </Button>
-                        </td>
-                      </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                          </td>
+                          <td className="p-4 text-base text-gray-500">{formatDate(agent.createdAt)}</td>
+                          <td className="p-4 text-right">
+                            <Button variant="outline" className="text-sm font-medium rounded-lg border-gray-300 hover:bg-gray-100 hover:border-gray-400 h-9 px-4" onClick={() => handleOpenDetails(agent.id)}>
+                              View
+                            </Button>
+                          </td>
+                        </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           ) : (
             <div className="text-center py-12">
               <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
@@ -651,7 +690,7 @@ export default function AdminAgentsPage() {
 
       {/* Password Reset Credentials Modal */}
       <Dialog open={showCredentialsModal} onOpenChange={closeCredentialsModal}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Password Reset</DialogTitle>
             <DialogDescription>A new password has been generated and an email has been sent to the agent.</DialogDescription>
@@ -698,7 +737,7 @@ export default function AdminAgentsPage() {
 
       {/* Create Agent Modal */}
       <Dialog open={showCreateModal} onOpenChange={closeCreateModal}>
-        <DialogContent className="max-w-md p-0 rounded-lg overflow-hidden" closeClassName="text-white">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-0 rounded-lg" closeClassName="text-white">
           <div className="p-5" style={{ backgroundColor: brandColor }}>
             <h2 className="text-white text-lg font-semibold">Create New Agent</h2>
             <p className="text-gray-300 text-sm mt-1">Add a new mortgage agent to the platform</p>

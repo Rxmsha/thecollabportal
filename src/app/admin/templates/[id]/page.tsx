@@ -500,11 +500,11 @@ export default function TemplateDetailPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleCancelEdit} className="rounded-lg">
+          <Button variant="ghost" size="icon" onClick={handleCancelEdit} className="rounded-lg flex-shrink-0">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Edit Template</h1>
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Edit Template</h1>
             <p className="text-gray-500 mt-1">Update template information</p>
           </div>
         </div>
@@ -520,7 +520,7 @@ export default function TemplateDetailPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Category</Label>
                 <Select value={editData.category} onValueChange={(v) => setEditData({ ...editData, category: v as TemplateCategory })}>
@@ -610,9 +610,9 @@ export default function TemplateDetailPage() {
               </div>
             )}
 
-            <div className="flex gap-3 pt-4 border-t">
-              <Button variant="outline" onClick={handleCancelEdit} className="rounded-lg">Cancel</Button>
-              <Button onClick={handleSaveEdit} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 rounded-lg">
+            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4 border-t">
+              <Button variant="outline" onClick={handleCancelEdit} className="rounded-lg w-full sm:w-auto">Cancel</Button>
+              <Button onClick={handleSaveEdit} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 rounded-lg w-full sm:w-auto">
                 {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Save Changes
               </Button>
@@ -627,38 +627,41 @@ export default function TemplateDetailPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.push('/admin/templates')} className="rounded-lg">
+      <div className="border-b border-gray-200 pb-4 space-y-4">
+        {/* Top row: Back button + Title */}
+        <div className="flex items-start gap-3">
+          <Button variant="ghost" size="icon" onClick={() => router.push('/admin/templates')} className="rounded-lg flex-shrink-0 mt-0.5">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold text-gray-900">{template.title}</h1>
-              <span className={`px-3 py-1 text-sm font-medium rounded-full ${
-                template.status === 'published'
-                  ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                  : 'bg-amber-100 text-amber-700 border border-amber-200'
-              }`}>
-                {template.status === 'published' ? 'Published' : 'Draft'}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 mt-2">
-              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full capitalize ${getCategoryStyle(template.category)}`}>
-                {getCategoryIcon(template.category)}
-                {template.category === 'social-media' ? 'Social' : template.category}
-              </span>
-              <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 border border-gray-200">{template.format.toUpperCase()}</span>
-            </div>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 break-words">{template.title}</h1>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleStartEdit} className="rounded-lg">
-            <Pencil className="h-4 w-4 mr-2" />Edit
-          </Button>
-          <Button variant="outline" onClick={() => setShowDeleteConfirm(true)} className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg">
-            <Trash2 className="h-4 w-4" />
-          </Button>
+
+        {/* Tags and Actions row */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pl-11 sm:pl-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`px-3 py-1 text-sm font-medium rounded-full ${
+              template.status === 'published'
+                ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                : 'bg-amber-100 text-amber-700 border border-amber-200'
+            }`}>
+              {template.status === 'published' ? 'Published' : 'Draft'}
+            </span>
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full capitalize ${getCategoryStyle(template.category)}`}>
+              {getCategoryIcon(template.category)}
+              {template.category === 'social-media' ? 'Social' : template.category}
+            </span>
+            <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 border border-gray-200">{template.format.toUpperCase()}</span>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleStartEdit} className="rounded-lg">
+              <Pencil className="h-4 w-4 mr-2" />Edit
+            </Button>
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(true)} className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg">
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
