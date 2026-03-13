@@ -405,9 +405,8 @@ export default function AdminResourcesPage() {
                 <div className="p-6 bg-white rounded-t-lg">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-4 flex-1">
-                      <div className="flex items-center gap-2 text-gray-400">
+                      <div className="flex items-center text-gray-400">
                         <GripVertical className="h-5 w-5" />
-                        <span className="text-sm font-medium">{resource.displayOrder}</span>
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
