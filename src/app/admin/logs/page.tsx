@@ -327,16 +327,16 @@ export default function AdminLogsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4 border-b border-gray-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-4">
         <div>
           <h1 className="dot-matrix text-2xl text-gray-900">Usage Logs</h1>
           <p className="text-sm text-gray-500 mt-1">
             Track all activity across the platform
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="grid grid-cols-2 sm:flex gap-3">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-40 text-sm rounded-lg border-gray-300 bg-white">
+            <SelectTrigger className="w-full sm:w-40 text-sm rounded-lg border-gray-300 bg-white">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent className="rounded-lg">
@@ -347,7 +347,7 @@ export default function AdminLogsPage() {
             </SelectContent>
           </Select>
           <Select value={eventFilter} onValueChange={setEventFilter}>
-            <SelectTrigger className="w-64 text-sm rounded-lg border-gray-300 bg-white">
+            <SelectTrigger className="w-full sm:w-64 text-sm rounded-lg border-gray-300 bg-white">
               <SelectValue placeholder="Filter by event" />
             </SelectTrigger>
             <SelectContent className="rounded-lg">
@@ -377,61 +377,61 @@ export default function AdminLogsPage() {
       </div>
 
       {/* Stats summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <Card className="border-0 overflow-hidden rounded-lg">
-          <div className="px-4 py-2 flex items-center gap-2 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-            <Activity className="h-4 w-4 text-white" />
-            <span className="text-white text-sm font-medium">Total Events</span>
+          <div className="px-3 sm:px-4 py-2 flex items-center gap-2 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+            <Activity className="h-4 w-4 text-white flex-shrink-0" />
+            <span className="text-white text-xs sm:text-sm font-medium truncate">Total Events</span>
           </div>
-          <CardContent className="p-4 bg-white rounded-b-lg">
-            <div className="text-3xl font-bold" style={{ color: brandColor }}>{logs.length}</div>
+          <CardContent className="p-3 sm:p-4 bg-white rounded-b-lg">
+            <div className="text-2xl sm:text-3xl font-bold" style={{ color: brandColor }}>{logs.length}</div>
           </CardContent>
         </Card>
         <Card className="border-0 overflow-hidden rounded-lg">
-          <div className="bg-[#0077B6] px-4 py-2 flex items-center gap-2 rounded-t-lg">
-            <Users className="h-4 w-4 text-white" />
-            <span className="text-white text-sm font-medium">Agent Events</span>
+          <div className="bg-[#0077B6] px-3 sm:px-4 py-2 flex items-center gap-2 rounded-t-lg">
+            <Users className="h-4 w-4 text-white flex-shrink-0" />
+            <span className="text-white text-xs sm:text-sm font-medium truncate">Agent Events</span>
           </div>
-          <CardContent className="p-4 bg-white rounded-b-lg">
-            <div className="text-3xl font-bold text-[#0077B6]">{agentCount}</div>
+          <CardContent className="p-3 sm:p-4 bg-white rounded-b-lg">
+            <div className="text-2xl sm:text-3xl font-bold text-[#0077B6]">{agentCount}</div>
           </CardContent>
         </Card>
         <Card className="border-0 overflow-hidden rounded-lg">
-          <div className="bg-orange-600 px-4 py-2 flex items-center gap-2 rounded-t-lg">
-            <Home className="h-4 w-4 text-white" />
-            <span className="text-white text-sm font-medium">Realtor Events</span>
+          <div className="bg-orange-600 px-3 sm:px-4 py-2 flex items-center gap-2 rounded-t-lg">
+            <Home className="h-4 w-4 text-white flex-shrink-0" />
+            <span className="text-white text-xs sm:text-sm font-medium truncate">Realtor Events</span>
           </div>
-          <CardContent className="p-4 bg-white rounded-b-lg">
-            <div className="text-3xl font-bold text-orange-600">{realtorCount}</div>
+          <CardContent className="p-3 sm:p-4 bg-white rounded-b-lg">
+            <div className="text-2xl sm:text-3xl font-bold text-orange-600">{realtorCount}</div>
           </CardContent>
         </Card>
         <Card className="border-0 overflow-hidden rounded-lg">
-          <div className="bg-purple-600 px-4 py-2 flex items-center gap-2 rounded-t-lg">
-            <LayoutTemplate className="h-4 w-4 text-white" />
-            <span className="text-white text-sm font-medium">Template Events</span>
+          <div className="bg-purple-600 px-3 sm:px-4 py-2 flex items-center gap-2 rounded-t-lg">
+            <LayoutTemplate className="h-4 w-4 text-white flex-shrink-0" />
+            <span className="text-white text-xs sm:text-sm font-medium truncate">Template Events</span>
           </div>
-          <CardContent className="p-4 bg-white rounded-b-lg">
-            <div className="text-3xl font-bold text-purple-600">{templateCount}</div>
+          <CardContent className="p-3 sm:p-4 bg-white rounded-b-lg">
+            <div className="text-2xl sm:text-3xl font-bold text-purple-600">{templateCount}</div>
           </CardContent>
         </Card>
       </div>
 
       <Card className="border-0 overflow-hidden rounded-lg">
-        <div className="px-6 py-3 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-          <Activity className="h-5 w-5 text-white" />
-          <span className="text-white font-semibold">Activity Log</span>
-          <span className="text-white/60 text-sm ml-auto">
+        <div className="px-4 sm:px-6 py-3 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+          <Activity className="h-5 w-5 text-white flex-shrink-0" />
+          <span className="text-white font-semibold text-sm sm:text-base">Activity Log</span>
+          <span className="text-white/60 text-xs sm:text-sm ml-auto">
             {filteredLogs.length} {filteredLogs.length === 1 ? 'entry' : 'entries'}
-            {totalPages > 1 && ` • Page ${currentPage} of ${totalPages}`}
+            <span className="hidden sm:inline">{totalPages > 1 && ` • Page ${currentPage} of ${totalPages}`}</span>
           </span>
         </div>
         <CardContent className="p-0 bg-white rounded-b-lg">
           {isLoading ? (
-            <div className="p-6 space-y-4">
+            <div className="p-4 sm:p-6 space-y-4">
               {[...Array(10)].map((_, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <div className="h-10 w-10 bg-gray-100 rounded-lg animate-pulse" />
-                  <div className="flex-1 space-y-2">
+                <div key={i} className="flex items-center gap-3 sm:gap-4">
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gray-100 rounded-lg animate-pulse flex-shrink-0" />
+                  <div className="flex-1 min-w-0 space-y-2">
                     <div className="h-4 bg-gray-100 rounded w-1/3 animate-pulse" />
                     <div className="h-3 bg-gray-100 rounded w-2/3 animate-pulse" />
                   </div>
@@ -448,36 +448,36 @@ export default function AdminLogsPage() {
                 return (
                   <div
                     key={log.id}
-                    className="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors"
+                    className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 hover:bg-gray-50 transition-colors"
                   >
                     <div
-                      className={`h-10 w-10 rounded-lg ${config.bgColor} flex items-center justify-center flex-shrink-0`}
+                      className={`h-8 w-8 sm:h-10 sm:w-10 rounded-lg ${config.bgColor} flex items-center justify-center flex-shrink-0`}
                     >
-                      <IconComponent className="h-5 w-5 text-white" />
+                      <IconComponent className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border ${config.color} border-current bg-white`}>
+                        <span className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full border ${config.color} border-current bg-white`}>
                           {config.label}
                         </span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-[10px] sm:text-xs text-gray-400">
                           {formatDateTime(log.createdAt)}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-700 mb-2">{description}</p>
-                      <div className="flex gap-3 text-xs flex-wrap items-center">
+                      <p className="text-xs sm:text-sm text-gray-700 mb-2">{description}</p>
+                      <div className="flex gap-2 sm:gap-3 text-xs flex-wrap items-center">
                         {/* Show agent info only for agent events */}
                         {config.category === 'agent' && log.agentId && (
                           <>
                             <Link
                               href={`/admin/agents?id=${log.agentId}`}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#0077B6]/10 text-[#0077B6] text-xs font-medium hover:bg-[#0077B6]/20 transition-colors"
+                              className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#0077B6]/10 text-[#0077B6] text-[10px] sm:text-xs font-medium hover:bg-[#0077B6]/20 transition-colors"
                             >
                               <span>Agent</span>
                               <span>#{log.agentId}</span>
                             </Link>
                             {(log.agent?.email || log.details?.agent_email) && (
-                              <span className="text-gray-500">{log.agent?.email || log.details?.agent_email}</span>
+                              <span className="text-gray-500 text-[10px] sm:text-xs truncate max-w-[150px] sm:max-w-none">{log.agent?.email || log.details?.agent_email}</span>
                             )}
                           </>
                         )}
@@ -486,13 +486,13 @@ export default function AdminLogsPage() {
                           <>
                             <Link
                               href={`/admin/realtors?id=${log.realtorId}`}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-600/10 text-orange-600 text-xs font-medium hover:bg-orange-600/20 transition-colors"
+                              className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-orange-600/10 text-orange-600 text-[10px] sm:text-xs font-medium hover:bg-orange-600/20 transition-colors"
                             >
                               <span>Realtor</span>
                               <span>#{log.realtorId}</span>
                             </Link>
                             {(log.realtor?.email || log.details?.realtor_email) && (
-                              <span className="text-gray-500">{log.realtor?.email || log.details?.realtor_email}</span>
+                              <span className="text-gray-500 text-[10px] sm:text-xs truncate max-w-[150px] sm:max-w-none">{log.realtor?.email || log.details?.realtor_email}</span>
                             )}
                           </>
                         )}
@@ -500,7 +500,7 @@ export default function AdminLogsPage() {
                         {config.category === 'template' && log.templateId && (
                           <Link
                             href={`/admin/templates/${log.templateId}`}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-600/10 text-purple-600 text-xs font-medium hover:bg-purple-600/20 transition-colors"
+                            className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-purple-600/10 text-purple-600 text-[10px] sm:text-xs font-medium hover:bg-purple-600/20 transition-colors"
                           >
                             <span>Template</span>
                             <span>#{log.templateId}</span>
@@ -513,10 +513,10 @@ export default function AdminLogsPage() {
               })}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <Activity className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 font-medium">No activity logs found</p>
-              <p className="text-gray-400 text-sm mt-1">
+            <div className="text-center py-8 sm:py-12 px-4">
+              <Activity className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 font-medium text-sm sm:text-base">No activity logs found</p>
+              <p className="text-gray-400 text-xs sm:text-sm mt-1">
                 {eventFilter !== 'all' && 'Try changing the filter to see more logs'}
               </p>
             </div>
@@ -525,17 +525,17 @@ export default function AdminLogsPage() {
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200 rounded-b-lg">
-            <div className="text-sm text-gray-500">
+          <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-gray-200 rounded-b-lg">
+            <div className="text-xs sm:text-sm text-gray-500 order-2 sm:order-1">
               Showing {startIndex + 1}-{Math.min(endIndex, filteredLogs.length)} of {filteredLogs.length}
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 order-1 sm:order-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
-                className="rounded-lg"
+                className="rounded-lg hidden sm:flex"
               >
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
@@ -549,8 +549,8 @@ export default function AdminLogsPage() {
                 <ChevronLeft className="h-4 w-4" />
               </Button>
 
-              {/* Page numbers */}
-              <div className="flex items-center gap-1 mx-2">
+              {/* Page numbers - simplified on mobile */}
+              <div className="flex items-center gap-1 mx-1 sm:mx-2">
                 {Array.from({ length: totalPages }, (_, i) => i + 1)
                   .filter(page => {
                     // Show first, last, current, and adjacent pages
@@ -564,13 +564,13 @@ export default function AdminLogsPage() {
                     return (
                       <React.Fragment key={page}>
                         {showEllipsisBefore && (
-                          <span className="px-2 text-gray-400">...</span>
+                          <span className="px-1 sm:px-2 text-gray-400 text-sm">...</span>
                         )}
                         <Button
                           variant={currentPage === page ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => setCurrentPage(page)}
-                          className="rounded-lg min-w-[36px]"
+                          className="rounded-lg min-w-[32px] sm:min-w-[36px] text-xs sm:text-sm"
                           style={currentPage === page ? { backgroundColor: brandColor } : undefined}
                         >
                           {page}
@@ -594,7 +594,7 @@ export default function AdminLogsPage() {
                 size="sm"
                 onClick={() => setCurrentPage(totalPages)}
                 disabled={currentPage === totalPages}
-                className="rounded-lg"
+                className="rounded-lg hidden sm:flex"
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>
