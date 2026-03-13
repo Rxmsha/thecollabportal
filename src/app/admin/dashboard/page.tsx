@@ -59,6 +59,10 @@ export default function AdminDashboardPage() {
   const [realtorsThisMonth, setRealtorsThisMonth] = useState(0)
   const [recentLogs, setRecentLogs] = useState<any[]>([])
   const [recentErrors, setRecentErrors] = useState<any[]>([])
+  const [popularContent, setPopularContent] = useState<{
+    popularResources: Array<{ id: number; title: string; category: string; clickCount: number }>
+    popularTemplates: Array<{ id: number; title: string; category: string; clickCount: number }>
+  }>({ popularResources: [], popularTemplates: [] })
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -67,10 +71,11 @@ export default function AdminDashboardPage() {
 
   const loadDashboardData = async () => {
     try {
-      const [statsRes, logsRes, errorsRes] = await Promise.all([
+      const [statsRes, logsRes, errorsRes, popularRes] = await Promise.all([
         xano.getAdminStats(),
         xano.getUsageLogs({ limit: 5 }),
         xano.getErrorLogs({ resolved: false }),
+        xano.getPopularContent(5),
       ])
 
       if (statsRes.data) {
@@ -131,6 +136,13 @@ export default function AdminDashboardPage() {
 
       if (errorsRes.data) {
         setRecentErrors(errorsRes.data.slice(0, 3))
+      }
+
+      if (popularRes.data) {
+        setPopularContent({
+          popularResources: popularRes.data.popularResources || [],
+          popularTemplates: popularRes.data.popularTemplates || [],
+        })
       }
     } catch (error) {
       console.error('Failed to load dashboard data:', error)
@@ -314,6 +326,91 @@ export default function AdminDashboardPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Popular Content */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Most Clicked Resources */}
+        <Card className="border-0 overflow-hidden">
+          <div className="p-4 border-b border-gray-100">
+            <h2 className="font-semibold text-sm flex items-center gap-2 text-gray-900">
+              <TrendingUp className="h-4 w-4" style={{ color: brandColor }} />
+              Most Clicked Resources
+            </h2>
+          </div>
+          <CardContent className="p-0">
+            {isLoading ? (
+              <div className="p-4 space-y-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+                ))}
+              </div>
+            ) : popularContent.popularResources.length > 0 ? (
+              <div className="divide-y divide-gray-100">
+                {popularContent.popularResources.map((resource, index) => (
+                  <div key={resource.id} className="p-3 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <span className="text-sm font-bold text-gray-400 w-5">#{index + 1}</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate">{resource.title}</p>
+                          <p className="text-xs text-gray-500 capitalize">{resource.category.replace(/-/g, ' ')}</p>
+                        </div>
+                      </div>
+                      <Badge variant="secondary" className="text-xs ml-2 flex-shrink-0">
+                        <MousePointerClick className="h-3 w-3 mr-1" />
+                        {resource.clickCount}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-8 text-sm">No resource clicks yet</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Most Clicked Templates */}
+        <Card className="border-0 overflow-hidden">
+          <div className="p-4 border-b border-gray-100">
+            <h2 className="font-semibold text-sm flex items-center gap-2 text-gray-900">
+              <TrendingUp className="h-4 w-4" style={{ color: brandColor }} />
+              Most Clicked Templates
+            </h2>
+          </div>
+          <CardContent className="p-0">
+            {isLoading ? (
+              <div className="p-4 space-y-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+                ))}
+              </div>
+            ) : popularContent.popularTemplates.length > 0 ? (
+              <div className="divide-y divide-gray-100">
+                {popularContent.popularTemplates.map((template, index) => (
+                  <div key={template.id} className="p-3 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <span className="text-sm font-bold text-gray-400 w-5">#{index + 1}</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate">{template.title}</p>
+                          <p className="text-xs text-gray-500 capitalize">{template.category.replace(/-/g, ' ')}</p>
+                        </div>
+                      </div>
+                      <Badge variant="secondary" className="text-xs ml-2 flex-shrink-0">
+                        <MousePointerClick className="h-3 w-3 mr-1" />
+                        {template.clickCount}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-8 text-sm">No template clicks yet</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Three Column Layout */}
       <div className="grid gap-6 lg:grid-cols-3">

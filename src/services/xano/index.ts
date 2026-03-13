@@ -60,6 +60,7 @@ class XanoService extends XanoClient {
   deleteTemplate: ReturnType<typeof addTemplateMethods>['deleteTemplate']
   updateTemplateStatus: ReturnType<typeof addTemplateMethods>['updateTemplateStatus']
   publishTemplate: ReturnType<typeof addTemplateMethods>['publishTemplate']
+  trackTemplateClick: ReturnType<typeof addTemplateMethods>['trackTemplateClick']
 
   // Resource methods
   getResources: ReturnType<typeof addResourceMethods>['getResources']
@@ -93,6 +94,7 @@ class XanoService extends XanoClient {
   adminUnlinkRealtor: ReturnType<typeof addAdminMethods>['adminUnlinkRealtor']
   adminLinkRealtorToAgent: ReturnType<typeof addAdminMethods>['adminLinkRealtorToAgent']
   adminCreateRealtor: ReturnType<typeof addAdminMethods>['adminCreateRealtor']
+  getPopularContent: ReturnType<typeof addAdminMethods>['getPopularContent']
 
   // Log methods
   getUsageLogs: ReturnType<typeof addLogMethods>['getUsageLogs']
@@ -168,6 +170,7 @@ class XanoService extends XanoClient {
     this.deleteTemplate = templateMethods.deleteTemplate
     this.updateTemplateStatus = templateMethods.updateTemplateStatus
     this.publishTemplate = templateMethods.publishTemplate
+    this.trackTemplateClick = templateMethods.trackTemplateClick
 
     // Assign resource methods
     this.getResources = resourceMethods.getResources
@@ -201,6 +204,7 @@ class XanoService extends XanoClient {
     this.adminUnlinkRealtor = adminMethods.adminUnlinkRealtor
     this.adminLinkRealtorToAgent = adminMethods.adminLinkRealtorToAgent
     this.adminCreateRealtor = adminMethods.adminCreateRealtor
+    this.getPopularContent = adminMethods.getPopularContent
 
     // Assign log methods
     this.getUsageLogs = logMethods.getUsageLogs

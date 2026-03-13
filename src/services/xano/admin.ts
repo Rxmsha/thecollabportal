@@ -385,5 +385,24 @@ export function addAdminMethods<T extends XanoClient>(client: T) {
         body: JSON.stringify(payload),
       })
     },
+
+    // Admin: Get most popular resources and templates
+    async getPopularContent(limit: number = 5) {
+      const response = await client.request<{
+        popularResources: Array<{
+          id: number
+          title: string
+          category: string
+          clickCount: number
+        }>
+        popularTemplates: Array<{
+          id: number
+          title: string
+          category: string
+          clickCount: number
+        }>
+      }>(`/admin_get_popular_content?limit=${limit}`)
+      return response
+    },
   }
 }

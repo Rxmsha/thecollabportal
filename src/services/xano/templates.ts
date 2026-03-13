@@ -119,5 +119,13 @@ export function addTemplateMethods<T extends XanoClient>(client: T) {
         body: JSON.stringify({ template_id: id }),
       })
     },
+
+    // Track template click
+    async trackTemplateClick(templateId: number) {
+      return client.request<{ success: boolean; clickId: number }>('/track_template_click', {
+        method: 'POST',
+        body: JSON.stringify({ template_id: templateId }),
+      })
+    },
   }
 }

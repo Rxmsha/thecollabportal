@@ -43,8 +43,14 @@ export default function RealtorTemplatesPage() {
     return matchesSearch && matchesCategory
   })
 
-  const handleUseTemplate = (template: Template) => {
+  const handleUseTemplate = async (template: Template) => {
     if (template.downloadLink) {
+      // Track the click for analytics
+      try {
+        await xano.trackTemplateClick(template.id)
+      } catch (error) {
+        console.error('Failed to track template click:', error)
+      }
       window.open(template.downloadLink, '_blank')
     }
   }
