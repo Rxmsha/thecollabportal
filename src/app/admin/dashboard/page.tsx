@@ -139,9 +139,16 @@ export default function AdminDashboardPage() {
       }
 
       if (popularRes.data) {
+        // Sort by clickCount descending and take top 5
+        const sortedResources = (popularRes.data.popularResources || [])
+          .sort((a: any, b: any) => b.clickCount - a.clickCount)
+          .slice(0, 5)
+        const sortedTemplates = (popularRes.data.popularTemplates || [])
+          .sort((a: any, b: any) => b.clickCount - a.clickCount)
+          .slice(0, 5)
         setPopularContent({
-          popularResources: popularRes.data.popularResources || [],
-          popularTemplates: popularRes.data.popularTemplates || [],
+          popularResources: sortedResources,
+          popularTemplates: sortedTemplates,
         })
       }
     } catch (error) {
