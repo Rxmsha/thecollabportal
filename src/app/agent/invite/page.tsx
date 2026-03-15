@@ -142,11 +142,11 @@ export default function AgentInvitePage() {
         credentials={credentials}
         isReactivation={false}
       />
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Page Header */}
-        <div className="border-b border-gray-200 pb-4">
-          <h1 className="dot-matrix text-2xl text-gray-900">Invite Realtor</h1>
-          <p className="text-base text-gray-700 mt-1">
+        <div className="border-b border-gray-200 pb-3 sm:pb-4">
+          <h1 className="dot-matrix text-xl sm:text-2xl text-gray-900">Invite Realtor</h1>
+          <p className="text-sm sm:text-base text-gray-700 mt-1">
             Send an invitation to a realtor to join your portal
           </p>
         </div>
@@ -155,17 +155,17 @@ export default function AgentInvitePage() {
         <div className="max-w-xl mx-auto">
           {/* Seat Usage Banner */}
           {seatStats && (
-            <div className={`mb-6 p-4 border rounded-lg flex items-center gap-3 ${
+            <div className={`mb-4 sm:mb-6 p-3 sm:p-4 border rounded-lg flex items-start sm:items-center gap-2 sm:gap-3 ${
               seatStats.canInvite
                 ? 'bg-blue-50 border-blue-200'
                 : 'bg-amber-50 border-amber-200'
             }`}>
-              <Users className={`h-5 w-5 ${seatStats.canInvite ? 'text-blue-600' : 'text-amber-600'}`} />
+              <Users className={`h-5 w-5 flex-shrink-0 mt-0.5 sm:mt-0 ${seatStats.canInvite ? 'text-blue-600' : 'text-amber-600'}`} />
               <div>
-                <p className={`font-semibold text-base ${seatStats.canInvite ? 'text-blue-800' : 'text-amber-800'}`}>
+                <p className={`font-semibold text-sm sm:text-base ${seatStats.canInvite ? 'text-blue-800' : 'text-amber-800'}`}>
                   {seatStats.occupiedSeats} / {seatStats.seatLimit} seats used
                 </p>
-                <p className={`text-base ${seatStats.canInvite ? 'text-blue-600' : 'text-amber-600'}`}>
+                <p className={`text-xs sm:text-base ${seatStats.canInvite ? 'text-blue-600' : 'text-amber-600'}`}>
                   {seatStats.canInvite
                     ? `${seatStats.seatLimit - seatStats.occupiedSeats} seats remaining`
                     : 'Seat limit reached. Contact support to upgrade your plan.'}
@@ -175,35 +175,35 @@ export default function AgentInvitePage() {
           )}
 
           <Card className="border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-              <UserPlus className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <UserPlus className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">
                 Realtor Details
               </span>
             </div>
-            <CardContent className="p-6 bg-white rounded-b-lg">
-              <p className="text-base text-gray-700 mb-6">
+            <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+              <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
                 Enter the realtor's information to send them an invitation
               </p>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                 {!seatStats?.canInvite && !isLoadingStats && (
-                  <div className="flex items-center gap-2 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-base">
-                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                    You have reached your seat limit. Please upgrade your plan to invite more realtors.
+                  <div className="flex items-start gap-2 p-3 sm:p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-xs sm:text-base">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                    <span>You have reached your seat limit. Please upgrade your plan to invite more realtors.</span>
                   </div>
                 )}
 
                 {error && (
-                  <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-base">
-                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                    {error}
+                  <div className="flex items-start gap-2 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs sm:text-base">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                    <span>{error}</span>
                   </div>
                 )}
 
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName" className="text-gray-900 text-base">
+                <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="firstName" className="text-gray-900 text-sm sm:text-base">
                       First Name <span className="text-red-500">*</span>
                     </Label>
                     <Input
@@ -211,11 +211,11 @@ export default function AgentInvitePage() {
                       value={formData.firstName}
                       onChange={(e) => handleChange('firstName', e.target.value)}
                       required
-                      className="rounded-lg"
+                      className="rounded-lg text-sm"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName" className="text-gray-900 text-base">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="lastName" className="text-gray-900 text-sm sm:text-base">
                       Last Name <span className="text-red-500">*</span>
                     </Label>
                     <Input
@@ -223,13 +223,13 @@ export default function AgentInvitePage() {
                       value={formData.lastName}
                       onChange={(e) => handleChange('lastName', e.target.value)}
                       required
-                      className="rounded-lg"
+                      className="rounded-lg text-sm"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-900 text-base">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="email" className="text-gray-900 text-sm sm:text-base">
                     Email Address <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
@@ -239,26 +239,26 @@ export default function AgentInvitePage() {
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleChange('email', e.target.value)}
-                      className="pl-10 rounded-lg"
+                      className="pl-10 rounded-lg text-sm"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="brokerage" className="text-gray-900 text-base">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="brokerage" className="text-gray-900 text-sm sm:text-base">
                     Brokerage
                   </Label>
                   <Input
                     id="brokerage"
                     value={formData.brokerage}
                     onChange={(e) => handleChange('brokerage', e.target.value)}
-                    className="rounded-lg"
+                    className="rounded-lg text-sm"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-gray-900 text-base">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="phone" className="text-gray-900 text-sm sm:text-base">
                     Phone Number
                   </Label>
                   <Input
@@ -267,13 +267,13 @@ export default function AgentInvitePage() {
                     inputMode="numeric"
                     value={formData.phone}
                     onChange={(e) => handlePhoneChange(e.target.value)}
-                    className="rounded-lg"
+                    className="rounded-lg text-sm"
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full rounded-lg text-sm h-11"
+                  className="w-full rounded-lg text-sm h-10 sm:h-11"
                   style={{ backgroundColor: brandColor }}
                   disabled={isSubmitting || isLoadingStats || !seatStats?.canInvite}
                 >

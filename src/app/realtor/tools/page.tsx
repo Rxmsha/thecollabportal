@@ -27,41 +27,41 @@ export default function RealtorToolsPage() {
     const Icon = currentTool.icon
     return (
       <div className="h-[calc(100vh-2rem)] flex flex-col">
-        <div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-4">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3 sm:mb-4 border-b border-gray-200 pb-3 sm:pb-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setActiveTool(null)}
-              className="hover:bg-gray-100 rounded-lg"
+              className="hover:bg-gray-100 rounded-lg flex-shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div>
-              <h1 className="dot-matrix text-2xl text-gray-900">{currentTool.name}</h1>
-              <p className="text-base text-gray-700">{currentTool.subtitle}</p>
+            <div className="min-w-0">
+              <h1 className="dot-matrix text-xl sm:text-2xl text-gray-900 truncate">{currentTool.name}</h1>
+              <p className="text-sm sm:text-base text-gray-700 truncate">{currentTool.subtitle}</p>
             </div>
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={() => window.open(currentTool.url, '_blank')}
-            className="rounded-lg"
+            className="rounded-lg w-full sm:w-auto text-sm"
           >
             <ExternalLink className="h-4 w-4 mr-2" />
             Open in New Tab
           </Button>
         </div>
-        <div className="flex-1 overflow-hidden border-0">
+        <div className="flex-1 overflow-hidden border-0 min-h-0">
           <Card className="h-full border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-3 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-              <Icon className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold">{currentTool.name}</span>
-              <span className="text-white/70 text-sm">- {currentTool.subtitle}</span>
+            <div className="px-4 sm:px-6 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <Icon className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base truncate">{currentTool.name}</span>
+              <span className="text-white/70 text-xs sm:text-sm hidden sm:inline">- {currentTool.subtitle}</span>
             </div>
             <iframe
               src={currentTool.url}
-              className="w-full h-[calc(100%-48px)] bg-white rounded-b-lg"
+              className="w-full h-[calc(100%-40px)] sm:h-[calc(100%-48px)] bg-white rounded-b-lg"
               title={currentTool.name}
               allow="clipboard-write"
             />
@@ -72,22 +72,22 @@ export default function RealtorToolsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Page Header */}
-      <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-2xl text-gray-900">AI Tools</h1>
-        <p className="text-base text-gray-700 mt-1">
+      <div className="border-b border-gray-200 pb-3 sm:pb-4">
+        <h1 className="dot-matrix text-xl sm:text-2xl text-gray-900">AI Tools</h1>
+        <p className="text-sm sm:text-base text-gray-700 mt-1">
           Transform your workflow with AI-powered tools designed for realtors.
         </p>
       </div>
 
       {/* Tools Section */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Bot className="h-4 w-4" style={{ color: brandColor }} />
+        <h2 className="text-xs sm:text-sm font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+          <Bot className="h-4 w-4 flex-shrink-0" style={{ color: brandColor }} />
           Your AI Specialist
         </h2>
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
           {tools.map((tool) => {
             const Icon = tool.icon
             return (
@@ -96,16 +96,16 @@ export default function RealtorToolsPage() {
                 className="border-0 overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg group"
                 onClick={() => setActiveTool(tool.id)}
               >
-                <div className="px-6 py-3 flex items-center justify-between rounded-t-lg" style={{ backgroundColor: brandColor }}>
-                  <div className="flex items-center gap-3">
-                    <Icon className="h-5 w-5 text-white" />
-                    <span className="text-white font-semibold">{tool.name}</span>
+                <div className="px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between rounded-t-lg" style={{ backgroundColor: brandColor }}>
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <Icon className="h-5 w-5 text-white flex-shrink-0" />
+                    <span className="text-white font-semibold text-sm sm:text-base truncate">{tool.name}</span>
                   </div>
-                  <ExternalLink className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
+                  <ExternalLink className="h-4 w-4 text-white/70 group-hover:text-white transition-colors flex-shrink-0" />
                 </div>
-                <CardContent className="p-6 bg-white rounded-b-lg">
-                  <p className="text-lg font-semibold text-gray-900">{tool.subtitle}</p>
-                  <p className="text-base text-gray-700 mt-2">{tool.description}</p>
+                <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+                  <p className="text-base sm:text-lg font-semibold text-gray-900">{tool.subtitle}</p>
+                  <p className="text-sm sm:text-base text-gray-700 mt-1.5 sm:mt-2">{tool.description}</p>
                 </CardContent>
               </Card>
             )

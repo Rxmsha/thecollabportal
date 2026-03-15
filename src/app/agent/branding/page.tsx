@@ -169,40 +169,40 @@ export default function AgentBrandingPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Page Header */}
-      <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-2xl text-gray-900">Branding</h1>
-        <p className="text-base text-gray-700 mt-1">
+      <div className="border-b border-gray-200 pb-3 sm:pb-4">
+        <h1 className="dot-matrix text-xl sm:text-2xl text-gray-900">Branding</h1>
+        <p className="text-sm sm:text-base text-gray-700 mt-1">
           Customize how your portal appears to your realtors
         </p>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          {error}
+        <div className="flex items-start gap-2 p-2.5 sm:p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs sm:text-sm">
+          <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <span>{error}</span>
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
         {/* Settings */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Contact Info */}
           <Card className="border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-              <Phone className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <Phone className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">
                 Contact Information
               </span>
             </div>
-            <CardContent className="p-6 bg-white rounded-b-lg">
-              <p className="text-base text-gray-700 mb-4">
+            <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+              <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">
                 Your contact details visible to realtors
               </p>
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-medium text-gray-500">
+                <Label htmlFor="phone" className="text-xs sm:text-sm font-medium text-gray-500">
                   Phone Number
                 </Label>
                 <div className="relative">
@@ -214,7 +214,7 @@ export default function AgentBrandingPage() {
                       setBranding((prev) => ({ ...prev, phone: e.target.value }))
                     }
                     placeholder="(555) 123-4567"
-                    className="pl-10 rounded-lg"
+                    className="pl-10 rounded-lg text-sm"
                   />
                 </div>
               </div>
@@ -223,18 +223,18 @@ export default function AgentBrandingPage() {
 
           {/* Logo */}
           <Card className="border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-              <ImageIcon className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <ImageIcon className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">
                 Logo
               </span>
             </div>
-            <CardContent className="p-6 bg-white rounded-b-lg">
-              <p className="text-base text-gray-700 mb-4">
+            <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+              <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">
                 Upload your company logo to be displayed on your portal
               </p>
-              <div className="flex items-start gap-6">
-                <div className="h-24 w-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 overflow-hidden">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
+                <div className="h-20 w-20 sm:h-24 sm:w-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 overflow-hidden flex-shrink-0">
                   {isUploading ? (
                     <div className="h-6 w-6 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
                   ) : branding.logoUrl ? (
@@ -244,10 +244,10 @@ export default function AgentBrandingPage() {
                       className="h-full w-full object-contain"
                     />
                   ) : (
-                    <ImageIcon className="h-8 w-8 text-gray-400" />
+                    <ImageIcon className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
                   )}
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 text-center sm:text-left">
                   <Label htmlFor="logo-upload" className={isUploading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}>
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                       <Upload className="h-4 w-4" />
@@ -262,7 +262,7 @@ export default function AgentBrandingPage() {
                       disabled={isUploading}
                     />
                   </Label>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-xs sm:text-sm text-gray-700">
                     Recommended: 200x200px, PNG or JPG
                   </p>
                 </div>
@@ -272,26 +272,26 @@ export default function AgentBrandingPage() {
 
           {/* Brand Color */}
           <Card className="border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-              <Palette className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <Palette className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">
                 Brand Color
               </span>
             </div>
-            <CardContent className="p-6 bg-white rounded-b-lg">
-              <p className="text-base text-gray-700 mb-4">
+            <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+              <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">
                 Choose a primary color for your portal
               </p>
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="relative flex-shrink-0">
                     <input
                       type="color"
                       value={branding.brandColor}
                       onChange={(e) =>
                         setBranding((prev) => ({ ...prev, brandColor: e.target.value }))
                       }
-                      className="h-12 w-12 cursor-pointer border-2 border-gray-200 rounded-lg"
+                      className="h-10 w-10 sm:h-12 sm:w-12 cursor-pointer border-2 border-gray-200 rounded-lg"
                     />
                   </div>
                   <Input
@@ -299,7 +299,7 @@ export default function AgentBrandingPage() {
                     onChange={(e) =>
                       setBranding((prev) => ({ ...prev, brandColor: e.target.value }))
                     }
-                    className="w-32 rounded-lg uppercase"
+                    className="w-28 sm:w-32 rounded-lg uppercase text-sm"
                     placeholder="#1a2332"
                   />
                 </div>
@@ -310,7 +310,7 @@ export default function AgentBrandingPage() {
                       onClick={() =>
                         setBranding((prev) => ({ ...prev, brandColor: color.value }))
                       }
-                      className={`group relative h-10 w-10 rounded-lg border-2 transition-all ${
+                      className={`group relative h-8 w-8 sm:h-10 sm:w-10 rounded-lg border-2 transition-all ${
                         branding.brandColor === color.value
                           ? 'border-gray-900 scale-110'
                           : 'border-gray-200 hover:border-gray-400'
@@ -319,7 +319,7 @@ export default function AgentBrandingPage() {
                       title={color.name}
                     >
                       {branding.brandColor === color.value && (
-                        <Check className="h-4 w-4 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                        <Check className="h-3 w-3 sm:h-4 sm:w-4 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                       )}
                     </button>
                   ))}
@@ -330,18 +330,18 @@ export default function AgentBrandingPage() {
 
           {/* External Links */}
           <Card className="border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-              <ExternalLink className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <ExternalLink className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">
                 External Links
               </span>
             </div>
-            <CardContent className="p-6 bg-white rounded-b-lg space-y-5">
-              <p className="text-base text-gray-700">
+            <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg space-y-4 sm:space-y-5">
+              <p className="text-sm sm:text-base text-gray-700">
                 Add links to your scheduling and CMA tools
               </p>
               <div className="space-y-2">
-                <Label htmlFor="calendly" className="text-sm font-medium text-gray-500">
+                <Label htmlFor="calendly" className="text-xs sm:text-sm font-medium text-gray-500">
                   Calendly Link
                 </Label>
                 <div className="relative">
@@ -353,12 +353,12 @@ export default function AgentBrandingPage() {
                       setBranding((prev) => ({ ...prev, calendlyLink: e.target.value }))
                     }
                     placeholder="https://calendly.com/your-link"
-                    className="pl-10 rounded-lg"
+                    className="pl-10 rounded-lg text-sm"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cma" className="text-sm font-medium text-gray-500">
+                <Label htmlFor="cma" className="text-xs sm:text-sm font-medium text-gray-500">
                   CMA Tool Link
                 </Label>
                 <div className="relative">
@@ -370,7 +370,7 @@ export default function AgentBrandingPage() {
                       setBranding((prev) => ({ ...prev, cmaLink: e.target.value }))
                     }
                     placeholder="https://cma-tool.com/your-link"
-                    className="pl-10 rounded-lg"
+                    className="pl-10 rounded-lg text-sm"
                   />
                 </div>
               </div>
@@ -379,14 +379,14 @@ export default function AgentBrandingPage() {
 
           {/* Bio */}
           <Card className="border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-              <User className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <User className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">
                 About You
               </span>
             </div>
-            <CardContent className="p-6 bg-white rounded-b-lg">
-              <p className="text-base text-gray-700 mb-4">
+            <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+              <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">
                 Write a short bio that will be displayed to your realtors
               </p>
               <Textarea
@@ -395,19 +395,19 @@ export default function AgentBrandingPage() {
                   setBranding((prev) => ({ ...prev, bio: e.target.value }))
                 }
                 placeholder="Tell your realtors about yourself and your services..."
-                rows={5}
-                className="rounded-lg"
+                rows={4}
+                className="rounded-lg text-sm"
               />
-              <p className="text-sm text-gray-700 mt-2">
+              <p className="text-xs sm:text-sm text-gray-700 mt-2">
                 {branding.bio.length}/500 characters
               </p>
             </CardContent>
           </Card>
 
           {/* Save Button */}
-          <div className="flex items-center justify-end gap-4">
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 sm:gap-4">
             {saveSuccess && (
-              <span className="text-base text-emerald-600 flex items-center gap-2">
+              <span className="text-sm sm:text-base text-emerald-600 flex items-center gap-2">
                 <Check className="h-4 w-4" />
                 Changes saved successfully!
               </span>
@@ -415,7 +415,7 @@ export default function AgentBrandingPage() {
             <Button
               onClick={handleSave}
               disabled={isSaving}
-              className="rounded-lg text-sm h-10"
+              className="rounded-lg text-sm h-10 w-full sm:w-auto"
               style={{ backgroundColor: brandColor }}
             >
               <Save className="h-4 w-4 mr-2" />
@@ -426,21 +426,21 @@ export default function AgentBrandingPage() {
 
         {/* Preview */}
         <div className="lg:col-span-1">
-          <Card className="border-0 overflow-hidden rounded-lg sticky top-6">
-            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: branding.brandColor }}>
-              <Eye className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">
+          <Card className="border-0 overflow-hidden rounded-lg lg:sticky lg:top-6">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: branding.brandColor }}>
+              <Eye className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">
                 Preview
               </span>
             </div>
-            <CardContent className="p-6 bg-white rounded-b-lg">
-              <p className="text-base text-gray-700 mb-4">
+            <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+              <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">
                 How your portal will appear to realtors
               </p>
-              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                <div className="flex items-center gap-3 mb-4">
+              <div className="border border-gray-200 rounded-lg p-3 sm:p-4 bg-gray-50">
+                <div className="flex items-center gap-3 mb-3 sm:mb-4">
                   <div
-                    className="h-12 w-12 rounded-lg flex items-center justify-center text-white font-bold"
+                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center text-white font-bold flex-shrink-0"
                     style={{ backgroundColor: branding.brandColor }}
                   >
                     {branding.logoUrl ? (
@@ -453,24 +453,24 @@ export default function AgentBrandingPage() {
                       agentName.firstName?.[0] || 'A'
                     )}
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 text-base">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">
                       {agentName.firstName} {agentName.lastName}
                     </h3>
-                    <p className="text-sm text-gray-600">Mortgage Agent</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Mortgage Agent</p>
                     {branding.phone && (
-                      <p className="text-sm text-gray-500">{branding.phone}</p>
+                      <p className="text-xs sm:text-sm text-gray-500 truncate">{branding.phone}</p>
                     )}
                     {user?.email && (
-                      <p className="text-sm text-gray-500">{user.email}</p>
+                      <p className="text-xs sm:text-sm text-gray-500 truncate">{user.email}</p>
                     )}
                   </div>
                 </div>
-                <div className="border-t border-gray-200 my-4" />
+                <div className="border-t border-gray-200 my-3 sm:my-4" />
                 <div className="space-y-2">
                   {branding.calendlyLink && (
                     <Button
-                      className="w-full justify-start rounded-lg text-sm"
+                      className="w-full justify-start rounded-lg text-xs sm:text-sm h-9 sm:h-10"
                       style={{ backgroundColor: branding.brandColor }}
                       disabled
                     >
@@ -480,7 +480,7 @@ export default function AgentBrandingPage() {
                   {branding.cmaLink && (
                     <Button
                       variant="outline"
-                      className="w-full justify-start rounded-lg text-sm"
+                      className="w-full justify-start rounded-lg text-xs sm:text-sm h-9 sm:h-10"
                       disabled
                     >
                       CMA Tool
@@ -488,7 +488,7 @@ export default function AgentBrandingPage() {
                   )}
                   <Button
                     variant="outline"
-                    className="w-full justify-start rounded-lg text-sm"
+                    className="w-full justify-start rounded-lg text-xs sm:text-sm h-9 sm:h-10"
                     disabled
                   >
                     View Templates
@@ -496,8 +496,8 @@ export default function AgentBrandingPage() {
                 </div>
                 {branding.bio && (
                   <>
-                    <div className="border-t border-gray-200 my-4" />
-                    <p className="text-base text-gray-700 line-clamp-4">
+                    <div className="border-t border-gray-200 my-3 sm:my-4" />
+                    <p className="text-sm sm:text-base text-gray-700 line-clamp-4">
                       {branding.bio}
                     </p>
                   </>

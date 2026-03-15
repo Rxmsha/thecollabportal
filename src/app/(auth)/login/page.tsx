@@ -29,56 +29,56 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 auth-background">
+    <div className="min-h-screen flex items-center justify-center px-4 py-6 sm:p-4 auth-background">
       <div className="w-full max-w-md relative z-10">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="dot-matrix text-3xl mb-2 text-gray-900">The Collab Portal</h1>
-          <p className="text-gray-500">Sign in to continue</p>
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="dot-matrix text-2xl sm:text-3xl mb-2 text-gray-900">The Collab Portal</h1>
+          <p className="text-sm sm:text-base text-gray-500">Sign in to continue</p>
         </div>
 
         {/* Card */}
-        <div className="border border-gray-200 bg-white p-8 rounded-lg">
+        <div className="border border-gray-200 bg-white p-5 sm:p-8 rounded-lg">
           {/* Card Header */}
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-900">
-              <LogIn className="w-5 h-5" />
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2 text-gray-900">
+              <LogIn className="w-5 h-5 flex-shrink-0" />
               Sign In
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
               Enter your credentials to access your account
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             {error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
+              <div className="p-2.5 sm:p-3 text-xs sm:text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
                 {error}
               </div>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-700">Email</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="email" className="text-sm text-gray-700">Email</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-10 border-gray-200 focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] rounded-lg"
+                className="h-10 border-gray-200 focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] rounded-lg text-sm"
                 required
                 disabled={isLoading}
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-700">Password</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="password" className="text-sm text-gray-700">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-10 border-gray-200 focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] pr-10 rounded-lg"
+                  className="h-10 border-gray-200 focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] pr-10 rounded-lg text-sm"
                   required
                   disabled={isLoading}
                 />
@@ -95,7 +95,7 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full h-10 bg-[#0077B6] hover:bg-[#006399] text-white rounded-lg"
+              className="w-full h-10 sm:h-11 bg-[#0077B6] hover:bg-[#006399] text-white rounded-lg text-sm sm:text-base"
               disabled={isLoading}
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
@@ -104,7 +104,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-6 text-center">
+        <div className="mt-4 sm:mt-6 text-center">
           <p className="text-xs text-gray-400">
             Powered by The Collab Portal
           </p>

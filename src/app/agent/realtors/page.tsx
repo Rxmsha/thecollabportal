@@ -178,18 +178,18 @@ export default function AgentRealtorsPage() {
         onPasswordReset={handlePasswordReset}
         onUnlink={handleUnlink}
       />
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Page Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-gray-200 pb-3 sm:pb-4">
           <div>
-            <h1 className="dot-matrix text-2xl text-gray-900">My Realtors</h1>
-            <p className="text-base text-gray-700 mt-1">
+            <h1 className="dot-matrix text-xl sm:text-2xl text-gray-900">My Realtors</h1>
+            <p className="text-sm sm:text-base text-gray-700 mt-1">
               Manage the realtors in your network
             </p>
           </div>
           <Link href="/agent/invite">
             <Button
-              className="rounded-lg text-sm h-10"
+              className="rounded-lg text-sm h-10 w-full sm:w-auto"
               style={{ backgroundColor: brandColor }}
             >
               <UserPlus className="h-4 w-4 mr-2" />
@@ -199,18 +199,18 @@ export default function AgentRealtorsPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search realtors..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 rounded-lg"
+              className="pl-10 rounded-lg text-sm"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-40 rounded-lg">
+            <SelectTrigger className="w-full sm:w-40 rounded-lg text-sm">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent className="rounded-lg">
@@ -224,14 +224,14 @@ export default function AgentRealtorsPage() {
 
         {/* Realtors Grid */}
         {isLoading ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
               <Card key={i} className="border-0 overflow-hidden rounded-lg">
                 <div className="px-4 py-3 bg-gray-200 animate-pulse rounded-t-lg" />
-                <CardContent className="p-6 bg-white rounded-b-lg">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 bg-gray-100 rounded-lg animate-pulse" />
-                    <div className="space-y-2 flex-1">
+                <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gray-100 rounded-lg animate-pulse flex-shrink-0" />
+                    <div className="space-y-2 flex-1 min-w-0">
                       <div className="h-4 bg-gray-100 w-2/3 rounded animate-pulse" />
                       <div className="h-3 bg-gray-100 w-1/2 rounded animate-pulse" />
                     </div>
@@ -241,22 +241,22 @@ export default function AgentRealtorsPage() {
             ))}
           </div>
         ) : filteredRealtors.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredRealtors.map((realtor) => (
-              <Card key={realtor.id} className="border-0 overflow-hidden rounded-lg hover:shadow-md transition-shadow h-[280px]">
+              <Card key={realtor.id} className="border-0 overflow-hidden rounded-lg hover:shadow-md transition-shadow min-h-[240px] sm:min-h-[280px]">
                 <CardContent className="p-0 bg-white h-full flex flex-col rounded-lg">
-                  <div className="p-4 border-b border-gray-100">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
+                  <div className="p-3 sm:p-4 border-b border-gray-100">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                         <div
-                          className="h-12 w-12 rounded-lg flex items-center justify-center text-white font-semibold text-sm"
+                          className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center text-white font-semibold text-xs sm:text-sm flex-shrink-0"
                           style={{ backgroundColor: brandColor }}
                         >
                           {realtor.firstName[0]}
                           {realtor.lastName[0]}
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900 text-base">
+                        <div className="min-w-0">
+                          <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">
                             {realtor.firstName} {realtor.lastName}
                           </h3>
                           {getStatusBadge(realtor.status)}
@@ -266,37 +266,37 @@ export default function AgentRealtorsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleOpenDetails(realtor.id)}
-                        className="rounded-lg text-sm"
+                        className="rounded-lg text-xs sm:text-sm flex-shrink-0 h-8 px-2 sm:px-3"
                       >
                         More
                       </Button>
                     </div>
                   </div>
 
-                  <div className="p-4 space-y-2 flex-1">
-                    <div className="flex items-center gap-2 text-gray-700 text-base">
-                      <Mail className="h-4 w-4 text-gray-400" />
-                      {realtor.email}
+                  <div className="p-3 sm:p-4 space-y-1.5 sm:space-y-2 flex-1">
+                    <div className="flex items-center gap-2 text-gray-700 text-xs sm:text-base min-w-0">
+                      <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
+                      <span className="truncate">{realtor.email}</span>
                     </div>
                     {realtor.brokerage && (
-                      <div className="flex items-center gap-2 text-gray-700 text-base">
-                        <Building className="h-4 w-4 text-gray-400" />
-                        {realtor.brokerage}
+                      <div className="flex items-center gap-2 text-gray-700 text-xs sm:text-base min-w-0">
+                        <Building className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
+                        <span className="truncate">{realtor.brokerage}</span>
                       </div>
                     )}
                     {realtor.phone && (
-                      <div className="flex items-center gap-2 text-gray-700 text-base">
-                        <Phone className="h-4 w-4 text-gray-400" />
-                        {realtor.phone}
+                      <div className="flex items-center gap-2 text-gray-700 text-xs sm:text-base min-w-0">
+                        <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
+                        <span className="truncate">{realtor.phone}</span>
                       </div>
                     )}
                   </div>
 
                   <div
-                    className="px-4 h-12 flex items-center justify-between rounded-b-lg"
+                    className="px-3 sm:px-4 h-10 sm:h-12 flex items-center justify-between rounded-b-lg"
                     style={{ backgroundColor: brandColor }}
                   >
-                    <span className="text-base text-white/80">
+                    <span className="text-xs sm:text-base text-white/80 truncate">
                       Invited {formatDate(realtor.inviteSentAt)}
                     </span>
                     {realtor.status === 'invited' && (
@@ -304,9 +304,9 @@ export default function AgentRealtorsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleResendInvite(realtor.id)}
-                        className="rounded-lg text-sm h-8 text-white hover:bg-white/10"
+                        className="rounded-lg text-xs sm:text-sm h-7 sm:h-8 text-white hover:bg-white/10 flex-shrink-0"
                       >
-                        Resend Invite
+                        Resend
                       </Button>
                     )}
                   </div>
@@ -316,18 +316,18 @@ export default function AgentRealtorsPage() {
           </div>
         ) : (
           <Card className="border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-              <Users className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <Users className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">
                 Realtors
               </span>
             </div>
-            <CardContent className="py-12 text-center bg-white rounded-b-lg">
-              <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-base text-gray-700 mb-4">No realtors found</p>
+            <CardContent className="py-8 sm:py-12 px-4 sm:px-6 text-center bg-white rounded-b-lg">
+              <Users className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mx-auto mb-3 sm:mb-4" />
+              <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">No realtors found</p>
               <Link href="/agent/invite">
                 <Button
-                  className="rounded-lg text-sm"
+                  className="rounded-lg text-sm w-full sm:w-auto"
                   style={{ backgroundColor: brandColor }}
                 >
                   <UserPlus className="h-4 w-4 mr-2" />

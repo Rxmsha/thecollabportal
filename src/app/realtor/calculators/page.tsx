@@ -100,16 +100,16 @@ export default function RealtorCalculatorsPage() {
   const activeCalc = calculators.find((c) => c.id === activeCalculator)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Page Header */}
-      <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-2xl text-gray-900">Calculators</h1>
-        <p className="text-base text-gray-700 mt-1">
+      <div className="border-b border-gray-200 pb-3 sm:pb-4">
+        <h1 className="dot-matrix text-xl sm:text-2xl text-gray-900">Calculators</h1>
+        <p className="text-sm sm:text-base text-gray-700 mt-1">
           Use these calculators to help your clients understand their mortgage options
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         {calculators.map((calc) => {
           const Icon = calc.icon
           const isActive = activeCalculator === calc.id
@@ -123,16 +123,16 @@ export default function RealtorCalculatorsPage() {
               onClick={() => setActiveCalculator(calc.id)}
             >
               <div
-                className={`px-4 py-3 flex items-center justify-center rounded-t-lg ${
+                className={`px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-center rounded-t-lg ${
                   isActive ? '' : 'bg-gray-100'
                 }`}
                 style={isActive ? { backgroundColor: brandColor } : undefined}
               >
-                <Icon className={`h-6 w-6 ${isActive ? 'text-white' : 'text-gray-600'}`} />
+                <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${isActive ? 'text-white' : 'text-gray-600'}`} />
               </div>
-              <CardContent className="p-3 bg-white rounded-b-lg">
+              <CardContent className="p-2 sm:p-3 bg-white rounded-b-lg">
                 <h3
-                  className={`text-xs text-center ${
+                  className={`text-[10px] sm:text-xs text-center leading-tight ${
                     isActive ? 'font-semibold' : 'text-gray-700'
                   }`}
                   style={isActive ? { color: brandColor } : undefined}
@@ -146,17 +146,17 @@ export default function RealtorCalculatorsPage() {
       </div>
 
       <Card className="border-0 overflow-hidden rounded-lg">
-        <div className="px-6 py-3 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+        <div className="px-4 sm:px-6 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
           {activeCalc && (
             <>
-              <activeCalc.icon className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold">
+              <activeCalc.icon className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base truncate">
                 {activeCalc.name}
               </span>
             </>
           )}
         </div>
-        <CardContent className="p-6 bg-white rounded-b-lg">
+        <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
           <BendigiCalculator toolId={activeCalculator} />
         </CardContent>
       </Card>

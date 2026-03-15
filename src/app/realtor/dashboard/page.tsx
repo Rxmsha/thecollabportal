@@ -197,7 +197,7 @@ export default function RealtorDashboardPage() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* First Login Modal for password change */}
       <FirstLoginModal
         isOpen={showFirstLoginModal}
@@ -205,38 +205,38 @@ export default function RealtorDashboardPage() {
       />
 
       {/* Header */}
-      <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-2xl text-gray-900">
+      <div className="border-b border-gray-200 pb-3 sm:pb-4">
+        <h1 className="dot-matrix text-xl sm:text-2xl text-gray-900">
           Welcome, {user?.name?.split(' ')[0]}!
         </h1>
-        <p className="text-base text-gray-500 mt-1">
+        <p className="text-sm sm:text-base text-gray-500 mt-1">
           Access resources and tools provided by your mortgage partner
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Quick Links */}
           <Card className="border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-              <Briefcase className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">Quick Access</span>
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <Briefcase className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">Quick Access</span>
             </div>
-            <CardContent className="p-6 bg-white rounded-b-lg">
-              <div className="grid gap-4 sm:grid-cols-2">
+            <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+              <div className="grid gap-3 sm:gap-4 grid-cols-2">
                 {quickLinks.map((link) => {
                   const Icon = link.icon
                   return (
                     <Link key={link.title} href={link.href}>
-                      <div className="group p-4 border border-gray-200 hover:border-gray-400 transition-colors cursor-pointer bg-white rounded-lg">
-                        <div className={`${link.iconColor} mb-3`}>
-                          <Icon className="h-6 w-6" />
+                      <div className="group p-3 sm:p-4 border border-gray-200 hover:border-gray-400 transition-colors cursor-pointer bg-white rounded-lg h-full">
+                        <div className={`${link.iconColor} mb-2 sm:mb-3`}>
+                          <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                         </div>
-                        <h3 className="font-semibold text-gray-900 text-sm group-hover:text-gray-700">
+                        <h3 className="font-semibold text-gray-900 text-xs sm:text-sm group-hover:text-gray-700">
                           {link.title}
                         </h3>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2">
                           {link.description}
                         </p>
                       </div>
@@ -250,28 +250,28 @@ export default function RealtorDashboardPage() {
           {/* Resources for Your Clients */}
           {resources.length > 0 && (
             <Card className="border-0 overflow-hidden rounded-lg">
-              <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-                <FileText className="h-5 w-5 text-white" />
-                <span className="text-white font-semibold text-base">Resources for Your Clients</span>
+              <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+                <FileText className="h-5 w-5 text-white flex-shrink-0" />
+                <span className="text-white font-semibold text-sm sm:text-base">Resources for Your Clients</span>
               </div>
-              <CardContent className="p-6 bg-white rounded-b-lg">
-                <div className="space-y-4">
+              <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+                <div className="space-y-3 sm:space-y-4">
                   {resources.map((resource) => (
                     <div
                       key={resource.id}
                       className="flex border border-gray-200 bg-white overflow-hidden rounded-lg"
                     >
-                      <div className="flex-1 p-4">
-                        <h4 className="font-semibold text-gray-900 text-base">
+                      <div className="flex-1 p-3 sm:p-4 min-w-0">
+                        <h4 className="font-semibold text-gray-900 text-sm sm:text-base truncate">
                           {resource.title}
                         </h4>
-                        <p className="text-base text-gray-700 mt-1 mb-3">
+                        <p className="text-sm sm:text-base text-gray-700 mt-1 mb-2 sm:mb-3 line-clamp-2">
                           {resource.description}
                         </p>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="rounded-lg text-sm"
+                          className="rounded-lg text-xs sm:text-sm"
                           asChild
                         >
                           <a
@@ -281,11 +281,11 @@ export default function RealtorDashboardPage() {
                             onClick={() => handleResourceClick(resource.id)}
                           >
                             {resource.buttonText}
-                            <ExternalLink className="h-3 w-3 ml-2" />
+                            <ExternalLink className="h-3 w-3 ml-1.5 sm:ml-2" />
                           </a>
                         </Button>
                       </div>
-                      <div className="w-3 rounded-r-lg" style={{ backgroundColor: brandColor }} />
+                      <div className="w-2 sm:w-3 rounded-r-lg flex-shrink-0" style={{ backgroundColor: brandColor }} />
                     </div>
                   ))}
                 </div>
@@ -295,74 +295,74 @@ export default function RealtorDashboardPage() {
         </div>
 
         {/* Agent Info Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Card className="border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-              <User className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">Your Mortgage Partner</span>
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <User className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">Your Mortgage Partner</span>
             </div>
-            <CardContent className="p-6 bg-white rounded-b-lg">
+            <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
               {isLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                <div className="flex items-center justify-center py-6 sm:py-8">
+                  <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-gray-400" />
                 </div>
               ) : agent ? (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {/* Agent Info */}
                   <div className="flex items-center gap-3">
                     {agent.logoUrl ? (
                       <img
                         src={agent.logoUrl}
                         alt={agent.companyName}
-                        className="h-12 w-12 object-cover rounded-lg"
+                        className="h-10 w-10 sm:h-12 sm:w-12 object-cover rounded-lg flex-shrink-0"
                         style={{ backgroundColor: agent.brandColor }}
                       />
                     ) : (
                       <div
-                        className="h-12 w-12 flex items-center justify-center text-white font-bold rounded-lg"
+                        className="h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center text-white font-bold rounded-lg text-sm sm:text-base flex-shrink-0"
                         style={{ backgroundColor: agent.brandColor }}
                       >
                         {agent.firstName[0]}{agent.lastName[0]}
                       </div>
                     )}
-                    <div>
-                      <h3 className="font-semibold text-gray-900 text-sm">
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-gray-900 text-sm truncate">
                         {agent.firstName} {agent.lastName}
                       </h3>
-                      <p className="text-sm text-gray-500">{agent.companyName}</p>
+                      <p className="text-xs sm:text-sm text-gray-500 truncate">{agent.companyName}</p>
                     </div>
                   </div>
 
                   {/* Contact Info */}
-                  <div className="space-y-2 pt-4 border-t border-gray-100">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Mail className="h-4 w-4 text-gray-400" />
-                      {agent.email}
+                  <div className="space-y-1.5 sm:space-y-2 pt-3 sm:pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                      <Mail className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <span className="truncate">{agent.email}</span>
                     </div>
                     {agent.phone && (
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Phone className="h-4 w-4 text-gray-400" />
-                        {agent.phone}
+                      <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                        <Phone className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <span>{agent.phone}</span>
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Building className="h-4 w-4 text-gray-400" />
-                      {agent.companyName}
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                      <Building className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <span className="truncate">{agent.companyName}</span>
                     </div>
                   </div>
 
                   {/* Bio */}
                   {agent.bio && (
-                    <div className="pt-4 border-t border-gray-100">
-                      <p className="text-sm text-gray-600">{agent.bio}</p>
+                    <div className="pt-3 sm:pt-4 border-t border-gray-100">
+                      <p className="text-xs sm:text-sm text-gray-600">{agent.bio}</p>
                     </div>
                   )}
 
                   {/* Action Buttons */}
-                  <div className="space-y-2 pt-4 border-t border-gray-100">
+                  <div className="space-y-2 pt-3 sm:pt-4 border-t border-gray-100">
                     {agent.calendlyLink && (
                       <Button
-                        className="w-full rounded-lg text-sm"
+                        className="w-full rounded-lg text-xs sm:text-sm h-9 sm:h-10"
                         style={{ backgroundColor: agent.brandColor }}
                         asChild
                       >
@@ -371,7 +371,7 @@ export default function RealtorDashboardPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <Calendar className="h-4 w-4 mr-2" />
+                          <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
                           Book a Call
                         </a>
                       </Button>
@@ -379,7 +379,7 @@ export default function RealtorDashboardPage() {
                     {agent.cmaLink && (
                       <Button
                         variant="outline"
-                        className="w-full rounded-lg text-sm"
+                        className="w-full rounded-lg text-xs sm:text-sm h-9 sm:h-10"
                         asChild
                       >
                         <a
@@ -387,7 +387,7 @@ export default function RealtorDashboardPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <ExternalLink className="h-4 w-4 mr-2" />
+                          <ExternalLink className="h-4 w-4 mr-2 flex-shrink-0" />
                           CMA Tool
                         </a>
                       </Button>
@@ -395,16 +395,16 @@ export default function RealtorDashboardPage() {
                     <Link href="/realtor/contact" className="block">
                       <Button
                         variant="outline"
-                        className="w-full rounded-lg text-sm"
+                        className="w-full rounded-lg text-xs sm:text-sm h-9 sm:h-10"
                       >
-                        <Mail className="h-4 w-4 mr-2" />
+                        <Mail className="h-4 w-4 mr-2 flex-shrink-0" />
                         Send Message
                       </Button>
                     </Link>
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-4">
+                <p className="text-gray-500 text-center py-3 sm:py-4 text-sm">
                   Unable to load agent information
                 </p>
               )}
@@ -413,15 +413,15 @@ export default function RealtorDashboardPage() {
 
           {/* My Notes Card */}
           <Card className="border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-              <StickyNote className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">My Notes</span>
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+              <StickyNote className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">My Notes</span>
             </div>
-            <CardContent className="p-4 bg-white space-y-3 rounded-b-lg">
+            <CardContent className="p-3 sm:p-4 bg-white space-y-2.5 sm:space-y-3 rounded-b-lg">
               {/* Privacy Notice */}
               <div className="flex items-center gap-2 p-2 bg-gray-50 border border-gray-200 rounded-lg">
                 <Lock className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                <p className="text-xs text-gray-500">
+                <p className="text-[10px] sm:text-xs text-gray-500">
                   Private notes - not visible to your mortgage agent
                 </p>
               </div>
@@ -447,14 +447,14 @@ export default function RealtorDashboardPage() {
                 }}
                 onKeyDown={handleNotesKeyDown}
                 placeholder="• Start typing your notes..."
-                className="min-h-[150px] text-sm rounded-lg resize-none"
+                className="min-h-[120px] sm:min-h-[150px] text-xs sm:text-sm rounded-lg resize-none"
               />
 
               {/* Save Button */}
               <Button
                 onClick={saveNotes}
                 disabled={isSavingNotes}
-                className="w-full rounded-lg text-sm"
+                className="w-full rounded-lg text-xs sm:text-sm h-9 sm:h-10"
                 style={{ backgroundColor: brandColor }}
               >
                 {isSavingNotes ? (

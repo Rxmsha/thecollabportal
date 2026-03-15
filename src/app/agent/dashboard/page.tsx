@@ -144,7 +144,7 @@ export default function AgentDashboardPage() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* First Login Password Change Modal */}
       <FirstLoginModal
         isOpen={showFirstLoginModal}
@@ -152,61 +152,61 @@ export default function AgentDashboardPage() {
       />
 
       {/* Page Header */}
-      <div className="border-b border-gray-200 pb-4">
-        <h1 className="dot-matrix text-2xl text-gray-900">
+      <div className="border-b border-gray-200 pb-3 sm:pb-4">
+        <h1 className="dot-matrix text-xl sm:text-2xl text-gray-900">
           Welcome back, {user?.name?.split(' ')[0]}
         </h1>
-        <p className="text-base text-gray-700 mt-1">
+        <p className="text-sm sm:text-base text-gray-700 mt-1">
           Here's an overview of your portal activity
         </p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <Card className="border-0 overflow-hidden rounded-lg">
-          <div className="px-4 py-3 flex items-center gap-2 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-            <Users className="h-4 w-4 text-white" />
-            <span className="text-white text-sm font-medium">Total Realtors</span>
+          <div className="px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+            <Users className="h-4 w-4 text-white flex-shrink-0" />
+            <span className="text-white text-xs sm:text-sm font-medium truncate">Total Realtors</span>
           </div>
-          <CardContent className="p-4 bg-white rounded-b-lg">
-            <p className="text-3xl font-bold text-gray-900">{stats.totalRealtors}</p>
-            <p className="text-base text-gray-700 mt-1">{stats.activeRealtors} active</p>
+          <CardContent className="p-3 sm:p-4 bg-white rounded-b-lg">
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.totalRealtors}</p>
+            <p className="text-sm sm:text-base text-gray-700 mt-1">{stats.activeRealtors} active</p>
           </CardContent>
         </Card>
 
         <Card className="border-0 overflow-hidden rounded-lg">
-          <div className="px-4 py-3 flex items-center gap-2 bg-emerald-600 rounded-t-lg">
-            <Users className="h-4 w-4 text-white" />
-            <span className="text-white text-sm font-medium">Active Realtors</span>
+          <div className="px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2 bg-emerald-600 rounded-t-lg">
+            <Users className="h-4 w-4 text-white flex-shrink-0" />
+            <span className="text-white text-xs sm:text-sm font-medium truncate">Active Realtors</span>
           </div>
-          <CardContent className="p-4 bg-white rounded-b-lg">
-            <p className="text-3xl font-bold text-emerald-600">{stats.activeRealtors}</p>
-            <p className="text-base text-gray-700 mt-1">currently active</p>
+          <CardContent className="p-3 sm:p-4 bg-white rounded-b-lg">
+            <p className="text-2xl sm:text-3xl font-bold text-emerald-600">{stats.activeRealtors}</p>
+            <p className="text-sm sm:text-base text-gray-700 mt-1">currently active</p>
           </CardContent>
         </Card>
 
         <Card className="border-0 overflow-hidden rounded-lg">
-          <div className="px-4 py-3 flex items-center gap-2 bg-amber-600 rounded-t-lg">
-            <UserPlus className="h-4 w-4 text-white" />
-            <span className="text-white text-sm font-medium">Pending Invites</span>
+          <div className="px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2 bg-amber-600 rounded-t-lg">
+            <UserPlus className="h-4 w-4 text-white flex-shrink-0" />
+            <span className="text-white text-xs sm:text-sm font-medium truncate">Pending Invites</span>
           </div>
-          <CardContent className="p-4 bg-white rounded-b-lg">
-            <p className="text-3xl font-bold text-amber-600">{stats.pendingRealtors}</p>
-            <p className="text-base text-gray-700 mt-1">awaiting activation</p>
+          <CardContent className="p-3 sm:p-4 bg-white rounded-b-lg">
+            <p className="text-2xl sm:text-3xl font-bold text-amber-600">{stats.pendingRealtors}</p>
+            <p className="text-sm sm:text-base text-gray-700 mt-1">awaiting activation</p>
           </CardContent>
         </Card>
 
         <Card className="border-0 overflow-hidden rounded-lg">
-          <div className="px-4 py-3 flex items-center gap-2 bg-purple-600 rounded-t-lg">
-            <LayoutDashboard className="h-4 w-4 text-white" />
-            <span className="text-white text-sm font-medium">Seat Usage</span>
+          <div className="px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2 bg-purple-600 rounded-t-lg">
+            <LayoutDashboard className="h-4 w-4 text-white flex-shrink-0" />
+            <span className="text-white text-xs sm:text-sm font-medium truncate">Seat Usage</span>
           </div>
-          <CardContent className="p-4 bg-white rounded-b-lg">
-            <p className="text-3xl font-bold text-purple-600">
+          <CardContent className="p-3 sm:p-4 bg-white rounded-b-lg">
+            <p className="text-2xl sm:text-3xl font-bold text-purple-600">
               {stats.seatsUsed}/{stats.seatLimit}
             </p>
             <Progress value={seatUsagePercent} className="h-2 mt-2" />
-            <p className="text-base text-gray-700 mt-1">
+            <p className="text-sm sm:text-base text-gray-700 mt-1">
               {stats.seatLimit - stats.seatsUsed} seats remaining
             </p>
           </CardContent>
@@ -215,27 +215,27 @@ export default function AgentDashboardPage() {
 
       {/* Quick Actions */}
       <Card className="border-0 overflow-hidden rounded-lg">
-        <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-          <Zap className="h-5 w-5 text-white" />
-          <span className="text-white font-semibold text-base">Quick Actions</span>
+        <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+          <Zap className="h-5 w-5 text-white flex-shrink-0" />
+          <span className="text-white font-semibold text-sm sm:text-base">Quick Actions</span>
         </div>
-        <CardContent className="p-6 bg-white rounded-b-lg">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {quickActions.map((action) => {
               const Icon = action.icon
               return (
-                <Link key={action.title} href={action.href}>
-                  <div className="group p-4 border border-gray-200 rounded-lg hover:border-gray-400 transition-all cursor-pointer h-full">
-                    <div className="mb-3">
-                      <Icon className="h-6 w-6" style={{ color: action.color }} />
+                <Link key={action.title} href={action.href} className="h-full">
+                  <div className="group p-3 sm:p-4 border border-gray-200 rounded-lg hover:border-gray-400 transition-all cursor-pointer h-full flex flex-col">
+                    <div className="mb-2 sm:mb-3">
+                      <Icon className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: action.color }} />
                     </div>
-                    <h3 className="font-semibold text-gray-900 text-base">
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
                       {action.title}
                     </h3>
-                    <p className="text-base text-gray-700 mt-1">
+                    <p className="text-xs sm:text-base text-gray-700 mt-1 line-clamp-2 flex-1">
                       {action.description}
                     </p>
-                    <div className="flex items-center gap-1 mt-3 text-sm font-medium" style={{ color: action.color }}>
+                    <div className="flex items-center gap-1 mt-2 sm:mt-3 text-xs sm:text-sm font-medium" style={{ color: action.color }}>
                       Go <ArrowRight className="h-3 w-3" />
                     </div>
                   </div>
@@ -249,28 +249,28 @@ export default function AgentDashboardPage() {
       {/* Resources for Your Clients */}
       {resources.length > 0 && (
         <Card className="border-0 overflow-hidden rounded-lg">
-          <div className="px-6 py-4 flex items-center gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
-            <BookOpen className="h-5 w-5 text-white" />
-            <span className="text-white font-semibold text-base">Resources for Your Clients</span>
+          <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 rounded-t-lg" style={{ backgroundColor: brandColor }}>
+            <BookOpen className="h-5 w-5 text-white flex-shrink-0" />
+            <span className="text-white font-semibold text-sm sm:text-base">Resources for Your Clients</span>
           </div>
-          <CardContent className="p-6 bg-white rounded-b-lg">
-            <div className="space-y-4">
+          <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+            <div className="space-y-3 sm:space-y-4">
               {resources.map((resource) => (
                 <div
                   key={resource.id}
                   className="flex border border-gray-200 bg-white overflow-hidden rounded-lg"
                 >
-                  <div className="flex-1 p-4">
-                    <h4 className="font-semibold text-gray-900 text-base">
+                  <div className="flex-1 p-3 sm:p-4 min-w-0">
+                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base break-words">
                       {resource.title}
                     </h4>
-                    <p className="text-base text-gray-700 mt-1 mb-3">
+                    <p className="text-sm sm:text-base text-gray-700 mt-1 mb-2 sm:mb-3 line-clamp-2">
                       {resource.description}
                     </p>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="rounded-lg text-sm"
+                      className="rounded-lg text-xs sm:text-sm"
                       asChild
                     >
                       <a
@@ -279,12 +279,12 @@ export default function AgentDashboardPage() {
                         rel="noopener noreferrer"
                         onClick={() => handleResourceClick(resource.id)}
                       >
-                        {resource.buttonText}
-                        <ExternalLink className="h-3 w-3 ml-2" />
+                        <span className="truncate">{resource.buttonText}</span>
+                        <ExternalLink className="h-3 w-3 ml-2 flex-shrink-0" />
                       </a>
                     </Button>
                   </div>
-                  <div className="w-3 rounded-r-lg" style={{ backgroundColor: brandColor }} />
+                  <div className="w-2 sm:w-3 flex-shrink-0" style={{ backgroundColor: brandColor }} />
                 </div>
               ))}
             </div>
@@ -294,34 +294,34 @@ export default function AgentDashboardPage() {
 
       {/* Getting Started - Only show if not completed */}
       {!onboarding.completed && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <Card className="border-0 overflow-hidden rounded-lg">
-            <div className="px-6 py-4 flex items-center gap-3 bg-emerald-600 rounded-t-lg">
-              <Check className="h-5 w-5 text-white" />
-              <span className="text-white font-semibold text-base">Getting Started</span>
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 bg-emerald-600 rounded-t-lg">
+              <Check className="h-5 w-5 text-white flex-shrink-0" />
+              <span className="text-white font-semibold text-sm sm:text-base">Getting Started</span>
             </div>
-            <CardContent className="p-6 bg-white rounded-b-lg">
-              <div className="space-y-4">
+            <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">
+              <div className="space-y-3 sm:space-y-4">
                 <Link href="/agent/branding">
-                  <div className={`flex items-start gap-4 p-4 border rounded-lg transition-all cursor-pointer ${
+                  <div className={`flex items-start gap-3 sm:gap-4 p-3 sm:p-4 border rounded-lg transition-all cursor-pointer ${
                     onboarding.visitedBranding
                       ? 'border-emerald-300 bg-emerald-50'
                       : 'border-gray-200 hover:border-gray-400'
                   }`}>
-                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center text-base font-bold flex-shrink-0 ${
+                    <div className={`h-7 w-7 sm:h-8 sm:w-8 rounded-lg flex items-center justify-center text-sm sm:text-base font-bold flex-shrink-0 ${
                       onboarding.visitedBranding
                         ? 'bg-emerald-600 text-white'
                         : 'bg-gray-200 text-gray-600'
                     }`}>
                       {onboarding.visitedBranding ? <Check className="h-4 w-4" /> : '1'}
                     </div>
-                    <div>
-                      <h4 className={`font-semibold text-base ${
+                    <div className="min-w-0">
+                      <h4 className={`font-semibold text-sm sm:text-base ${
                         onboarding.visitedBranding ? 'text-emerald-700' : 'text-gray-900'
                       }`}>
                         Customize Your Branding
                       </h4>
-                      <p className={`text-base mt-1 ${
+                      <p className={`text-xs sm:text-base mt-1 ${
                         onboarding.visitedBranding ? 'text-emerald-600' : 'text-gray-700'
                       }`}>
                         Add your logo and brand colors to personalize your portal
@@ -331,25 +331,25 @@ export default function AgentDashboardPage() {
                 </Link>
 
                 <Link href="/agent/invite">
-                  <div className={`flex items-start gap-4 p-4 border rounded-lg transition-all cursor-pointer ${
+                  <div className={`flex items-start gap-3 sm:gap-4 p-3 sm:p-4 border rounded-lg transition-all cursor-pointer ${
                     onboarding.visitedInvite
                       ? 'border-emerald-300 bg-emerald-50'
                       : 'border-gray-200 hover:border-gray-400'
                   }`}>
-                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center text-base font-bold flex-shrink-0 ${
+                    <div className={`h-7 w-7 sm:h-8 sm:w-8 rounded-lg flex items-center justify-center text-sm sm:text-base font-bold flex-shrink-0 ${
                       onboarding.visitedInvite
                         ? 'bg-emerald-600 text-white'
                         : 'bg-gray-200 text-gray-600'
                     }`}>
                       {onboarding.visitedInvite ? <Check className="h-4 w-4" /> : '2'}
                     </div>
-                    <div>
-                      <h4 className={`font-semibold text-base ${
+                    <div className="min-w-0">
+                      <h4 className={`font-semibold text-sm sm:text-base ${
                         onboarding.visitedInvite ? 'text-emerald-700' : 'text-gray-900'
                       }`}>
                         Invite Your Realtors
                       </h4>
-                      <p className={`text-base mt-1 ${
+                      <p className={`text-xs sm:text-base mt-1 ${
                         onboarding.visitedInvite ? 'text-emerald-600' : 'text-gray-700'
                       }`}>
                         Send invitations to realtors you want to collaborate with
@@ -359,25 +359,25 @@ export default function AgentDashboardPage() {
                 </Link>
 
                 <Link href="/agent/templates">
-                  <div className={`flex items-start gap-4 p-4 border rounded-lg transition-all cursor-pointer ${
+                  <div className={`flex items-start gap-3 sm:gap-4 p-3 sm:p-4 border rounded-lg transition-all cursor-pointer ${
                     onboarding.visitedTemplates
                       ? 'border-emerald-300 bg-emerald-50'
                       : 'border-gray-200 hover:border-gray-400'
                   }`}>
-                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center text-base font-bold flex-shrink-0 ${
+                    <div className={`h-7 w-7 sm:h-8 sm:w-8 rounded-lg flex items-center justify-center text-sm sm:text-base font-bold flex-shrink-0 ${
                       onboarding.visitedTemplates
                         ? 'bg-emerald-600 text-white'
                         : 'bg-gray-200 text-gray-600'
                     }`}>
                       {onboarding.visitedTemplates ? <Check className="h-4 w-4" /> : '3'}
                     </div>
-                    <div>
-                      <h4 className={`font-semibold text-base ${
+                    <div className="min-w-0">
+                      <h4 className={`font-semibold text-sm sm:text-base ${
                         onboarding.visitedTemplates ? 'text-emerald-700' : 'text-gray-900'
                       }`}>
                         Explore Templates & Tools
                       </h4>
-                      <p className={`text-base mt-1 ${
+                      <p className={`text-xs sm:text-base mt-1 ${
                         onboarding.visitedTemplates ? 'text-emerald-600' : 'text-gray-700'
                       }`}>
                         Browse our library of marketing templates and AI tools
